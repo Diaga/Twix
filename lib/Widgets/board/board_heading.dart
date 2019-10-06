@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:twix/Palette/palette.dart';
+
 class BoardHeading extends StatelessWidget {
   final String heading;
 
@@ -7,6 +9,10 @@ class BoardHeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(heading);
+    return Text(heading, style: TextStyle(
+      color: Palette.boardHeading,
+      fontWeight: FontWeight.bold,
+      fontSize: 20
+    ),);
   }
 }

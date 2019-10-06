@@ -24,35 +24,48 @@ class _BoardState extends State<Board> {
   final int doneTasks;
   final int totalTasks;
 
-  _BoardState({Key key, this.heading, this.doneTasks, this.totalTasks});
+  _BoardState(
+      {Key key,
+      @required this.heading,
+      @required this.doneTasks,
+      @required this.totalTasks});
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.all(Radius.circular(1.0)),
-        border: Border.all(color: Palette.board_borders),
-      ),
+          color: Palette.boardColor,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
+          boxShadow: [
+            BoxShadow(
+              color: Palette.boardShadow,
+              offset: Offset(3, 3),
+              blurRadius: 10,
+            ),
+          ]),
       width: size.width * 0.4,
       height: 100.0,
       child: Stack(
         children: <Widget>[
           Align(
             child: BoardHeading(heading: heading),
+            alignment: Alignment(-0.7, -0.85),
           ),
           Align(
             child: BoardTaskCounter(
               doneTasks: doneTasks,
               totalTasks: totalTasks,
             ),
+            alignment: Alignment(-0.6, 0.3),
           ),
           Align(
             child: BoardTaskProgressBar(
               doneTasks: doneTasks,
               totalTasks: totalTasks,
             ),
+            alignment: Alignment(-0.9, 0.8),
           )
         ],
       ),

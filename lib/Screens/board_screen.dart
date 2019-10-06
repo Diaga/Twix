@@ -17,9 +17,10 @@ class _BoardScreenState extends State<BoardScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            Board(heading: "WORL", doneTasks: 1, totalTasks: 5),
+        BoardRow(
+          widgets: <Widget>[
+            Board(heading: 'Board 1', doneTasks: 1, totalTasks: 5,),
+            Board(heading: 'Board 2', doneTasks: 3, totalTasks: 6,),
           ],
         )
       ],

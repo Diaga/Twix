@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:twix/Palette/palette.dart';
 
 class BoardTaskCounter extends StatelessWidget {
   final int doneTasks;
@@ -9,6 +10,10 @@ class BoardTaskCounter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text('$doneTasks of $totalTasks completed!');
+    return Text('$doneTasks of $totalTasks completed!', style: TextStyle(
+      color: Palette.boardTaskCounter,
+      fontStyle: FontStyle.italic,
+      fontSize: 15,
+    ),);
   }
 }
