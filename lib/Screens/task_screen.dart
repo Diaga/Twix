@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/Widgets/onswipe_container.dart';
-import 'package:task_manager/Widgets/task.dart';
+import 'package:twix/Widgets/onswipe_container.dart';
+import 'package:twix/Widgets/task.dart';
 
 class TaskScreen extends StatefulWidget {
   @override
