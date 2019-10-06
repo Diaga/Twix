@@ -1,6 +1,6 @@
-# task_manager
+# Twix
 
-A new Flutter application.
+AppCon Task Manager
 
 ## Getting Started
 
