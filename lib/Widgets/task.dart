@@ -18,6 +18,29 @@ class Task extends StatelessWidget {
       child: ListTile(
         leading: Icon(Icons.check_circle_outline),
         title: Text('Tasks'),
+        onTap: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Screen()));
+        },
+      ),
+    );
+  }
+}
+
+class Screen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+            children: <Widget>[
+              Card(
+                child: ListTile(
+                  title: Text('Title',style: TextStyle(fontSize: 12,color:Colors.grey[500]),),
+                  subtitle: Text('Submit a project',style: TextStyle(fontSize: 15,color: Colors.black),),
+                ),
+              )
+            ],
+        ),
       ),
     );
   }

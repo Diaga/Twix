@@ -12,25 +12,28 @@ class BoardTaskProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
     final double width = size.width * 0.4;
-    return Stack(
-      children: <Widget>[
-        Container(
-          height: 10,
-          width: width,
-          decoration: BoxDecoration(
-              color: Palette.boardProgressBarBackground,
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.all(Radius.circular(50))),
-        ),
-        Container(
-          height: 10,
-          width: width * (doneTasks / totalTasks),
-          decoration: BoxDecoration(
-              color: Palette.boardProgressBar,
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.all(Radius.circular(50))),
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 3),
+      child: Stack(
+        children: <Widget>[
+          Container(
+            height: 10,
+            width: width,
+            decoration: BoxDecoration(
+                color: Palette.boardProgressBarBackground,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.all(Radius.circular(50))),
+          ),
+          Container(
+            height: 10,
+            width: width * (doneTasks / totalTasks),
+            decoration: BoxDecoration(
+                color: Palette.boardProgressBar,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.all(Radius.circular(50))),
+          ),
+        ],
+      ),
     );
   }
 }

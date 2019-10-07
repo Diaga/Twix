@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:twix/Screens/task_screen.dart';
 
 import 'package:twix/Palette/palette.dart';
 
@@ -33,41 +34,53 @@ class _BoardState extends State<Board> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    return Container(
-      decoration: BoxDecoration(
-          color: Palette.boardColor,
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          boxShadow: [
-            BoxShadow(
-              color: Palette.boardShadow,
-              offset: Offset(3, 3),
-              blurRadius: 10,
-            ),
-          ]),
-      width: size.width * 0.4,
-      height: 100.0,
-      child: Stack(
-        children: <Widget>[
-          Align(
-            child: BoardHeading(heading: heading),
-            alignment: Alignment(-0.7, -0.85),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TaskScreen(),
           ),
-          Align(
-            child: BoardTaskCounter(
-              doneTasks: doneTasks,
-              totalTasks: totalTasks,
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+            color: Palette.boardColor,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            boxShadow: [
+              BoxShadow(
+                color: Palette.boardShadow,
+                offset: Offset(3, 3),
+                blurRadius: 10,
+              ),
+            ]),
+        width: size.width * 0.1,
+        height: 50.0,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal:8.0),
+              child: BoardHeading(heading: heading),
             ),
-            alignment: Alignment(-0.6, 0.3),
-          ),
-          Align(
-            child: BoardTaskProgressBar(
-              doneTasks: doneTasks,
-              totalTasks: totalTasks,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal:8.0),
+              child: BoardTaskCounter(
+                doneTasks: doneTasks,
+                totalTasks: totalTasks,
+              ),
             ),
-            alignment: Alignment(-0.9, 0.8),
-          )
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal:8.0),
+              child: BoardTaskProgressBar(
+                doneTasks: doneTasks,
+                totalTasks: totalTasks,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
