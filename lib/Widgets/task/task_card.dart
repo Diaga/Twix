@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:twix/Screens/task_details.dart';
 
-class Task extends StatelessWidget {
+class TaskCard extends StatelessWidget {
+  final String title;
+
+  const TaskCard({Key key, this.title}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -9,7 +13,7 @@ class Task extends StatelessWidget {
       color: Colors.white,
       child: ListTile(
         leading: Icon(Icons.check_circle_outline),
-        title: Text('Tasks'),
+        title: Text(title),
         onTap: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => Screen()));
