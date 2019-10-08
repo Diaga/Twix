@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class OnSwipeContainer extends StatelessWidget {
   final Color color;
 
@@ -8,13 +7,9 @@ class OnSwipeContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Card(
       margin: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.circular(10),
-      ),
+      color: color,
     );
   }
 }

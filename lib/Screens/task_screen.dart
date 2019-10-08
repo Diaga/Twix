@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/Widgets/onswipe_container.dart';
-import 'package:task_manager/Widgets/task.dart';
+import 'package:twix/Widgets/onswipe_container.dart';
+import 'package:twix/Widgets/task.dart';
 
 class TaskScreen extends StatefulWidget {
   @override
@@ -17,12 +17,15 @@ class _TaskScreenState extends State<TaskScreen> {
           'Tasks',
           style: TextStyle(color: Colors.black),
         ),
+        automaticallyImplyLeading: false,
         backgroundColor: ThemeData.light().scaffoldBackgroundColor,
         elevation: 0,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.clear),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
             color: Colors.black,
           )
         ],
