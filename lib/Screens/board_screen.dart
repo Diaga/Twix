@@ -21,9 +21,9 @@ class _BoardScreenState extends State<BoardScreen> {
             title: Text('Personal Boards'),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical:8.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Container(
-              height: 100,
+              height: 120,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[
@@ -51,9 +51,9 @@ class _BoardScreenState extends State<BoardScreen> {
             title: Text('Group Boards'),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical:8.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Container(
-              height: 100,
+              height: 120,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[

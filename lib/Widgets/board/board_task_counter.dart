@@ -10,10 +10,13 @@ class BoardTaskCounter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text('$doneTasks of $totalTasks completed!', style: TextStyle(
-      color: Palette.boardTaskCounter,
-      fontStyle: FontStyle.italic,
-      fontSize: 15,
-    ),);
+    return Text(
+      '$doneTasks of $totalTasks completed!',
+      style: TextStyle(
+        color: Palette.boardTaskCounter,
+        fontStyle: FontStyle.italic,
+        fontSize: 15,
+      ),
+    );
   }
 }

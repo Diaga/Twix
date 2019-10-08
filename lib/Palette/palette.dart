@@ -8,7 +8,7 @@ class Palette {
   static const Color boardColor = Colors.white;
   static const Color boardTaskCounter = Colors.black;
   static Color boardProgressBarBackground = Colors.grey[100];
-  static const Color boardProgressBar = Colors.blueAccent;
+  static const Color boardProgressBar = Color(0xFF3C6AFF);
 }
 
 

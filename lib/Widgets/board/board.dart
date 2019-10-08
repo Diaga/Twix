@@ -41,38 +41,24 @@ class _BoardState extends State<Board> {
           ),
         );
       },
-      child: Container(
-        decoration: BoxDecoration(
-            color: Palette.boardColor,
-            shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            boxShadow: [
-              BoxShadow(
-                color: Palette.boardShadow,
-                offset: Offset(1, 3),
-                blurRadius: 8,
-              ),
-            ],),
-        width: size.width * 0.4,
-        height: 50.0,
-        margin: EdgeInsets.symmetric(horizontal: 10),
+      child: Card(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal:8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: BoardHeading(heading: heading),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal:8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: BoardTaskCounter(
                 doneTasks: doneTasks,
                 totalTasks: totalTasks,
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal:5.0),
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: BoardTaskProgressBar(
                 doneTasks: doneTasks,
                 totalTasks: totalTasks,
