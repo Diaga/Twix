@@ -11,4 +11,3 @@ class Palette {
   static const Color boardProgressBar = Color(0xFF3C6AFF);
 }
 
-

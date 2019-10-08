@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:twix/Widgets/onswipe_container.dart';
 import 'package:twix/Widgets/task.dart';
+
+import 'package:twix/Widgets/task/onswipe_container.dart';
+import 'package:twix/Widgets/task/task.dart';
 
 class TaskScreen extends StatefulWidget {
   @override
@@ -8,10 +10,18 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  final tasks = List<Task>.generate(10, (i) => Task());
+  final tasks = List<Task>();
+
+  void addTask() {
+    setState(() {
+      tasks.add(Task());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text(
           'Tasks',
@@ -31,7 +41,7 @@ class _TaskScreenState extends State<TaskScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: null,
+        onPressed: addTask,
         backgroundColor: Color(0xFF3C6AFF),
         child: Icon(Icons.add),
       ),
@@ -105,49 +115,46 @@ class _TaskScreenState extends State<TaskScreen> {
             ),
           ),
           Container(
-            height: MediaQuery.of(context).size.height * 0.68,
-            child: ScrollConfiguration(
-              behavior: CustomBehavior(),
-              child: ListView.builder(
-                itemBuilder: (BuildContext context, int index) {
-                  return Dismissible(
-                    key: UniqueKey(),
-                    background: OnSwipeContainer(color: Colors.blue),
-                    child: tasks[index],
-                    onDismissed: (DismissDirection direction) {
-                      if (direction == DismissDirection.startToEnd) {
-                        Scaffold.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Completed"),
-                            duration: Duration(milliseconds: 400),
-                          ),
-                        );
-                      } else if (direction == DismissDirection.endToStart) {
-                        Scaffold.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("Deleted"),
-                            duration: Duration(milliseconds: 400),
-                          ),
-                        );
-                      }
-                      setState(() {
-                        tasks.removeAt(index);
-                      });
-                    },
-                    secondaryBackground: OnSwipeContainer(color: Colors.red,),
-                  );
-                },
-                itemCount: tasks.length,
-              ),
+            height: MediaQuery.of(context).size.height * 0.65,
+            child: ListView.builder(
+              itemBuilder: (BuildContext context, int index) {
+                return Dismissible(
+                  key: ValueKey(index),
+                  background: OnSwipeContainer(color: Colors.blue),
+                  child: tasks[index],
+                  onDismissed: (DismissDirection direction) {
+                    if (direction == DismissDirection.startToEnd) {
+                      Scaffold.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Completed"),
+                          duration: Duration(milliseconds: 400),
+                        ),
+                      );
+                    } else if (direction == DismissDirection.endToStart) {
+                      Scaffold.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Deleted"),
+                          duration: Duration(milliseconds: 400),
+                        ),
+                      );
+                    }
+                    setState(() {
+                      tasks.removeAt(index);
+                    });
+                  },
+                  secondaryBackground: OnSwipeContainer(
+                    color: Colors.red,
+                  ),
+                );
+              },
+              itemCount: tasks.length,
             ),
-          )
+          ),
         ],
       ),
     );
   }
 }
-
-
 
 class CustomBehavior extends ScrollBehavior {
   @override
