@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:twix/Screens/task_screen.dart';
-import 'package:twix/Palette/palette.dart';
+
 import 'package:twix/Widgets/board/board_heading.dart';
 import 'package:twix/Widgets/board/board_task_counter.dart';
 import 'package:twix/Widgets/board/board_task_progress_bar.dart';
@@ -31,7 +32,6 @@ class _BoardState extends State<Board> {
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
         Navigator.push(

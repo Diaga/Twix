@@ -18,7 +18,11 @@ class TaskEditCard extends StatelessWidget {
           width: size.width * 0.7,
           child: TextField(
             controller: textEditingController,
-            decoration: null,
+            autofocus: true,
+            onSubmitted: (value) => callBack(),
+            decoration: InputDecoration(
+              labelText: 'Add new task'
+            ),
           ),
         ),
         trailing: IconButton(

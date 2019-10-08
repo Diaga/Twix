@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:twix/Screens/board_screen.dart';
 import 'package:twix/Screens/task_screen.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  runApp(Twix());
+}
 
-class MyApp extends StatelessWidget {
+class Twix extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
