@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:twix/Screens/task_screen.dart';
-
 import 'package:twix/Palette/palette.dart';
-
 import 'package:twix/Widgets/board/board_heading.dart';
 import 'package:twix/Widgets/board/board_task_counter.dart';
 import 'package:twix/Widgets/board/board_task_progress_bar.dart';
@@ -51,12 +49,13 @@ class _BoardState extends State<Board> {
             boxShadow: [
               BoxShadow(
                 color: Palette.boardShadow,
-                offset: Offset(3, 3),
-                blurRadius: 10,
+                offset: Offset(1, 3),
+                blurRadius: 8,
               ),
-            ]),
-        width: size.width * 0.1,
+            ],),
+        width: size.width * 0.4,
         height: 50.0,
+        margin: EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +72,7 @@ class _BoardState extends State<Board> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal:8.0),
+              padding: const EdgeInsets.symmetric(horizontal:5.0),
               child: BoardTaskProgressBar(
                 doneTasks: doneTasks,
                 totalTasks: totalTasks,

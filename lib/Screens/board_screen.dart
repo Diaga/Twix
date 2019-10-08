@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'package:twix/Palette/palette.dart';
-
 import 'package:twix/Widgets/board/board.dart';
-import 'package:twix/Widgets/board/board_row.dart';
 
 class BoardScreen extends StatefulWidget {
   @override
@@ -13,48 +9,75 @@ class BoardScreen extends StatefulWidget {
 class _BoardScreenState extends State<BoardScreen> {
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 2,
-      mainAxisSpacing: 20,
-      crossAxisSpacing: 10,
-      childAspectRatio: 1.8,
-      children: <Widget>[
-        Board(
-          heading: 'Board 1',
-          doneTasks: 1,
-          totalTasks: 5,
-        ),
-        Board(
-          heading: 'Board 2',
-          doneTasks: 3,
-          totalTasks: 6,
-        ),
-        Board(
-          heading: 'Board 3',
-          doneTasks: 2,
-          totalTasks: 3,
-        ),
-        Board(
-          heading: 'Board 4',
-          doneTasks: 4,
-          totalTasks: 6,
-        ),
-        Board(
-          heading: 'Board 5',
-          doneTasks: 6,
-          totalTasks: 6,
-        ),
-        Board(
-          heading: 'Board 6',
-          doneTasks: 1,
-          totalTasks: 4,
-        ),
-        Board(
-          heading: 'Board 7',
-          doneTasks: 1,
-          totalTasks: 10,
-        ),
-      ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Boards'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text('Personal Boards'),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical:8.0),
+            child: Container(
+              height: 100,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: <Widget>[
+                  Board(
+                    heading: 'Board 1',
+                    doneTasks: 1,
+                    totalTasks: 5,
+                  ),
+                  Board(
+                    heading: 'Board 2',
+                    doneTasks: 1,
+                    totalTasks: 5,
+                  ),
+                  Board(
+                    heading: 'Board 3',
+                    doneTasks: 1,
+                    totalTasks: 5,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.group),
+            title: Text('Group Boards'),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical:8.0),
+            child: Container(
+              height: 100,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: <Widget>[
+                  Board(
+                    heading: 'Board 1',
+                    doneTasks: 1,
+                    totalTasks: 5,
+                  ),
+                  Board(
+                    heading: 'Board 2',
+                    doneTasks: 1,
+                    totalTasks: 5,
+                  ),
+                  Board(
+                    heading: 'Board 3',
+                    doneTasks: 1,
+                    totalTasks: 5,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

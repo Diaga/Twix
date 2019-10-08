@@ -17,12 +17,15 @@ class _TaskScreenState extends State<TaskScreen> {
           'Tasks',
           style: TextStyle(color: Colors.black),
         ),
+        automaticallyImplyLeading: false,
         backgroundColor: ThemeData.light().scaffoldBackgroundColor,
         elevation: 0,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.clear),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
             color: Colors.black,
           )
         ],
