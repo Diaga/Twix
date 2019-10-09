@@ -4,7 +4,7 @@ import 'package:twix/Screens/task_details.dart';
 class TaskCard extends StatelessWidget {
   final String title;
 
-  const TaskCard({Key key, this.title}) : super(key: key);
+  TaskCard({this.title});
 
   @override
   Widget build(BuildContext context) {

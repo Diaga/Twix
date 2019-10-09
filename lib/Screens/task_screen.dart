@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:twix/Widgets/task.dart';
 
 import 'package:twix/Widgets/task/onswipe_container.dart';
-import 'package:twix/Widgets/task/task.dart';
+import 'package:twix/Widgets/task/task_adder_sheet.dart';
+import 'package:twix/Widgets/task/task_card.dart';
 
 class TaskScreen extends StatefulWidget {
   @override
@@ -10,12 +10,23 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  final tasks = List<Task>();
+  List<TaskCard> tasks = [];
 
-  void addTask() {
-    setState(() {
-      tasks.add(Task());
-    });
+  void add() async {
+    var result = await showModalBottomSheet(
+      isScrollControlled: true,
+      context: (context),
+      builder: (context) {
+        return TaskAdderSheet();
+      },
+    );
+    if (result != null) {
+      setState(() {
+        tasks.add(TaskCard(
+          title: result,
+        ));
+      });
+    }
   }
 
   @override
@@ -41,7 +52,7 @@ class _TaskScreenState extends State<TaskScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: addTask,
+        onPressed: add,
         backgroundColor: Color(0xFF3C6AFF),
         child: Icon(Icons.add),
       ),
@@ -117,24 +128,29 @@ class _TaskScreenState extends State<TaskScreen> {
           Container(
             height: MediaQuery.of(context).size.height * 0.65,
             child: ListView.builder(
+              physics: BouncingScrollPhysics(),
               itemBuilder: (BuildContext context, int index) {
                 return Dismissible(
-                  key: ValueKey(index),
-                  background: OnSwipeContainer(color: Colors.blue),
+                  key: ValueKey(tasks[index]),
+                  background: OnSwipeContainer(
+                    color: Colors.blue,
+                    iconData: Icons.check,
+                    alignment: Alignment.centerLeft,
+                  ),
                   child: tasks[index],
                   onDismissed: (DismissDirection direction) {
                     if (direction == DismissDirection.startToEnd) {
                       Scaffold.of(context).showSnackBar(
                         SnackBar(
                           content: Text("Completed"),
-                          duration: Duration(milliseconds: 400),
+                          duration: Duration(milliseconds: 600),
                         ),
                       );
                     } else if (direction == DismissDirection.endToStart) {
                       Scaffold.of(context).showSnackBar(
                         SnackBar(
                           content: Text("Deleted"),
-                          duration: Duration(milliseconds: 400),
+                          duration: Duration(milliseconds: 600),
                         ),
                       );
                     }
@@ -144,6 +160,8 @@ class _TaskScreenState extends State<TaskScreen> {
                   },
                   secondaryBackground: OnSwipeContainer(
                     color: Colors.red,
+                    iconData: Icons.delete,
+                    alignment: Alignment.centerRight,
                   ),
                 );
               },
@@ -153,13 +171,5 @@ class _TaskScreenState extends State<TaskScreen> {
         ],
       ),
     );
-  }
-}
-
-class CustomBehavior extends ScrollBehavior {
-  @override
-  Widget buildViewportChrome(
-      BuildContext context, Widget child, AxisDirection axisDirection) {
-    return child;
   }
 }
