@@ -4,13 +4,37 @@ import 'package:twix/Widgets/task/onswipe_container.dart';
 import 'package:twix/Widgets/task/task_adder_sheet.dart';
 import 'package:twix/Widgets/task/task_card.dart';
 
+import 'package:twix/Database/Managers/task_manager.dart';
+import 'package:twix/Database/Tables/task_table.dart';
+
 class TaskScreen extends StatefulWidget {
+  final int boardId;
+
+  TaskScreen({@required this.boardId});
+
   @override
-  _TaskScreenState createState() => _TaskScreenState();
+  _TaskScreenState createState() => _TaskScreenState(boardId);
 }
 
 class _TaskScreenState extends State<TaskScreen> {
+  int boardId;
   List<TaskCard> tasks = [];
+
+  _TaskScreenState(int boardId) {
+    this.boardId = boardId;
+    loadTasks();
+  }
+
+  void loadTasks() async {
+    List<Map<String, dynamic>> taskMaps = await TaskManager.boardTasks(boardId);
+
+    List<TaskTable> taskTables =
+        taskMaps.map((taskMap) => TaskTable.fromMap(taskMap)).toList();
+
+    tasks =
+        taskTables.map((taskTable) => TaskCard.fromObject(taskTable)).toList();
+    setState(() {});
+  }
 
   void add() async {
     var result = await showModalBottomSheet(
@@ -22,9 +46,9 @@ class _TaskScreenState extends State<TaskScreen> {
     );
     if (result != null) {
       setState(() {
-        tasks.add(TaskCard(
-          title: result,
-        ));
+        TaskTable taskTable = TaskTable(name: result, boardId: boardId);
+        TaskManager.insert(taskTable);
+        loadTasks();
       });
     }
   }

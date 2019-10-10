@@ -6,29 +6,41 @@ import 'package:twix/Widgets/board/board_heading.dart';
 import 'package:twix/Widgets/board/board_task_counter.dart';
 import 'package:twix/Widgets/board/board_task_progress_bar.dart';
 
+import 'package:twix/Database/Tables/board_table.dart';
+
 class Board extends StatefulWidget {
+  final int id;
   final String heading;
   final int doneTasks;
   final int totalTasks;
 
-  Board({Key key, this.heading, this.doneTasks, this.totalTasks})
+  Board({Key key, this.id, this.heading, this.doneTasks, this.totalTasks})
       : super(key: key);
+
+  Board.fromObject(BoardTable boardTable)
+      : this.id = boardTable.id,
+        this.heading = boardTable.name,
+        this.doneTasks = 1,
+        this.totalTasks = 5;
 
   @override
   State<StatefulWidget> createState() => _BoardState(
-      heading: heading, doneTasks: doneTasks, totalTasks: totalTasks);
+      id: id, heading: heading, doneTasks: doneTasks, totalTasks: totalTasks);
 }
 
 class _BoardState extends State<Board> {
+  final int id;
   final String heading;
   final int doneTasks;
   final int totalTasks;
 
-  _BoardState(
-      {Key key,
-      @required this.heading,
-      @required this.doneTasks,
-      @required this.totalTasks});
+  _BoardState({
+    Key key,
+    @required this.id,
+    @required this.heading,
+    @required this.doneTasks,
+    @required this.totalTasks,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +49,9 @@ class _BoardState extends State<Board> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TaskScreen(),
+            builder: (context) => TaskScreen(
+              boardId: id,
+            ),
           ),
         );
       },
