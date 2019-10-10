@@ -12,27 +12,31 @@ class TaskScreen extends StatefulWidget {
   TaskScreen({@required this.boardId});
 
   @override
-  _TaskScreenState createState() => _TaskScreenState(boardId);
+  _TaskScreenState createState() => _TaskScreenState();
 }
 
 class _TaskScreenState extends State<TaskScreen> {
   int boardId;
   List<TaskCard> tasks = [];
 
-  _TaskScreenState(int boardId) {
-    this.boardId = boardId;
+  @override
+  void initState() {
+    super.initState();
+    boardId = this.widget.boardId;
     loadTasks();
   }
 
   void loadTasks() async {
     List<Map<String, dynamic>> taskMaps = await TaskManager.boardTasks(boardId);
 
-    List<TaskTable> taskTables =
-        taskMaps.map((taskMap) => TaskTable.fromMap(taskMap)).toList();
+    setState(() {
+      List<TaskTable> taskTables =
+          taskMaps.map((taskMap) => TaskTable.fromMap(taskMap)).toList();
 
-    tasks =
-        taskTables.map((taskTable) => TaskCard.fromObject(taskTable)).toList();
-    setState(() {});
+      tasks = taskTables
+          .map((taskTable) => TaskCard.fromObject(taskTable))
+          .toList();
+    });
   }
 
   void add() async {
@@ -47,6 +51,8 @@ class _TaskScreenState extends State<TaskScreen> {
       setState(() {
         TaskTable taskTable = TaskTable(name: result, boardId: boardId);
         TaskManager.insert(taskTable);
+
+        // Call this to update screen
         loadTasks();
       });
     }

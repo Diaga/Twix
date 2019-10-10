@@ -15,17 +15,22 @@ class BoardScreen extends StatefulWidget {
 class _BoardScreenState extends State<BoardScreen> {
   List<Board> boards = [];
 
-  _BoardScreenState() {
+  @override
+  void initState() {
+    super.initState();
     loadBoards();
   }
 
   void loadBoards() async {
     List<Map<String, dynamic>> boardMaps = await BoardManager.boards();
-    List<BoardTable> boardTables =
-        boardMaps.map((boardMap) => BoardTable.fromMap(boardMap)).toList();
-    boards =
-        boardTables.map((boardTable) => Board.fromObject(boardTable)).toList();
-    setState(() {});
+
+    setState(() {
+      List<BoardTable> boardTables =
+          boardMaps.map((boardMap) => BoardTable.fromMap(boardMap)).toList();
+      boards = boardTables
+          .map((boardTable) => Board.fromObject(boardTable))
+          .toList();
+    });
   }
   void add() async{
     var result = await Navigator.push(

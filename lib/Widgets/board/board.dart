@@ -24,23 +24,23 @@ class Board extends StatefulWidget {
         this.totalTasks = 5;
 
   @override
-  State<StatefulWidget> createState() => _BoardState(
-      id: id, heading: heading, doneTasks: doneTasks, totalTasks: totalTasks);
+  State<StatefulWidget> createState() => _BoardState();
 }
 
 class _BoardState extends State<Board> {
-  final int id;
-  final String heading;
-  final int doneTasks;
-  final int totalTasks;
+  int id;
+  String heading;
+  int doneTasks;
+  int totalTasks;
 
-  _BoardState({
-    Key key,
-    @required this.id,
-    @required this.heading,
-    @required this.doneTasks,
-    @required this.totalTasks,
-  });
+  @override
+  void initState() {
+    super.initState();
+    id = widget.id;
+    heading = widget.heading;
+    doneTasks = widget.doneTasks;
+    totalTasks = widget.totalTasks;
+  }
 
   @override
   Widget build(BuildContext context) {
