@@ -13,7 +13,10 @@ class BoardScreen extends StatefulWidget {
 class _BoardScreenState extends State<BoardScreen> {
   List<Board> boards = [];
 
-  _BoardScreenState() {
+  @override
+  void initState() {
+    super.initState();
+
     initial();
     loadBoards();
   }
