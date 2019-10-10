@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:twix/Widgets/board/board.dart';
-
+import 'package:twix/Palette/palette.dart';
 import 'package:twix/Database/Managers/board_manager.dart';
 import 'package:twix/Database/Tables/board_table.dart';
+
+import 'create_board.dart';
 
 class BoardScreen extends StatefulWidget {
   @override
@@ -14,36 +16,41 @@ class _BoardScreenState extends State<BoardScreen> {
   List<Board> boards = [];
 
   _BoardScreenState() {
-    initial();
     loadBoards();
-  }
-
-  void initial() async {
-    List<Map<String, dynamic>> boardMaps = await BoardManager.boards();
-    if (boardMaps.length == 0) {
-      BoardTable boardTable1 = BoardTable(name: 'Board 1');
-      BoardTable boardTable2 = BoardTable(name: 'Board 2');
-
-      BoardManager.insert(boardTable1);
-      BoardManager.insert(boardTable2);
-    }
   }
 
   void loadBoards() async {
     List<Map<String, dynamic>> boardMaps = await BoardManager.boards();
-
     List<BoardTable> boardTables =
         boardMaps.map((boardMap) => BoardTable.fromMap(boardMap)).toList();
     boards =
         boardTables.map((boardTable) => Board.fromObject(boardTable)).toList();
     setState(() {});
   }
-
+  void add() async{
+    var result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreateBoard(),
+      ),
+    );
+   if (result!=null){
+     setState(() {
+       BoardManager.insert(result);
+       loadBoards();
+     });
+   }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Boards'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: add,
+        child: Icon(Icons.add),
+        backgroundColor: Palette.primaryColor,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
