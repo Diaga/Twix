@@ -35,11 +35,13 @@ class _BoardScreenState extends State<BoardScreen> {
   void loadBoards() async {
     List<Map<String, dynamic>> boardMaps = await BoardManager.boards();
 
-    List<BoardTable> boardTables =
-        boardMaps.map((boardMap) => BoardTable.fromMap(boardMap)).toList();
-    boards =
-        boardTables.map((boardTable) => Board.fromObject(boardTable)).toList();
-    setState(() {});
+    setState(() {
+      List<BoardTable> boardTables =
+          boardMaps.map((boardMap) => BoardTable.fromMap(boardMap)).toList();
+      boards = boardTables
+          .map((boardTable) => Board.fromObject(boardTable))
+          .toList();
+    });
   }
 
   @override
