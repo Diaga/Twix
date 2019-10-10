@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'package:twix/Screens/board_screen.dart';
-import 'package:twix/Screens/task_screen.dart';
+import 'Screens/login.dart';
 
 void main() async {
   runApp(Twix());
@@ -16,7 +14,7 @@ class Twix extends StatelessWidget {
         primaryColor: Color(0xFF3C6AFF),
       ),
       home: Scaffold(
-        body: BoardScreen(),
+        body: Login(),
       ),
     );
   }
