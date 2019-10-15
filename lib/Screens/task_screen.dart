@@ -127,6 +127,9 @@ class _TaskScreenState extends State<TaskScreen> {
                   child: tasks[index],
                   onDismissed: (DismissDirection direction) {
                     if (direction == DismissDirection.startToEnd) {
+                      // Logic to update the task to isDone
+
+                      // Display snack bar
                       Scaffold.of(context).showSnackBar(
                         SnackBar(
                           content: Text("Completed"),
@@ -134,6 +137,9 @@ class _TaskScreenState extends State<TaskScreen> {
                         ),
                       );
                     } else if (direction == DismissDirection.endToStart) {
+                      // Logic to delete the task
+
+                      // Display snack bar
                       Scaffold.of(context).showSnackBar(
                         SnackBar(
                           content: Text("Deleted"),
