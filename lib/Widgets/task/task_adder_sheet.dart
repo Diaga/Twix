@@ -1,49 +1,64 @@
 import 'package:flutter/material.dart';
-
+import 'package:twix/Widgets/task/task_details.dart';
 
 class TaskAdderSheet extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-    String taskTitle;
     return AnimatedPadding(
       padding: MediaQuery.of(context).viewInsets,
       duration: Duration(milliseconds: 100),
       child: Container(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 15, left: 30),
-              child: Text('Add Task'),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Task Title',
-                ),
-                autofocus: true,
-                onChanged: (value) {
-                  taskTitle = value;
-                },
+            Container(
+              height: 70,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 6,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 8.0, top: 8, bottom: 8, right: 5),
+                      child: TextField(
+                        expands: true,
+                        decoration: InputDecoration(
+                          hintText: 'Task Title',
+                          border: InputBorder.none,
+                        ),
+                        autofocus: true,
+                        maxLines: null,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                      child: IconButton(
+                          icon: Icon(Icons.arrow_upward),
+                          onPressed: () {})),
+                ],
               ),
             ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 2, top: 10),
-                child: FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context, taskTitle);
-                  },
-                  child: Text(
-                    'Save',
-                    style: TextStyle(color: Colors.green, fontSize: 15),
+            Container(height: 51,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: <Widget>[
+                  TaskDetails(
+                    iconData: Icons.calendar_today,
+                    text: 'Set due date',
                   ),
-                ),
+                  TaskDetails(
+                    iconData: Icons.add_alert,
+                    text: 'Remind Me',
+                  ),
+                  TaskDetails(
+                    iconData: Icons.note,
+                    text: 'Add note',
+                  ),
+                  TaskDetails(
+                    iconData: Icons.calendar_today,
+                    text: 'Set due date',
+                  ),
+                ],
               ),
             ),
           ],

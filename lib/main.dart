@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'Screens/login.dart';
+
+import 'Screens/home_screen.dart';
 
 void main() async {
   runApp(Twix());
@@ -10,11 +11,8 @@ class Twix extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light().copyWith(
-        primaryColor: Color(0xFF3C6AFF),
-      ),
       home: Scaffold(
-        body: Login(),
+        body: HomeScreen(),
       ),
     );
   }

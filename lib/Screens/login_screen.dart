@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:twix/Palette/palette.dart';
-import 'board_screen.dart';
+import 'home_screen.dart';
 
 class Login extends StatelessWidget {
   @override
@@ -82,7 +82,7 @@ class Login extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BoardScreen(),
+                         // builder: (context) => BoardScreen(),
                         ),
                       );
                     },

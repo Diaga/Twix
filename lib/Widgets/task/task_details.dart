@@ -1,0 +1,45 @@
+import 'package:flutter/material.dart';
+
+
+class TaskDetails extends StatelessWidget {
+  final IconData iconData;
+  final String text;
+
+  TaskDetails({this.iconData, this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 5, top: 8, bottom: 8,right: 5),
+      child: InkWell(
+        onTap:(){},
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.grey[300],
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(20)),
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 8.0, left: 10, bottom: 8, right: 5),
+                child: Icon(
+                  iconData,
+                  size: 17,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 8.0, left: 5, bottom: 8, right: 10),
+                child: Text(
+                  text,
+                  style: TextStyle(fontSize: 13),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

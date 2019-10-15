@@ -2,61 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:twix/Widgets/task/onswipe_container.dart';
 import 'package:twix/Widgets/task/task_adder_sheet.dart';
 import 'package:twix/Widgets/task/task_card.dart';
-import 'package:twix/Database/Managers/task_manager.dart';
-import 'package:twix/Database/Tables/task_table.dart';
 
 class TaskScreen extends StatefulWidget {
-
-  final int boardId;
-
-  TaskScreen({@required this.boardId});
-
   @override
   _TaskScreenState createState() => _TaskScreenState();
 }
 
 class _TaskScreenState extends State<TaskScreen> {
-  int boardId;
-  List<TaskCard> tasks = [];
-
-  @override
-  void initState() {
-    super.initState();
-    boardId = this.widget.boardId;
-    loadTasks();
-  }
-
-  void loadTasks() async {
-    List<Map<String, dynamic>> taskMaps = await TaskManager.boardTasks(boardId);
-
-    setState(() {
-      List<TaskTable> taskTables =
-          taskMaps.map((taskMap) => TaskTable.fromMap(taskMap)).toList();
-
-      tasks = taskTables
-          .map((taskTable) => TaskCard.fromObject(taskTable))
-          .toList();
-    });
-  }
-
-  void add() async {
-    var result = await showModalBottomSheet(
-      isScrollControlled: true,
-      context: (context),
-      builder: (context) {
-        return TaskAdderSheet();
-      },
-    );
-    if (result != null) {
-      setState(() {
-        TaskTable taskTable = TaskTable(name: result, boardId: boardId);
-        TaskManager.insert(taskTable);
-
-        // Call this to update screen
-        loadTasks();
-      });
-    }
-  }
+  List<TaskCard> tasks = [TaskCard()];
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +34,12 @@ class _TaskScreenState extends State<TaskScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: add,
+        onPressed: () {
+          showModalBottomSheet(
+              context: (context),
+              isScrollControlled: true,
+              builder: (context) => TaskAdderSheet());
+        },
         backgroundColor: Color(0xFF3C6AFF),
         child: Icon(Icons.add),
       ),
