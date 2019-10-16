@@ -22,4 +22,11 @@ class BoardDao extends DatabaseAccessor<TwixDB> with _$BoardDaoMixin {
 
   Future deleteBoard(Insertable<BoardTableData> board) =>
       delete(boardTable).delete(board);
+
+  Future<BoardTableData> getBoardById(String id) async =>
+      (select(boardTable)..where((row) => row.id.equals(id))).getSingle();
+
+  Future<BoardTableData> getMyTasksBoard() async =>
+      (select(boardTable)..where((row) => row.isMyTasks.equals(true)))
+          .getSingle();
 }

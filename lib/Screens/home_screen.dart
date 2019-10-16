@@ -10,17 +10,42 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
           height: 80.0, color: ThemeData.light().scaffoldBackgroundColor),
-      bottomNavigationBar: CustomBottomBar(listCallBack: (){},groupCallBack: (){},),
+      bottomNavigationBar: CustomBottomBar(
+        listCallBack: () {},
+        groupCallBack: () {},
+      ),
       body: ListView(
         children: <Widget>[
           BoardsList(
-              iconData: Icons.wb_sunny, title: 'My Day', callBack: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => TaskScreen()));
-          }),
+              iconData: Icons.wb_sunny,
+              title: 'My Day',
+              callBack: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => TaskScreen(
+                              action: 'My Day',
+                            )));
+              }),
           BoardsList(
               iconData: Icons.person_outline,
               title: 'Assigned To Me',
-              callBack: () {}),
+              callBack: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => TaskScreen()));
+              }),
+          BoardsList(
+            iconData: Icons.playlist_add_check,
+            title: 'My Tasks',
+            callBack: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TaskScreen(
+                            action: 'My Tasks',
+                          )));
+            },
+          ),
           Divider(),
         ],
       ),

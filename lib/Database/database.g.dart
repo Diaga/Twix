@@ -10,15 +10,20 @@ part of 'database.dart';
 class BoardTableData extends DataClass implements Insertable<BoardTableData> {
   final String id;
   final String name;
-  BoardTableData({@required this.id, @required this.name});
+  final bool isMyTasks;
+  BoardTableData(
+      {@required this.id, @required this.name, @required this.isMyTasks});
   factory BoardTableData.fromData(
       Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final stringType = db.typeSystem.forDartType<String>();
+    final boolType = db.typeSystem.forDartType<bool>();
     return BoardTableData(
       id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      isMyTasks: boolType
+          .mapFromDatabaseResponse(data['${effectivePrefix}is_my_tasks']),
     );
   }
   factory BoardTableData.fromJson(Map<String, dynamic> json,
@@ -26,6 +31,7 @@ class BoardTableData extends DataClass implements Insertable<BoardTableData> {
     return BoardTableData(
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      isMyTasks: serializer.fromJson<bool>(json['isMyTasks']),
     );
   }
   @override
@@ -34,6 +40,7 @@ class BoardTableData extends DataClass implements Insertable<BoardTableData> {
     return {
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
+      'isMyTasks': serializer.toJson<bool>(isMyTasks),
     };
   }
 
@@ -42,47 +49,60 @@ class BoardTableData extends DataClass implements Insertable<BoardTableData> {
     return BoardTableCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      isMyTasks: isMyTasks == null && nullToAbsent
+          ? const Value.absent()
+          : Value(isMyTasks),
     );
   }
 
-  BoardTableData copyWith({String id, String name}) => BoardTableData(
+  BoardTableData copyWith({String id, String name, bool isMyTasks}) =>
+      BoardTableData(
         id: id ?? this.id,
         name: name ?? this.name,
+        isMyTasks: isMyTasks ?? this.isMyTasks,
       );
   @override
   String toString() {
     return (StringBuffer('BoardTableData(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('isMyTasks: $isMyTasks')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(id.hashCode, name.hashCode));
+  int get hashCode =>
+      $mrjf($mrjc(id.hashCode, $mrjc(name.hashCode, isMyTasks.hashCode)));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
       (other is BoardTableData &&
           other.id == this.id &&
-          other.name == this.name);
+          other.name == this.name &&
+          other.isMyTasks == this.isMyTasks);
 }
 
 class BoardTableCompanion extends UpdateCompanion<BoardTableData> {
   final Value<String> id;
   final Value<String> name;
+  final Value<bool> isMyTasks;
   const BoardTableCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.isMyTasks = const Value.absent(),
   });
   BoardTableCompanion.insert({
     this.id = const Value.absent(),
     @required String name,
+    this.isMyTasks = const Value.absent(),
   }) : name = Value(name);
-  BoardTableCompanion copyWith({Value<String> id, Value<String> name}) {
+  BoardTableCompanion copyWith(
+      {Value<String> id, Value<String> name, Value<bool> isMyTasks}) {
     return BoardTableCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      isMyTasks: isMyTasks ?? this.isMyTasks,
     );
   }
 }
@@ -113,8 +133,17 @@ class $BoardTableTable extends BoardTable
     );
   }
 
+  final VerificationMeta _isMyTasksMeta = const VerificationMeta('isMyTasks');
+  GeneratedBoolColumn _isMyTasks;
   @override
-  List<GeneratedColumn> get $columns => [id, name];
+  GeneratedBoolColumn get isMyTasks => _isMyTasks ??= _constructIsMyTasks();
+  GeneratedBoolColumn _constructIsMyTasks() {
+    return GeneratedBoolColumn('is_my_tasks', $tableName, false,
+        defaultValue: const Constant(false));
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, name, isMyTasks];
   @override
   $BoardTableTable get asDslTable => this;
   @override
@@ -136,6 +165,12 @@ class $BoardTableTable extends BoardTable
     } else if (name.isRequired && isInserting) {
       context.missing(_nameMeta);
     }
+    if (d.isMyTasks.present) {
+      context.handle(_isMyTasksMeta,
+          isMyTasks.isAcceptableValue(d.isMyTasks.value, _isMyTasksMeta));
+    } else if (isMyTasks.isRequired && isInserting) {
+      context.missing(_isMyTasksMeta);
+    }
     return context;
   }
 
@@ -155,6 +190,9 @@ class $BoardTableTable extends BoardTable
     }
     if (d.name.present) {
       map['name'] = Variable<String, StringType>(d.name.value);
+    }
+    if (d.isMyTasks.present) {
+      map['is_my_tasks'] = Variable<bool, BoolType>(d.isMyTasks.value);
     }
     return map;
   }
@@ -367,20 +405,27 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
   final String notes;
   final DateTime dueDate;
   final DateTime remindMe;
+  final DateTime myDayDate;
+  final bool isDone;
   final String boardId;
+  final String assignedTo;
   TaskTableData(
       {@required this.id,
       @required this.name,
-      @required this.notes,
+      this.notes,
       this.dueDate,
       this.remindMe,
-      @required this.boardId});
+      this.myDayDate,
+      @required this.isDone,
+      this.boardId,
+      this.assignedTo});
   factory TaskTableData.fromData(
       Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final stringType = db.typeSystem.forDartType<String>();
     final dateTimeType = db.typeSystem.forDartType<DateTime>();
+    final boolType = db.typeSystem.forDartType<bool>();
     return TaskTableData(
       id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
@@ -390,8 +435,14 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
           .mapFromDatabaseResponse(data['${effectivePrefix}due_date']),
       remindMe: dateTimeType
           .mapFromDatabaseResponse(data['${effectivePrefix}remind_me']),
+      myDayDate: dateTimeType
+          .mapFromDatabaseResponse(data['${effectivePrefix}my_day_date']),
+      isDone:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}is_done']),
       boardId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}board_id']),
+      assignedTo: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}assigned_to']),
     );
   }
   factory TaskTableData.fromJson(Map<String, dynamic> json,
@@ -402,7 +453,10 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
       notes: serializer.fromJson<String>(json['notes']),
       dueDate: serializer.fromJson<DateTime>(json['dueDate']),
       remindMe: serializer.fromJson<DateTime>(json['remindMe']),
+      myDayDate: serializer.fromJson<DateTime>(json['myDayDate']),
+      isDone: serializer.fromJson<bool>(json['isDone']),
       boardId: serializer.fromJson<String>(json['boardId']),
+      assignedTo: serializer.fromJson<String>(json['assignedTo']),
     );
   }
   @override
@@ -414,7 +468,10 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
       'notes': serializer.toJson<String>(notes),
       'dueDate': serializer.toJson<DateTime>(dueDate),
       'remindMe': serializer.toJson<DateTime>(remindMe),
+      'myDayDate': serializer.toJson<DateTime>(myDayDate),
+      'isDone': serializer.toJson<bool>(isDone),
       'boardId': serializer.toJson<String>(boardId),
+      'assignedTo': serializer.toJson<String>(assignedTo),
     };
   }
 
@@ -431,9 +488,17 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
       remindMe: remindMe == null && nullToAbsent
           ? const Value.absent()
           : Value(remindMe),
+      myDayDate: myDayDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(myDayDate),
+      isDone:
+          isDone == null && nullToAbsent ? const Value.absent() : Value(isDone),
       boardId: boardId == null && nullToAbsent
           ? const Value.absent()
           : Value(boardId),
+      assignedTo: assignedTo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(assignedTo),
     );
   }
 
@@ -443,14 +508,20 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
           String notes,
           DateTime dueDate,
           DateTime remindMe,
-          String boardId}) =>
+          DateTime myDayDate,
+          bool isDone,
+          String boardId,
+          String assignedTo}) =>
       TaskTableData(
         id: id ?? this.id,
         name: name ?? this.name,
         notes: notes ?? this.notes,
         dueDate: dueDate ?? this.dueDate,
         remindMe: remindMe ?? this.remindMe,
+        myDayDate: myDayDate ?? this.myDayDate,
+        isDone: isDone ?? this.isDone,
         boardId: boardId ?? this.boardId,
+        assignedTo: assignedTo ?? this.assignedTo,
       );
   @override
   String toString() {
@@ -460,7 +531,10 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
           ..write('notes: $notes, ')
           ..write('dueDate: $dueDate, ')
           ..write('remindMe: $remindMe, ')
-          ..write('boardId: $boardId')
+          ..write('myDayDate: $myDayDate, ')
+          ..write('isDone: $isDone, ')
+          ..write('boardId: $boardId, ')
+          ..write('assignedTo: $assignedTo')
           ..write(')'))
         .toString();
   }
@@ -472,8 +546,16 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
           name.hashCode,
           $mrjc(
               notes.hashCode,
-              $mrjc(dueDate.hashCode,
-                  $mrjc(remindMe.hashCode, boardId.hashCode))))));
+              $mrjc(
+                  dueDate.hashCode,
+                  $mrjc(
+                      remindMe.hashCode,
+                      $mrjc(
+                          myDayDate.hashCode,
+                          $mrjc(
+                              isDone.hashCode,
+                              $mrjc(boardId.hashCode,
+                                  assignedTo.hashCode)))))))));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
@@ -483,7 +565,10 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
           other.notes == this.notes &&
           other.dueDate == this.dueDate &&
           other.remindMe == this.remindMe &&
-          other.boardId == this.boardId);
+          other.myDayDate == this.myDayDate &&
+          other.isDone == this.isDone &&
+          other.boardId == this.boardId &&
+          other.assignedTo == this.assignedTo);
 }
 
 class TaskTableCompanion extends UpdateCompanion<TaskTableData> {
@@ -492,39 +577,52 @@ class TaskTableCompanion extends UpdateCompanion<TaskTableData> {
   final Value<String> notes;
   final Value<DateTime> dueDate;
   final Value<DateTime> remindMe;
+  final Value<DateTime> myDayDate;
+  final Value<bool> isDone;
   final Value<String> boardId;
+  final Value<String> assignedTo;
   const TaskTableCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.notes = const Value.absent(),
     this.dueDate = const Value.absent(),
     this.remindMe = const Value.absent(),
+    this.myDayDate = const Value.absent(),
+    this.isDone = const Value.absent(),
     this.boardId = const Value.absent(),
+    this.assignedTo = const Value.absent(),
   });
   TaskTableCompanion.insert({
     this.id = const Value.absent(),
     @required String name,
-    @required String notes,
+    this.notes = const Value.absent(),
     this.dueDate = const Value.absent(),
     this.remindMe = const Value.absent(),
-    @required String boardId,
-  })  : name = Value(name),
-        notes = Value(notes),
-        boardId = Value(boardId);
+    this.myDayDate = const Value.absent(),
+    this.isDone = const Value.absent(),
+    this.boardId = const Value.absent(),
+    this.assignedTo = const Value.absent(),
+  }) : name = Value(name);
   TaskTableCompanion copyWith(
       {Value<String> id,
       Value<String> name,
       Value<String> notes,
       Value<DateTime> dueDate,
       Value<DateTime> remindMe,
-      Value<String> boardId}) {
+      Value<DateTime> myDayDate,
+      Value<bool> isDone,
+      Value<String> boardId,
+      Value<String> assignedTo}) {
     return TaskTableCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       notes: notes ?? this.notes,
       dueDate: dueDate ?? this.dueDate,
       remindMe: remindMe ?? this.remindMe,
+      myDayDate: myDayDate ?? this.myDayDate,
+      isDone: isDone ?? this.isDone,
       boardId: boardId ?? this.boardId,
+      assignedTo: assignedTo ?? this.assignedTo,
     );
   }
 }
@@ -563,7 +661,7 @@ class $TaskTableTable extends TaskTable
     return GeneratedTextColumn(
       'notes',
       $tableName,
-      false,
+      true,
     );
   }
 
@@ -591,18 +689,57 @@ class $TaskTableTable extends TaskTable
     );
   }
 
+  final VerificationMeta _myDayDateMeta = const VerificationMeta('myDayDate');
+  GeneratedDateTimeColumn _myDayDate;
+  @override
+  GeneratedDateTimeColumn get myDayDate => _myDayDate ??= _constructMyDayDate();
+  GeneratedDateTimeColumn _constructMyDayDate() {
+    return GeneratedDateTimeColumn(
+      'my_day_date',
+      $tableName,
+      true,
+    );
+  }
+
+  final VerificationMeta _isDoneMeta = const VerificationMeta('isDone');
+  GeneratedBoolColumn _isDone;
+  @override
+  GeneratedBoolColumn get isDone => _isDone ??= _constructIsDone();
+  GeneratedBoolColumn _constructIsDone() {
+    return GeneratedBoolColumn('is_done', $tableName, false,
+        defaultValue: const Constant(false));
+  }
+
   final VerificationMeta _boardIdMeta = const VerificationMeta('boardId');
   GeneratedTextColumn _boardId;
   @override
   GeneratedTextColumn get boardId => _boardId ??= _constructBoardId();
   GeneratedTextColumn _constructBoardId() {
-    return GeneratedTextColumn('board_id', $tableName, false,
+    return GeneratedTextColumn('board_id', $tableName, true,
         $customConstraints: 'NOT NULL REFERENCES board_table(id)');
   }
 
+  final VerificationMeta _assignedToMeta = const VerificationMeta('assignedTo');
+  GeneratedTextColumn _assignedTo;
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, notes, dueDate, remindMe, boardId];
+  GeneratedTextColumn get assignedTo => _assignedTo ??= _constructAssignedTo();
+  GeneratedTextColumn _constructAssignedTo() {
+    return GeneratedTextColumn('assigned_to', $tableName, true,
+        $customConstraints: 'NULLABLE REFERENCES group_table(id)');
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        notes,
+        dueDate,
+        remindMe,
+        myDayDate,
+        isDone,
+        boardId,
+        assignedTo
+      ];
   @override
   $TaskTableTable get asDslTable => this;
   @override
@@ -642,11 +779,29 @@ class $TaskTableTable extends TaskTable
     } else if (remindMe.isRequired && isInserting) {
       context.missing(_remindMeMeta);
     }
+    if (d.myDayDate.present) {
+      context.handle(_myDayDateMeta,
+          myDayDate.isAcceptableValue(d.myDayDate.value, _myDayDateMeta));
+    } else if (myDayDate.isRequired && isInserting) {
+      context.missing(_myDayDateMeta);
+    }
+    if (d.isDone.present) {
+      context.handle(
+          _isDoneMeta, isDone.isAcceptableValue(d.isDone.value, _isDoneMeta));
+    } else if (isDone.isRequired && isInserting) {
+      context.missing(_isDoneMeta);
+    }
     if (d.boardId.present) {
       context.handle(_boardIdMeta,
           boardId.isAcceptableValue(d.boardId.value, _boardIdMeta));
     } else if (boardId.isRequired && isInserting) {
       context.missing(_boardIdMeta);
+    }
+    if (d.assignedTo.present) {
+      context.handle(_assignedToMeta,
+          assignedTo.isAcceptableValue(d.assignedTo.value, _assignedToMeta));
+    } else if (assignedTo.isRequired && isInserting) {
+      context.missing(_assignedToMeta);
     }
     return context;
   }
@@ -677,8 +832,17 @@ class $TaskTableTable extends TaskTable
     if (d.remindMe.present) {
       map['remind_me'] = Variable<DateTime, DateTimeType>(d.remindMe.value);
     }
+    if (d.myDayDate.present) {
+      map['my_day_date'] = Variable<DateTime, DateTimeType>(d.myDayDate.value);
+    }
+    if (d.isDone.present) {
+      map['is_done'] = Variable<bool, BoolType>(d.isDone.value);
+    }
     if (d.boardId.present) {
       map['board_id'] = Variable<String, StringType>(d.boardId.value);
+    }
+    if (d.assignedTo.present) {
+      map['assigned_to'] = Variable<String, StringType>(d.assignedTo.value);
     }
     return map;
   }

@@ -8,4 +8,5 @@ part of 'task_dao.dart';
 
 mixin _$TaskDaoMixin on DatabaseAccessor<TwixDB> {
   $TaskTableTable get taskTable => db.taskTable;
+  $BoardTableTable get boardTable => db.boardTable;
 }

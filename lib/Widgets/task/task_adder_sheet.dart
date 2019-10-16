@@ -1,9 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:moor_flutter/moor_flutter.dart' as moor;
+
+import 'package:twix/Database/database.dart';
+
 import 'package:twix/Widgets/task/task_details.dart';
 
-class TaskAdderSheet extends StatelessWidget {
+class TaskAdderSheet extends StatefulWidget {
+  final String boardId;
+
+  const TaskAdderSheet({Key key, this.boardId}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _TaskAdderSheetState();
+}
+
+class _TaskAdderSheetState extends State<TaskAdderSheet> {
+  final TextEditingController textEditingController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final database = Provider.of<TwixDB>(context);
     return AnimatedPadding(
       padding: MediaQuery.of(context).viewInsets,
       duration: Duration(milliseconds: 100),
@@ -23,22 +40,29 @@ class TaskAdderSheet extends StatelessWidget {
                       child: TextField(
                         expands: true,
                         decoration: InputDecoration(
-                          hintText: 'Task Title',
+                          hintText: 'Task name',
                           border: InputBorder.none,
                         ),
                         autofocus: true,
                         maxLines: null,
+                        controller: textEditingController,
                       ),
                     ),
                   ),
                   Expanded(
                       child: IconButton(
                           icon: Icon(Icons.arrow_upward),
-                          onPressed: () {})),
+                          onPressed: () {
+                            if (textEditingController.text.isNotEmpty)
+                              database.taskDao.insertTask(TaskTableCompanion(
+                                  name: moor.Value(textEditingController.text),
+                                  boardId: moor.Value(widget.boardId)));
+                          })),
                 ],
               ),
             ),
-            Container(height: 51,
+            Container(
+              height: 51,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[
@@ -65,5 +89,11 @@ class TaskAdderSheet extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    textEditingController.dispose();
+    super.dispose();
   }
 }

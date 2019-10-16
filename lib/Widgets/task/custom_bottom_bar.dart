@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class CustomBottomBar extends StatelessWidget {
   final Function listCallBack;
   final Function groupCallBack;

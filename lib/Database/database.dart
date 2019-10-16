@@ -14,7 +14,6 @@ import 'package:twix/Database/DAOs/group_user_dao.dart';
 
 import 'package:uuid/uuid.dart';
 
-
 part 'database.g.dart';
 
 @UseMoor(
@@ -26,5 +25,18 @@ class TwixDB extends _$TwixDB {
             path: 'db.sqlite', logStatements: true)));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+      onCreate: (migrator) {
+        return migrator.createAllTables();
+      },
+      onUpgrade: (migrator, to, from) async {},
+      beforeOpen: (details) async {
+        if (details.wasCreated) {
+          await into(boardTable).insert(const BoardTableCompanion(
+              name: Value('My Tasks'), isMyTasks: Value(true)));
+        }
+      });
 }

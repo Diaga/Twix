@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'Screens/home_screen.dart';
+import 'package:provider/provider.dart';
+
+import 'package:twix/Database/database.dart';
+
+import 'package:twix/Screens/home_screen.dart';
 
 void main() async {
   runApp(Twix());
@@ -9,11 +13,13 @@ void main() async {
 class Twix extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: HomeScreen(),
-      ),
-    );
+    return Provider(
+        builder: (_) => TwixDB(),
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: Scaffold(
+            body: HomeScreen(),
+          ),
+        ));
   }
 }

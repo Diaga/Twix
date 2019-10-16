@@ -3,6 +3,11 @@ import 'package:twix/Screens/task_details.dart';
 
 
 class TaskCard extends StatelessWidget {
+  final String name;
+  final String boardName;
+
+  const TaskCard({Key key, this.name, this.boardName}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -10,8 +15,8 @@ class TaskCard extends StatelessWidget {
       color: Colors.white,
       child: ListTile(
         leading: Icon(Icons.hourglass_empty),
-        title: Text('Name'),
-        subtitle: Text('Group Name'),
+        title: Text(name),
+        subtitle: Text(boardName),
         dense: true,
         trailing: Icon(Icons.star_border),
         onTap: () {
