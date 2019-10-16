@@ -17,7 +17,7 @@ class CustomBottomBar extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Expanded(
-              flex: 6,
+              flex: 5,
               child: InkWell(
                 onTap: listCallBack,
                 child: Row(
@@ -37,7 +37,12 @@ class CustomBottomBar extends StatelessWidget {
                 ),
               ),
             ),
-            IconButton(icon: Icon(Icons.group), onPressed: groupCallBack)
+            Expanded(
+              child: InkWell(
+                onTap: groupCallBack,
+                child: Icon(Icons.group_add),
+              ),
+            ),
           ],
         ),
       ),

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
-
 import 'package:twix/Database/database.dart';
-
 import 'package:twix/Widgets/task/task_details.dart';
 
 class TaskAdderSheet extends StatefulWidget {
@@ -17,6 +15,9 @@ class TaskAdderSheet extends StatefulWidget {
 
 class _TaskAdderSheetState extends State<TaskAdderSheet> {
   final TextEditingController textEditingController = TextEditingController();
+  var dueDate = DateTime.now();
+  var reminderDate = DateTime.now();
+  var reminderTime = TimeOfDay.now();
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +51,16 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                     ),
                   ),
                   Expanded(
-                      child: IconButton(
-                          icon: Icon(Icons.arrow_upward),
-                          onPressed: () {
-                            if (textEditingController.text.isNotEmpty)
-                              database.taskDao.insertTask(TaskTableCompanion(
-                                  name: moor.Value(textEditingController.text),
-                                  boardId: moor.Value(widget.boardId)));
-                          })),
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_upward),
+                      onPressed: () {
+                        if (textEditingController.text.isNotEmpty)
+                          database.taskDao.insertTask(TaskTableCompanion(
+                              name: moor.Value(textEditingController.text),
+                              boardId: moor.Value(widget.boardId)));
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -96,4 +99,28 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
     textEditingController.dispose();
     super.dispose();
   }
+
+  Future selectDate(DateTime date) async {
+    var selected = await showDatePicker(
+        context: (context),
+        initialDate: date,
+        firstDate: DateTime(2000, 1),
+        lastDate: DateTime(2050, 1));
+    if (selected != null && selected != date)
+      setState(() {
+        date = selected;
+      });
+  }
+
+  Future selectTime() async {
+
+    var selected = await showTimePicker(context: context, initialTime: reminderTime);
+    if (selected != null && selected != reminderTime){
+      setState(() {
+        reminderTime = selected;
+      });
+    }
+  }
+
+
 }

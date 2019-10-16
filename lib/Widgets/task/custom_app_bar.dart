@@ -8,15 +8,17 @@ class CustomAppBar extends PreferredSize {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, snapshot) {
-        return Container(
+    return Container(
           padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
           height: height,
           color: color,
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Expanded(child: CircleAvatar()),
+              Expanded(child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: CircleAvatar(),
+              )),
               Expanded(
                 flex: 5,
                 child: Padding(
@@ -37,15 +39,15 @@ class CustomAppBar extends PreferredSize {
                 ),
               ),
               Expanded(
-                child: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {},
+                child: Material(
+                  child: InkWell(
+                    onTap: (){},
+                    child: Icon(Icons.search),
+                  ),
                 ),
               ),
             ],
           ),
-        );
-      },
     );
   }
 

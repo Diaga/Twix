@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
-
 class TaskDetails extends StatelessWidget {
   final IconData iconData;
   final String text;
-
-  TaskDetails({this.iconData, this.text});
+  final Function callBack;
+  TaskDetails({this.iconData, this.text,this.callBack});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 5, top: 8, bottom: 8,right: 5),
+      padding: const EdgeInsets.only(left: 5, top: 8, bottom: 8, right: 5),
       child: InkWell(
-        onTap:(){},
+        onTap: callBack,
         child: Container(
           decoration: BoxDecoration(
               color: Colors.grey[300],
