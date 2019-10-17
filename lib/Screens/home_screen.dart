@@ -15,63 +15,61 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TwixDB database = Provider.of<TwixDB>(context);
-    return SafeArea(
-      child: Scaffold(
-        appBar: CustomAppBar(
-            height: 80.0, color: ThemeData.light().scaffoldBackgroundColor),
-        bottomNavigationBar: CustomBottomBar(
-          listCallBack: () {
-            _sheetDisplay(context, Icons.developer_board, 'Board', _insertBoard);
-          },
-          groupCallBack: () {
-            _sheetDisplay(context, Icons.group_add, 'Group', _insertGroup);
-          },
-        ),
-        body: ListView(
-          children: <Widget>[
-            BoardsList(
-              iconData: Icons.wb_sunny,
-              title: 'My Day',
+    return Scaffold(
+      appBar: CustomAppBar(
+          height: MediaQuery.of(context).size.height*0.12, color: ThemeData.light().scaffoldBackgroundColor),
+      bottomNavigationBar: CustomBottomBar(
+        listCallBack: () {
+          _sheetDisplay(context, Icons.developer_board, 'Board', _insertBoard);
+        },
+        groupCallBack: () {
+          _sheetDisplay(context, Icons.group_add, 'Group', _insertGroup);
+        },
+      ),
+      body: ListView(
+        children: <Widget>[
+          BoardsList(
+            iconData: Icons.wb_sunny,
+            title: 'My Day',
+            callBack: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TaskScreen(
+                    action: 'My Day',
+                  ),
+                ),
+              );
+            },
+          ),
+          BoardsList(
+              iconData: Icons.person_outline,
+              title: 'Assigned To Me',
               callBack: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TaskScreen(
-                      action: 'My Day',
-                    ),
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => TaskScreen()));
+              }),
+          BoardsList(
+            iconData: Icons.playlist_add_check,
+            title: 'My Tasks',
+            callBack: () async {
+              String myTasksBoardId =
+                  (await database.boardDao.getMyTasksBoard()).id;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TaskScreen(
+                    boardId: myTasksBoardId,
                   ),
-                );
-              },
-            ),
-            BoardsList(
-                iconData: Icons.person_outline,
-                title: 'Assigned To Me',
-                callBack: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => TaskScreen()));
-                }),
-            BoardsList(
-              iconData: Icons.playlist_add_check,
-              title: 'My Tasks',
-              callBack: () async {
-                String myTasksBoardId =
-                    (await database.boardDao.getMyTasksBoard()).id;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TaskScreen(
-                      boardId: myTasksBoardId,
-                    ),
-                  ),
-                );
-              },
-            ),
-            Divider(),
-            _buildBoardList(context, database),
-            Divider(),
-            _buildGroupList(context, database)
-          ],
-        ),
+                ),
+              );
+            },
+          ),
+          Divider(),
+          _buildBoardList(context, database),
+          Divider(),
+          _buildGroupList(context, database)
+        ],
       ),
     );
   }
