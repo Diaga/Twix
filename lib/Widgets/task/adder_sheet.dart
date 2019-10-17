@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:twix/Database/database.dart';
 
 class AdderSheet extends StatefulWidget {
   final IconData iconData;
   final String text;
+  final Function callBack;
 
-  AdderSheet({this.iconData, this.text});
+  AdderSheet({this.iconData, this.text, this.callBack});
 
   @override
   _AdderSheetState createState() => _AdderSheetState();
 }
 
 class _AdderSheetState extends State<AdderSheet> {
-  String fieldData;
+  TextEditingController textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final TwixDB database = Provider.of<TwixDB>(context);
     return AnimatedPadding(
-      padding: MediaQuery.of(context).viewInsets,
+      padding: MediaQuery
+          .of(context)
+          .viewInsets,
       duration: Duration(milliseconds: 100),
       child: Container(
         child: Column(
@@ -38,13 +45,11 @@ class _AdderSheetState extends State<AdderSheet> {
                       ),
                       child: TextField(
                         expands: true,
+                        controller: textEditingController,
                         decoration: InputDecoration(
                           hintText: '${widget.text} name',
                           border: InputBorder.none,
                         ),
-                        onChanged: (value) {
-                          fieldData = value;
-                        },
                         autofocus: true,
                         maxLines: null,
                       ),
@@ -55,10 +60,22 @@ class _AdderSheetState extends State<AdderSheet> {
             ),
             Align(
                 alignment: Alignment.centerRight,
-                child: FlatButton(onPressed: () {}, child: Text('Done')))
+                child: FlatButton(
+                    child: Text('Done'),
+                    onPressed: () {
+                      if (textEditingController.text.isNotEmpty)
+                        widget.callBack(textEditingController.text, database);
+                    }
+                ))
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    textEditingController.dispose();
+    super.dispose();
   }
 }

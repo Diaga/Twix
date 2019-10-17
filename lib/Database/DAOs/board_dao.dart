@@ -12,7 +12,8 @@ class BoardDao extends DatabaseAccessor<TwixDB> with _$BoardDaoMixin {
 
   Future<List<BoardTableData>> getAllBoards() => select(boardTable).get();
 
-  Stream<List<BoardTableData>> watchAllBoards() => select(boardTable).watch();
+  Stream<List<BoardTableData>> watchAllBoards() =>
+      (select(boardTable)..where((row) => row.isMyTasks.equals(false))).watch();
 
   Future<int> insertBoard(Insertable<BoardTableData> board) =>
       into(boardTable).insert(board);

@@ -18,4 +18,6 @@ class GroupDao extends DatabaseAccessor<TwixDB> with _$GroupDaoMixin {
 
   Future deleteGroup(Insertable<GroupTableData> group) =>
       delete(groupTable).delete(group);
+
+  Stream<List<GroupTableData>> watchAllGroups() => select(groupTable).watch();
 }
