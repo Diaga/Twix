@@ -72,10 +72,12 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                   TaskDetails(
                     iconData: Icons.calendar_today,
                     text: 'Set due date',
+                    callBack: selectDate,
                   ),
                   TaskDetails(
                     iconData: Icons.add_alert,
                     text: 'Remind Me',
+                    callBack: selectTime,
                   ),
                   TaskDetails(
                     iconData: Icons.note,
@@ -100,15 +102,15 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
     super.dispose();
   }
 
-  Future selectDate(DateTime date) async {
+  Future selectDate() async {
     var selected = await showDatePicker(
         context: (context),
-        initialDate: date,
+        initialDate: dueDate,
         firstDate: DateTime(2000, 1),
         lastDate: DateTime(2050, 1));
-    if (selected != null && selected != date)
+    if (selected != null && selected != dueDate)
       setState(() {
-        date = selected;
+        dueDate = selected;
       });
   }
 
