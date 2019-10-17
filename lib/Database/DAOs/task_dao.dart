@@ -20,15 +20,33 @@ class TaskDao extends DatabaseAccessor<TwixDB> with _$TaskDaoMixin {
   Future deleteTask(Insertable<TaskTableData> task) =>
       delete(taskTable).delete(task);
 
-  Stream<List<TaskTableData>> watchAllTasksByBoardId(String boardId) =>
-      (select(taskTable)..where((row) => row.boardId.equals(boardId))).watch();
+  Stream<List<TaskWithBoard>> watchAllTasksByBoardId(String boardId) =>
+      (select(taskTable)..where((row) => row.boardId.equals(boardId)))
+          .join([
+        innerJoin(boardTable, taskTable.boardId.equalsExp(boardTable.id)),
+      ])
+          .watch()
+          .map((rows) => rows
+          .map((row) => TaskWithBoard(
+          task: row.readTable(taskTable),
+          board: row.readTable(boardTable)))
+          .toList());
+
+  Future<List<TaskTableData>> getAllTasksByBoardId(String boardId) =>
+      (select(taskTable)..where((row) => row.boardId.equals(boardId))).get();
+
+  Future<List<TaskTableData>> getDoneTasksByBoardId(String boardId) =>
+      (select(taskTable)
+            ..where((row) => row.boardId.equals(boardId))
+            ..where((row) => row.isDone.equals(true)))
+          .get();
 
   Stream<List<TaskWithBoard>> watchAllMyDayTasks() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     return (select(taskTable)..where((row) => row.myDayDate.equals(today)))
         .join([
-          innerJoin(taskTable, taskTable.boardId.equalsExp(boardTable.id)),
+          innerJoin(boardTable, taskTable.boardId.equalsExp(boardTable.id)),
         ])
         .watch()
         .map((rows) => rows
@@ -36,6 +54,22 @@ class TaskDao extends DatabaseAccessor<TwixDB> with _$TaskDaoMixin {
                 task: row.readTable(taskTable),
                 board: row.readTable(boardTable)))
             .toList());
+  }
+
+  Future<List<TaskTableData>> getAllMyDayTasks() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return (select(taskTable)..where((row) => row.myDayDate.equals(today)))
+        .get();
+  }
+
+  Future<List<TaskTableData>> getDoneMyDayTasks() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return (select(taskTable)
+          ..where((row) => row.myDayDate.equals(today))
+          ..where((row) => row.isDone.equals(true)))
+        .get();
   }
 }
 

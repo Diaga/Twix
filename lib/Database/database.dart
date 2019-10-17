@@ -22,7 +22,7 @@ part 'database.g.dart';
 class TwixDB extends _$TwixDB {
   TwixDB()
       : super((FlutterQueryExecutor.inDatabaseFolder(
-            path: 'db.sqlite', logStatements: true)));
+            path: 'db.sqlite3', logStatements: true)));
 
   @override
   int get schemaVersion => 1;
@@ -35,8 +35,11 @@ class TwixDB extends _$TwixDB {
       onUpgrade: (migrator, to, from) async {},
       beforeOpen: (details) async {
         if (details.wasCreated) {
-          await into(boardTable).insert(const BoardTableCompanion(
-              name: Value('My Tasks'), isMyTasks: Value(true)));
+          await into(boardTable).insert(BoardTableCompanion(
+              id: Value(Uuid().v4()),
+              name: Value('My Tasks'),
+              isMyTasks: Value(true),
+              createdAt: Value(DateTime.now())));
         }
       });
 }

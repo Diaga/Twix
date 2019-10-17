@@ -1,8 +1,10 @@
 import 'package:moor_flutter/moor_flutter.dart';
-import 'package:uuid/uuid.dart';
 
 class TaskTable extends Table {
-  TextColumn get id => text().withDefault(Variable(Uuid().v4()))();
+  TextColumn get id => text()();
+
+  @override
+  Set<Column> get primaryKey => {id};
 
   // REQUIRED
   TextColumn get name => text()();
@@ -17,10 +19,11 @@ class TaskTable extends Table {
 
   BoolColumn get isDone => boolean().withDefault(const Constant(false))();
 
+  DateTimeColumn get createdAt => dateTime()();
+
   // REQUIRED
-  TextColumn get boardId => text()
-      .nullable()
-      .customConstraint('NOT NULL REFERENCES board_table(id)')();
+  TextColumn get boardId =>
+      text().customConstraint('NOT NULL REFERENCES board_table(id)')();
 
   TextColumn get assignedTo => text()
       .nullable()
