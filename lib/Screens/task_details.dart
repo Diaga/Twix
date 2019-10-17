@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'note_editor.dart';
+
 class Screen extends StatelessWidget {
   final String boardName;
   final String taskName;
@@ -16,7 +18,7 @@ class Screen extends StatelessWidget {
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
-        elevation: 0,
+        elevation: 0,iconTheme: IconThemeData(color: Colors.black),
       ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
@@ -43,7 +45,7 @@ class Screen extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView(
+      body: Column(
         children: <Widget>[
           Container(
             height: 100,
@@ -85,10 +87,14 @@ class Screen extends StatelessWidget {
             height: 200,
             width: double.infinity,
             child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('Add note'),
-              ),
+              child: InkWell(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => NoteEditor()));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('Add note'),
+                  )),
             ),
           ),
         ],

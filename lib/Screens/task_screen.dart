@@ -202,8 +202,9 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   Widget _buildTaskCard(TaskWithBoard taskItem, TwixDB database) {
+    IconData isCompletedIcon = Icons.check_circle_outline;
     final TaskCard taskCard =
-        TaskCard(name: taskItem.task.name, boardName: taskItem.board.name);
+        TaskCard(name: taskItem.task.name, boardName: taskItem.board.name,);
     return Builder(
         builder: (context) => Dismissible(
               key: ValueKey(taskCard.hashCode),
@@ -226,6 +227,9 @@ class _TaskScreenState extends State<TaskScreen> {
                       duration: Duration(milliseconds: 600),
                     ),
                   );
+                  setState(() {
+                    isCompletedIcon = Icons.check_circle;
+                  });
                 } else if (direction == DismissDirection.endToStart) {
                   // Logic to delete the task
                   database.taskDao.deleteTask(taskItem.task);
