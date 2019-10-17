@@ -6,6 +6,8 @@ import 'package:twix/Database/database.dart';
 
 import 'package:twix/Screens/home_screen.dart';
 
+import 'Screens/login_screen.dart';
+
 void main() async {
   runApp(Twix());
 }
@@ -18,7 +20,7 @@ class Twix extends StatelessWidget {
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           home: Scaffold(
-            body: HomeScreen(),
+            body: Login(),
           ),
         ));
   }

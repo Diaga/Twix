@@ -33,7 +33,7 @@ class Login extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15.0),
                         child: Text(
-                          'Welcome Back,',
+                          'Welcome,',
                           style: TextStyle(fontSize: 30),
                         ),
                       ),
@@ -82,7 +82,7 @@ class Login extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                         // builder: (context) => BoardScreen(),
+                          builder: (context) => HomeScreen(),
                         ),
                       );
                     },
