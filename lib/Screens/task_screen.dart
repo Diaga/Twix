@@ -160,7 +160,6 @@ class _TaskScreenState extends State<TaskScreen> {
                         StreamBuilder(
                             stream: watchAllTaskList(database),
                             builder: (context, snapshot) {
-                              print(snapshot.connectionState);
                               if (snapshot.connectionState ==
                                   ConnectionState.active) {
                                 if (snapshot.hasError) {

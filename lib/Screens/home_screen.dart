@@ -110,6 +110,7 @@ class HomeScreen extends StatelessWidget {
       builder: (context, AsyncSnapshot<List<BoardTableData>> snapshot) {
         final boards = snapshot.data ?? List();
         return ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: boards.length,
             itemBuilder: (_, index) {
@@ -141,6 +142,7 @@ class HomeScreen extends StatelessWidget {
       builder: (context, AsyncSnapshot<List<GroupTableData>> snapshot) {
         final groups = snapshot.data ?? List();
         return ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: groups.length,
             itemBuilder: (_, index) {
@@ -153,8 +155,6 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildGroupCard(BuildContext context, GroupTableData groupItem) {
     return BoardsList(
-        iconData: Icons.developer_board,
-        title: groupItem.name,
-        callBack: () {});
+        iconData: Icons.group, title: groupItem.name, callBack: () {});
   }
 }

@@ -21,6 +21,10 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
   final TextEditingController textEditingController = TextEditingController();
 
   DateTime today = DateTime.now();
+
+  DateTime initialDate = DateTime.now();
+  TimeOfDay initialTime = TimeOfDay.now();
+
   DateTime dueDate;
   DateTime reminderDate;
   TimeOfDay reminderTime;
@@ -125,7 +129,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
   Future selectDate() async {
     var selected = await showDatePicker(
         context: (context),
-        initialDate: dueDate,
+        initialDate: initialDate,
         firstDate: DateTime(2000, 1),
         lastDate: DateTime(2050, 1));
     if (selected != null && selected != dueDate)
@@ -136,7 +140,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
 
   Future selectTime() async {
     var selected =
-        await showTimePicker(context: context, initialTime: reminderTime);
+        await showTimePicker(context: context, initialTime: initialTime);
     if (selected != null && selected != reminderTime) {
       setState(() {
         reminderTime = selected;
