@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
-import 'package:twix/Database/database.dart';
-import 'package:twix/Widgets/task/task_details.dart';
 import 'package:uuid/uuid.dart';
+import 'package:intl/intl.dart';
+
+import 'package:twix/Database/database.dart';
+
+import 'package:twix/Widgets/task/task_details.dart';
 
 class TaskAdderSheet extends StatefulWidget {
   final String boardId;
@@ -76,12 +79,14 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                               ? database.taskDao.insertTask(TaskTableCompanion(
                                   id: moor.Value(Uuid().v4()),
                                   name: moor.Value(textEditingController.text),
+                                  dueDate: moor.Value(dueDate),
                                   boardId: moor.Value(widget.boardId),
                                   createdAt: moor.Value(today)))
                               : database.taskDao.insertTask(TaskTableCompanion(
                                   id: moor.Value(Uuid().v4()),
                                   name: moor.Value(textEditingController.text),
                                   boardId: moor.Value(widget.boardId),
+                                  dueDate: moor.Value(dueDate),
                                   myDayDate: moor.Value(DateTime(
                                       today.year, today.month, today.day)),
                                   createdAt: moor.Value(today)));
@@ -99,7 +104,9 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                 children: <Widget>[
                   TaskDetails(
                     iconData: Icons.calendar_today,
-                    text: 'Set due date',
+                    text: dueDate == null
+                        ? 'Set due date'
+                        : DateFormat.yMMMEd().format(dueDate).toString(),
                     callBack: selectDate,
                   ),
                   TaskDetails(
