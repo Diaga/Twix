@@ -16,9 +16,7 @@ class _AdderSheetState extends State<AdderSheet> {
   @override
   Widget build(BuildContext context) {
     return AnimatedPadding(
-      padding: MediaQuery
-          .of(context)
-          .viewInsets,
+      padding: MediaQuery.of(context).viewInsets,
       duration: Duration(milliseconds: 100),
       child: Container(
         child: Column(
@@ -28,14 +26,16 @@ class _AdderSheetState extends State<AdderSheet> {
               height: 60,
               child: Row(
                 children: <Widget>[
-                  Expanded(
-                      child: Icon(widget.iconData)
-                  ),
+                  Expanded(child: Icon(widget.iconData)),
                   Expanded(
                     flex: 6,
                     child: Padding(
                       padding: const EdgeInsets.only(
-                          left: 8.0, top: 8, bottom: 8, right: 5),
+                        left: 8.0,
+                        top: 8,
+                        bottom: 8,
+                        right: 5,
+                      ),
                       child: TextField(
                         expands: true,
                         decoration: InputDecoration(
@@ -53,7 +53,8 @@ class _AdderSheetState extends State<AdderSheet> {
                 ],
               ),
             ),
-            Align(alignment: Alignment.centerRight,
+            Align(
+                alignment: Alignment.centerRight,
                 child: FlatButton(onPressed: () {}, child: Text('Done')))
           ],
         ),
