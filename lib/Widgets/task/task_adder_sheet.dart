@@ -101,6 +101,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                   TaskDetails(
                     iconData: Icons.add_alert,
                     text: 'Remind Me',
+                    callBack: selectTime,
                   ),
                   TaskDetails(
                     iconData: Icons.note,
