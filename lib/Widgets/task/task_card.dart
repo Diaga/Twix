@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:twix/Screens/task_details.dart';
 
-
-class TaskCard extends StatelessWidget {
+class TaskCard extends StatefulWidget {
   final String name;
   final String boardName;
 
   const TaskCard({Key key, this.name, this.boardName}) : super(key: key);
+
+  @override
+  _TaskCardState createState() => _TaskCardState();
+}
+
+class _TaskCardState extends State<TaskCard> {
+  IconData myDayIcon = Icons.star_border;
 
   @override
   Widget build(BuildContext context) {
@@ -15,13 +21,27 @@ class TaskCard extends StatelessWidget {
       color: Colors.white,
       child: ListTile(
         leading: Icon(Icons.hourglass_empty),
-        title: Text(name),
-        subtitle: Text(boardName),
+        title: Text(widget.name),
+        subtitle: Text(widget.boardName),
         dense: true,
-        trailing: Icon(Icons.star_border),
+        trailing: GestureDetector(
+            onTap: () {
+              setState(() {
+                if (myDayIcon == Icons.star_border) {
+                  myDayIcon = Icons.star;
+                } else {
+                  myDayIcon = Icons.star_border;
+                }
+              });
+            },
+            child: Icon(myDayIcon)),
         onTap: () {
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => Screen()));
+            context,
+            MaterialPageRoute(
+              builder: (context) => Screen(boardName: widget.boardName,taskName: widget.name,myDayIcon: myDayIcon,),
+            ),
+          );
         },
       ),
     );

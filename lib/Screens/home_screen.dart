@@ -110,12 +110,13 @@ class HomeScreen extends StatelessWidget {
       builder: (context, AsyncSnapshot<List<BoardTableData>> snapshot) {
         final boards = snapshot.data ?? List();
         return ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: boards.length,
             itemBuilder: (_, index) {
               final boardItem = boards[index];
               return _buildBoardCard(context, boardItem);
-            });
+            },);
       },
     );
   }

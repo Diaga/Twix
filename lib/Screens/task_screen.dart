@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-
 import 'package:twix/Database/database.dart';
 import 'package:twix/Database/DAOs/task_dao.dart';
-
 import 'package:twix/Widgets/task/onswipe_container.dart';
 import 'package:twix/Widgets/task/task_adder_sheet.dart';
 import 'package:twix/Widgets/task/task_card.dart';
+
 
 class TaskScreen extends StatefulWidget {
   final String boardId;

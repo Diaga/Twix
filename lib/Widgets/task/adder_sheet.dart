@@ -65,6 +65,7 @@ class _AdderSheetState extends State<AdderSheet> {
                     onPressed: () {
                       if (textEditingController.text.isNotEmpty)
                         widget.callBack(textEditingController.text, database);
+                      Navigator.pop(context);
                     }
                 ))
           ],

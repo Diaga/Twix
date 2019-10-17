@@ -21,9 +21,9 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
   final TextEditingController textEditingController = TextEditingController();
 
   DateTime today = DateTime.now();
-  DateTime dueDate;
+  DateTime dueDate = DateTime.now();
   DateTime reminderDate;
-  TimeOfDay reminderTime;
+  TimeOfDay reminderTime = TimeOfDay.now();
 
   @override
   void initState() {
@@ -81,6 +81,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                                   myDayDate: moor.Value(DateTime(
                                       today.year, today.month, today.day)),
                                   createdAt: moor.Value(today)));
+                          Navigator.pop(context);
                         }
                       },
                     ),

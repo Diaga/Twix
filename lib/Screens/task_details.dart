@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 
 class Screen extends StatelessWidget {
+  final String boardName;
+  final String taskName;
+  final IconData myDayIcon;
+
+  Screen({this.boardName , this.taskName,this.myDayIcon});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Board Name',
+          boardName,
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
@@ -24,7 +30,7 @@ class Screen extends StatelessWidget {
                     alignment: Alignment.centerLeft ,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal:10.0),
-                      child: Text('Created a five minutes ago'),
+                      child: Text('Created five minutes ago'),
                     )),
               ),
               Expanded(
@@ -46,8 +52,8 @@ class Screen extends StatelessWidget {
               child: Center(
                 child: ListTile(
                   leading: Icon(Icons.check_circle_outline),
-                  title: Text('Task Name'),
-                  trailing: Icon(Icons.star_border),
+                  title: Text(taskName),
+                  trailing: Icon(myDayIcon),
                 ),
               ),
             ),
