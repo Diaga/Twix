@@ -40,20 +40,20 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   // TODO: Update for assigned to me
-  Future<List<TaskTableData>> getAllTaskList(TwixDB database) async {
+  Stream<List<TaskTableData>> watchAllTaskListNoJoin(TwixDB database) {
     return getBoardName
-        ? await database.taskDao.getAllTasksByBoardId(widget.boardId)
+        ? database.taskDao.watchAllTasksByBoardIdNoJoin(widget.boardId)
         : isMyDay
-            ? await database.taskDao.getAllMyDayTasks()
-            : await database.taskDao.getAllMyDayTasks();
+            ? database.taskDao.watchAllMyDayTasks()
+            : database.taskDao.watchAllMyDayTasks();
   }
 
-  Future<List<TaskTableData>> getDoneTaskList(TwixDB database) async {
+  Stream<List<TaskTableData>> watchDoneTaskList(TwixDB database) {
     return getBoardName
-        ? await database.taskDao.getDoneTasksByBoardId(widget.boardId)
+        ? database.taskDao.watchDoneTasksByBoardId(widget.boardId)
         : isMyDay
-            ? await database.taskDao.getDoneMyDayTasks()
-            : await database.taskDao.getDoneMyDayTasks();
+            ? database.taskDao.watchDoneMyDayTasks()
+            : database.taskDao.watchDoneMyDayTasks();
   }
 
   Stream<List<TaskWithBoard>> watchAllTaskList(TwixDB database) {
@@ -68,8 +68,6 @@ class _TaskScreenState extends State<TaskScreen> {
   Widget build(BuildContext context) {
     final TwixDB database = Provider.of<TwixDB>(context);
     final Future<BoardTableData> boardFuture = getBoard(database);
-    final Future<List<TaskTableData>> allTaskList = getAllTaskList(database);
-    final Future<List<TaskTableData>> doneTaskList = getDoneTaskList(database);
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
@@ -138,16 +136,17 @@ class _TaskScreenState extends State<TaskScreen> {
                     ),
                     child: Stack(
                       children: <Widget>[
-                        FutureBuilder(
-                            future: doneTaskList,
+                        StreamBuilder(
+                            stream: watchDoneTaskList(database),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
-                                  ConnectionState.done) {
+                                  ConnectionState.active) {
                                 if (snapshot.hasError) {
                                   return _buildCountDoneTasks('0');
                                 }
+                                final data = snapshot.data ?? List();
                                 return _buildCountDoneTasks(
-                                    snapshot.data.length.toString());
+                                    data.length.toString());
                               }
                               return _buildCountDoneTasks('0');
                             }),
@@ -158,16 +157,18 @@ class _TaskScreenState extends State<TaskScreen> {
                             style: TextStyle(fontSize: 30, color: Colors.white),
                           ),
                         ),
-                        FutureBuilder(
-                            future: allTaskList,
+                        StreamBuilder(
+                            stream: watchAllTaskList(database),
                             builder: (context, snapshot) {
+                              print(snapshot.connectionState);
                               if (snapshot.connectionState ==
-                                  ConnectionState.done) {
+                                  ConnectionState.active) {
                                 if (snapshot.hasError) {
                                   return _buildCountAllTasks('0');
                                 }
+                                final data = snapshot.data ?? List();
                                 return _buildCountAllTasks(
-                                    snapshot.data.length.toString());
+                                    data.length.toString());
                               }
                               return _buildCountAllTasks('0');
                             }),

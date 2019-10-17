@@ -32,14 +32,14 @@ class TaskDao extends DatabaseAccessor<TwixDB> with _$TaskDaoMixin {
           board: row.readTable(boardTable)))
           .toList());
 
-  Future<List<TaskTableData>> getAllTasksByBoardId(String boardId) =>
-      (select(taskTable)..where((row) => row.boardId.equals(boardId))).get();
+  Stream<List<TaskTableData>> watchAllTasksByBoardIdNoJoin(String boardId) =>
+      (select(taskTable)..where((row) => row.boardId.equals(boardId))).watch();
 
-  Future<List<TaskTableData>> getDoneTasksByBoardId(String boardId) =>
+  Stream<List<TaskTableData>> watchDoneTasksByBoardId(String boardId) =>
       (select(taskTable)
             ..where((row) => row.boardId.equals(boardId))
             ..where((row) => row.isDone.equals(true)))
-          .get();
+          .watch();
 
   Stream<List<TaskWithBoard>> watchAllMyDayTasks() {
     final now = DateTime.now();
@@ -56,20 +56,20 @@ class TaskDao extends DatabaseAccessor<TwixDB> with _$TaskDaoMixin {
             .toList());
   }
 
-  Future<List<TaskTableData>> getAllMyDayTasks() {
+  Stream<List<TaskTableData>> getAllMyDayTasksNoJoin() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     return (select(taskTable)..where((row) => row.myDayDate.equals(today)))
-        .get();
+        .watch();
   }
 
-  Future<List<TaskTableData>> getDoneMyDayTasks() {
+  Stream<List<TaskTableData>> watchDoneMyDayTasks() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     return (select(taskTable)
           ..where((row) => row.myDayDate.equals(today))
           ..where((row) => row.isDone.equals(true)))
-        .get();
+        .watch();
   }
 }
 
