@@ -3,11 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:moor_flutter/moor_flutter.dart' as moor;
 import 'package:twix/Database/database.dart';
 import 'package:twix/Widgets/task/task_details.dart';
+import 'package:uuid/uuid.dart';
 
 class TaskAdderSheet extends StatefulWidget {
   final String boardId;
+  final String action;
 
-  const TaskAdderSheet({Key key, this.boardId}) : super(key: key);
+  const TaskAdderSheet(
+      {Key key, @required this.boardId, this.action = 'normal'})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _TaskAdderSheetState();
@@ -15,9 +19,17 @@ class TaskAdderSheet extends StatefulWidget {
 
 class _TaskAdderSheetState extends State<TaskAdderSheet> {
   final TextEditingController textEditingController = TextEditingController();
-  var dueDate = DateTime.now();
-  var reminderDate = DateTime.now();
-  var reminderTime = TimeOfDay.now();
+
+  DateTime today = DateTime.now();
+  DateTime dueDate;
+  DateTime reminderDate;
+  TimeOfDay reminderTime;
+
+  @override
+  void initState() {
+    super.initState();
+    today = DateTime(today.year, today.month, today.day);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,11 +65,23 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                   Expanded(
                     child: IconButton(
                       icon: Icon(Icons.arrow_upward),
-                      onPressed: () {
-                        if (textEditingController.text.isNotEmpty)
-                          database.taskDao.insertTask(TaskTableCompanion(
-                              name: moor.Value(textEditingController.text),
-                              boardId: moor.Value(widget.boardId)));
+                      onPressed: () async {
+                        final today = DateTime.now();
+                        if (textEditingController.text.isNotEmpty) {
+                          widget.action == 'normal'
+                              ? database.taskDao.insertTask(TaskTableCompanion(
+                                  id: moor.Value(Uuid().v4()),
+                                  name: moor.Value(textEditingController.text),
+                                  boardId: moor.Value(widget.boardId),
+                                  createdAt: moor.Value(today)))
+                              : database.taskDao.insertTask(TaskTableCompanion(
+                                  id: moor.Value(Uuid().v4()),
+                                  name: moor.Value(textEditingController.text),
+                                  boardId: moor.Value(widget.boardId),
+                                  myDayDate: moor.Value(DateTime(
+                                      today.year, today.month, today.day)),
+                                  createdAt: moor.Value(today)));
+                        }
                       },
                     ),
                   ),
@@ -72,6 +96,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                   TaskDetails(
                     iconData: Icons.calendar_today,
                     text: 'Set due date',
+                    callBack: selectDate,
                   ),
                   TaskDetails(
                     iconData: Icons.add_alert,
@@ -79,11 +104,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                   ),
                   TaskDetails(
                     iconData: Icons.note,
-                    text: 'Add note',
-                  ),
-                  TaskDetails(
-                    iconData: Icons.calendar_today,
-                    text: 'Set due date',
+                    text: 'Add notes',
                   ),
                 ],
               ),
@@ -100,27 +121,25 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
     super.dispose();
   }
 
-  Future selectDate(DateTime date) async {
+  Future selectDate() async {
     var selected = await showDatePicker(
         context: (context),
-        initialDate: date,
+        initialDate: dueDate,
         firstDate: DateTime(2000, 1),
         lastDate: DateTime(2050, 1));
-    if (selected != null && selected != date)
+    if (selected != null && selected != dueDate)
       setState(() {
-        date = selected;
+        dueDate = selected;
       });
   }
 
   Future selectTime() async {
-
-    var selected = await showTimePicker(context: context, initialTime: reminderTime);
-    if (selected != null && selected != reminderTime){
+    var selected =
+        await showTimePicker(context: context, initialTime: reminderTime);
+    if (selected != null && selected != reminderTime) {
       setState(() {
         reminderTime = selected;
       });
     }
   }
-
-
 }

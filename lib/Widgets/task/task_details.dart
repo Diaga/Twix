@@ -4,7 +4,7 @@ class TaskDetails extends StatelessWidget {
   final IconData iconData;
   final String text;
   final Function callBack;
-  TaskDetails({this.iconData, this.text,this.callBack});
+  TaskDetails({this.iconData, this.text, this.callBack});
 
   @override
   Widget build(BuildContext context) {

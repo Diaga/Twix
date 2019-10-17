@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:twix/Database/DAOs/task_dao.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import 'package:twix/Database/database.dart';
-import 'package:provider/provider.dart';
+import 'package:twix/Database/DAOs/task_dao.dart';
 
 import 'package:twix/Widgets/task/onswipe_container.dart';
 import 'package:twix/Widgets/task/task_adder_sheet.dart';
@@ -19,24 +20,57 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
+  String boardId;
   bool getBoardName;
+  bool isMyDay;
+  bool isAssignedToMe;
 
   @override
   void initState() {
     super.initState();
     getBoardName = widget.action == 'normal';
+    isMyDay = widget.action == 'My Day';
+    isAssignedToMe = widget.action == 'Assigned To Me';
   }
 
-//  BoardTableData getBoard(TwixDB database) {
-//    return getBoardName
-//        ? await database.boardDao.getBoardById(widget.boardId)
-//        : await database.boardDao.getMyTasksBoard();
-//  }
+  Future<BoardTableData> getBoard(TwixDB database) async {
+    return getBoardName
+        ? await database.boardDao.getBoardById(widget.boardId)
+        : await database.boardDao.getMyTasksBoard();
+  }
+
+  // TODO: Update for assigned to me
+  Future<List<TaskTableData>> getAllTaskList(TwixDB database) async {
+    return getBoardName
+        ? await database.taskDao.getAllTasksByBoardId(widget.boardId)
+        : isMyDay
+            ? await database.taskDao.getAllMyDayTasks()
+            : await database.taskDao.getAllMyDayTasks();
+  }
+
+  Future<List<TaskTableData>> getDoneTaskList(TwixDB database) async {
+    return getBoardName
+        ? await database.taskDao.getDoneTasksByBoardId(widget.boardId)
+        : isMyDay
+            ? await database.taskDao.getDoneMyDayTasks()
+            : await database.taskDao.getDoneMyDayTasks();
+  }
+
+  Stream<List<TaskWithBoard>> watchAllTaskList(TwixDB database) {
+    return getBoardName
+        ? database.taskDao.watchAllTasksByBoardId(widget.boardId)
+        : isMyDay
+            ? database.taskDao.watchAllMyDayTasks()
+            : database.taskDao.watchAllMyDayTasks();
+  }
 
   @override
   Widget build(BuildContext context) {
     final TwixDB database = Provider.of<TwixDB>(context);
-//    final BoardTableData board = getBoard(database);
+    final Future<BoardTableData> boardFuture = getBoard(database);
+    final Future<List<TaskTableData>> allTaskList = getAllTaskList(database);
+    final Future<List<TaskTableData>> doneTaskList = getDoneTaskList(database);
+
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
@@ -58,11 +92,15 @@ class _TaskScreenState extends State<TaskScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
+          boardId = (await getBoard(database)).id;
           showModalBottomSheet(
               context: (context),
               isScrollControlled: true,
-              builder: (context) => TaskAdderSheet());
+              builder: (context) => TaskAdderSheet(
+                    boardId: boardId,
+                    action: widget.action,
+                  ));
         },
         backgroundColor: Color(0xFF3C6AFF),
         child: Icon(Icons.add),
@@ -74,24 +112,20 @@ class _TaskScreenState extends State<TaskScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 18),
-                      child: Text(
-                        'board.name',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5.0, horizontal: 20),
-                      child: Text('Oct 5, 2019'),
-                    ),
-                  ],
+                FutureBuilder(
+                  future: boardFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.done) {
+                      if (snapshot.hasError) {
+                        return _buildBoardColumn('Error encountered!', '');
+                      }
+                      DateTime dateTime = snapshot.data.createdAt;
+                      DateFormat format = DateFormat.yMMMd();
+                      return _buildBoardColumn(
+                          snapshot.data.name, format.format(dateTime));
+                    }
+                    return _buildBoardColumn('', '');
+                  },
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 15),
@@ -104,13 +138,19 @@ class _TaskScreenState extends State<TaskScreen> {
                     ),
                     child: Stack(
                       children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Text(
-                            '2',
-                            style: TextStyle(fontSize: 20, color: Colors.white),
-                          ),
-                        ),
+                        FutureBuilder(
+                            future: doneTaskList,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.done) {
+                                if (snapshot.hasError) {
+                                  return _buildCountDoneTasks('0');
+                                }
+                                return _buildCountDoneTasks(
+                                    snapshot.data.length.toString());
+                              }
+                              return _buildCountDoneTasks('0');
+                            }),
                         Align(
                           alignment: Alignment.center,
                           child: Text(
@@ -118,17 +158,19 @@ class _TaskScreenState extends State<TaskScreen> {
                             style: TextStyle(fontSize: 30, color: Colors.white),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(20.0),
-                          child: Align(
-                            alignment: Alignment.bottomRight,
-                            child: Text(
-                              '6',
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.white),
-                            ),
-                          ),
-                        ),
+                        FutureBuilder(
+                            future: allTaskList,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.done) {
+                                if (snapshot.hasError) {
+                                  return _buildCountAllTasks('0');
+                                }
+                                return _buildCountAllTasks(
+                                    snapshot.data.length.toString());
+                              }
+                              return _buildCountAllTasks('0');
+                            }),
                       ],
                     ),
                   ),
@@ -137,9 +179,8 @@ class _TaskScreenState extends State<TaskScreen> {
             ),
           ),
           Container(
-            height: MediaQuery.of(context).size.height * 0.65,
-            child: _buildTaskList(context, database),
-          ),
+              height: MediaQuery.of(context).size.height * 0.65,
+              child: _buildTaskList(context, database)),
         ],
       ),
     );
@@ -148,59 +189,104 @@ class _TaskScreenState extends State<TaskScreen> {
   StreamBuilder<List<TaskWithBoard>> _buildTaskList(
       BuildContext context, TwixDB database) {
     return StreamBuilder(
-      stream: database.taskDao.watchAllMyDayTasks(),
+      stream: watchAllTaskList(database),
       builder: (context, AsyncSnapshot<List<TaskWithBoard>> snapshot) {
         final tasks = snapshot.data ?? List();
         return ListView.builder(
             itemCount: tasks.length,
             itemBuilder: (_, index) {
               final taskItem = tasks[index];
-              return _taskCard(taskItem, database);
+              return _buildTaskCard(taskItem, database);
             });
       },
     );
   }
 
-  Widget _taskCard(TaskWithBoard taskItem, TwixDB database) {
+  Widget _buildTaskCard(TaskWithBoard taskItem, TwixDB database) {
     final TaskCard taskCard =
         TaskCard(name: taskItem.task.name, boardName: taskItem.board.name);
-    return Dismissible(
-      key: ValueKey(taskCard.hashCode),
-      background: OnSwipeContainer(
-        color: Colors.blue,
-        iconData: Icons.check,
-        alignment: Alignment.centerLeft,
+    return Builder(
+        builder: (context) => Dismissible(
+              key: ValueKey(taskCard.hashCode),
+              background: OnSwipeContainer(
+                color: Colors.blue,
+                iconData: Icons.check,
+                alignment: Alignment.centerLeft,
+              ),
+              child: taskCard,
+              onDismissed: (DismissDirection direction) {
+                if (direction == DismissDirection.startToEnd) {
+                  // Logic to update the task to isDone
+                  database.taskDao
+                      .updateTask(taskItem.task.copyWith(isDone: true));
+
+                  // Display snack bar
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Done"),
+                      duration: Duration(milliseconds: 600),
+                    ),
+                  );
+                } else if (direction == DismissDirection.endToStart) {
+                  // Logic to delete the task
+                  database.taskDao.deleteTask(taskItem.task);
+
+                  // Display snack bar
+                  Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Deleted"),
+                      duration: Duration(milliseconds: 600),
+                    ),
+                  );
+                }
+              },
+              secondaryBackground: OnSwipeContainer(
+                color: Colors.red,
+                iconData: Icons.delete,
+                alignment: Alignment.centerRight,
+              ),
+            ));
+  }
+
+  Widget _buildBoardColumn(String boardName, String createdAt) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 18),
+          child: Text(
+            boardName,
+            style: TextStyle(fontSize: 20),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 20),
+          child: Text(createdAt),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCountDoneTasks(String count) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Text(
+        count,
+        style: TextStyle(fontSize: 20, color: Colors.white),
       ),
-      child: taskCard,
-      onDismissed: (DismissDirection direction) {
-        if (direction == DismissDirection.startToEnd) {
-          // Logic to update the task to isDone
-          database.taskDao.updateTask(taskItem.task.copyWith(isDone: true));
+    );
+  }
 
-          // Display snack bar
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Completed"),
-              duration: Duration(milliseconds: 600),
-            ),
-          );
-        } else if (direction == DismissDirection.endToStart) {
-          // Logic to delete the task
-          database.taskDao.deleteTask(taskItem.task);
-
-          // Display snack bar
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Deleted"),
-              duration: Duration(milliseconds: 600),
-            ),
-          );
-        }
-      },
-      secondaryBackground: OnSwipeContainer(
-        color: Colors.red,
-        iconData: Icons.delete,
-        alignment: Alignment.centerRight,
+  Widget _buildCountAllTasks(String count) {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Align(
+        alignment: Alignment.bottomRight,
+        child: Text(
+          count,
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
       ),
     );
   }
