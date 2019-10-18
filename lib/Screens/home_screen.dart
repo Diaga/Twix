@@ -109,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await database.groupDao.insertGroup(GroupTableCompanion(
       id: Value(Uuid().v4()),
       name: Value(groupName),
+      adminId: Value((await database.userDao.getLoggedInUser()).id)
     ));
   }
 
