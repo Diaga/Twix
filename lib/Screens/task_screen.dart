@@ -7,7 +7,6 @@ import 'package:twix/Widgets/task/onswipe_container.dart';
 import 'package:twix/Widgets/task/task_adder_sheet.dart';
 import 'package:twix/Widgets/task/task_card.dart';
 
-
 class TaskScreen extends StatefulWidget {
   final String boardId;
   final String action;
@@ -188,23 +187,29 @@ class _TaskScreenState extends State<TaskScreen> {
   StreamBuilder<List<TaskWithBoard>> _buildTaskList(
       BuildContext context, TwixDB database) {
     return StreamBuilder(
-      stream: watchAllTaskList(database),
-      builder: (context, AsyncSnapshot<List<TaskWithBoard>> snapshot) {
-        final tasks = snapshot.data ?? List();
-        return ListView.builder(
-            itemCount: tasks.length,
-            itemBuilder: (_, index) {
-              final taskItem = tasks[index];
-              return _buildTaskCard(taskItem, database);
-            });
-      },
-    );
+        stream: watchAllTaskList(database),
+        builder: (context, AsyncSnapshot<List<TaskWithBoard>> snapshot) {
+          final tasks = snapshot.data ?? List();
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            return ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (_, index) {
+                final taskItem = tasks[index];
+                return _buildTaskCard(taskItem, database);
+              },
+            );
+          }
+        });
   }
 
   Widget _buildTaskCard(TaskWithBoard taskItem, TwixDB database) {
     IconData isCompletedIcon = Icons.check_circle_outline;
-    final TaskCard taskCard =
-        TaskCard(name: taskItem.task.name, boardName: taskItem.board.name,);
+    final TaskCard taskCard = TaskCard(
+      name: taskItem.task.name,
+      boardName: taskItem.board.name,
+    );
     return Builder(
         builder: (context) => Dismissible(
               key: ValueKey(taskCard.hashCode),
