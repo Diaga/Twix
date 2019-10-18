@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+
 import 'package:twix/Database/database.dart';
 import 'package:twix/Database/DAOs/task_dao.dart';
+
 import 'package:twix/Widgets/task/onswipe_container.dart';
 import 'package:twix/Widgets/task/task_adder_sheet.dart';
 import 'package:twix/Widgets/task/task_card.dart';
-
 
 class TaskScreen extends StatefulWidget {
   final String boardId;
@@ -112,9 +113,10 @@ class _TaskScreenState extends State<TaskScreen> {
                 FutureBuilder(
                   future: boardFuture,
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.connectionState == ConnectionState.active ||
+                        snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasError) {
-                        return _buildBoardColumn('Error encountered!', '');
+                        return _buildBoardColumn('', '');
                       }
                       DateTime dateTime = snapshot.data.createdAt;
                       DateFormat format = DateFormat.yMMMd();
@@ -139,10 +141,8 @@ class _TaskScreenState extends State<TaskScreen> {
                             stream: watchDoneTaskList(database),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
-                                  ConnectionState.active) {
-                                if (snapshot.hasError) {
-                                  return _buildCountDoneTasks('0');
-                                }
+                                  ConnectionState
+                                      .active) if (!snapshot.hasError) {
                                 final data = snapshot.data ?? List();
                                 return _buildCountDoneTasks(
                                     data.length.toString());
@@ -160,10 +160,8 @@ class _TaskScreenState extends State<TaskScreen> {
                             stream: watchAllTaskList(database),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
-                                  ConnectionState.active) {
-                                if (snapshot.hasError) {
-                                  return _buildCountAllTasks('0');
-                                }
+                                  ConnectionState
+                                      .active) if (snapshot.hasError) {
                                 final data = snapshot.data ?? List();
                                 return _buildCountAllTasks(
                                     data.length.toString());
@@ -202,8 +200,9 @@ class _TaskScreenState extends State<TaskScreen> {
   }
 
   Widget _buildTaskCard(TaskWithBoard taskItem, TwixDB database) {
-    final TaskCard taskCard =
-        TaskCard(name: taskItem.task.name, boardName: taskItem.board.name);
+    final TaskCard taskCard = TaskCard(
+      task: taskItem,
+    );
     return Builder(
         builder: (context) => Dismissible(
               key: ValueKey(taskCard.hashCode),

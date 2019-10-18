@@ -31,7 +31,7 @@ class CustomBottomBar extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text('New List'),
+                      child: Text('New Board'),
                     ),
                   ],
                 ),

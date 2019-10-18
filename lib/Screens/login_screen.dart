@@ -1,11 +1,37 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:twix/Palette/palette.dart';
-import 'home_screen.dart';
+import 'dart:convert';
 
-class Login extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:moor_flutter/moor_flutter.dart' hide Column;
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
+import 'package:twix/Database/database.dart';
+import 'package:twix/Api/api.dart';
+import 'package:twix/Palette/palette.dart';
+
+import 'package:twix/Screens/home_screen.dart';
+
+class Login extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => LoginState();
+}
+
+class LoginState extends State<Login> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final database = Provider.of<TwixDB>(context);
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: SafeArea(
@@ -33,14 +59,14 @@ class Login extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15.0),
                         child: Text(
-                          'Welcome,',
+                          'Welcome!',
                           style: TextStyle(fontSize: 30),
                         ),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15.0),
                         child: Text(
-                          'Sign in to continue',
+                          'Sign up to continue...',
                           style: TextStyle(color: Colors.grey),
                         ),
                       ),
@@ -48,27 +74,12 @@ class Login extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.29,
+                  height: MediaQuery.of(context).size.height * 0.35,
                   child: Column(
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 15.0, vertical: 10),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Email',
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 15.0, vertical: 10),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Password',
-                          ),
-                        ),
-                      ),
+                      _buildTextField('Name', nameController),
+                      _buildTextField('Email', emailController),
+                      _buildTextField('Password', passwordController),
                     ],
                   ),
                 ),
@@ -78,39 +89,34 @@ class Login extends StatelessWidget {
                   margin: EdgeInsets.all(15),
                   child: FlatButton(
                     color: Palette.primaryColor,
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
-                        ),
-                      );
+                    onPressed: () async {
+                      if (Connect.getConnection) {
+                        if (_validateFields()) {
+                          if (await (_actionSignUp(database))) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HomeScreen(),
+                              ),
+                            );
+                          }
+                        } else {
+                          final snackBar = SnackBar(
+                              content: Text(
+                                  'Please fill the above fields correctly!'));
+                          Scaffold.of(context).showSnackBar(snackBar);
+                        }
+                      } else {
+                        final snackBar = SnackBar(
+                            content: Text(
+                                'You must be connected to the internet to proceed!'));
+                        Scaffold.of(context).showSnackBar(snackBar);
+                      }
                     },
                     child: Text(
-                      'Login',
+                      'SIGN UP',
                       style: TextStyle(color: Colors.white),
                     ),
-                  ),
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.20,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'New User? ',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      GestureDetector(
-                        onTap: null,
-                        child: Text(
-                          'Sign up',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Palette.primaryColor),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ],
@@ -119,5 +125,42 @@ class Login extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildTextField(String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _actionSignUp(TwixDB database) async {
+    final String id = Uuid().v4();
+    final response = await Api.createUser(
+        id, nameController.text, emailController.text, passwordController.text);
+    final responseToken =
+        await Api.getToken(emailController.text, passwordController.text);
+    final bool result =
+        response.statusCode == 201 && responseToken.statusCode == 200;
+    if (result) {
+      await database.userDao.insertUser(UserTableCompanion(
+          id: Value(id),
+          name: Value(nameController.text),
+          email: Value(emailController.text),
+          password: Value(passwordController.text),
+          token: Value(jsonDecode(responseToken.body)['token'])));
+    }
+    return result;
+  }
+
+  bool _validateFields() {
+    if (nameController.text.isNotEmpty) if (emailController
+        .text.isNotEmpty) if (passwordController.text.isNotEmpty) return true;
+    return false;
   }
 }

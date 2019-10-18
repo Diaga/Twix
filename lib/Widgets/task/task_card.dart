@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:twix/Database/database.dart';
+import 'package:twix/Database/DAOs/task_dao.dart';
+
 import 'package:twix/Screens/task_details.dart';
 
 class TaskCard extends StatefulWidget {
-  final String name;
-  final String boardName;
+  final TaskWithBoard task;
 
-  const TaskCard({Key key, this.name, this.boardName}) : super(key: key);
+  const TaskCard({Key key, this.task}) : super(key: key);
 
   @override
   _TaskCardState createState() => _TaskCardState();
@@ -16,13 +20,14 @@ class _TaskCardState extends State<TaskCard> {
 
   @override
   Widget build(BuildContext context) {
+    final database = Provider.of<TwixDB>(context);
     return Card(
       margin: EdgeInsets.all(8.0),
       color: Colors.white,
       child: ListTile(
         leading: Icon(Icons.hourglass_empty),
-        title: Text(widget.name),
-        subtitle: Text(widget.boardName),
+        title: Text(widget.task.task.name),
+        subtitle: Text(widget.task.board.name),
         dense: true,
         trailing: GestureDetector(
             onTap: () {
@@ -34,12 +39,16 @@ class _TaskCardState extends State<TaskCard> {
                 }
               });
             },
-            child: Icon(myDayIcon)),
+            child: database.taskDao.isMyDay(widget.task.task.myDayDate)
+                ? Icon(Icons.star)
+                : Icon(Icons.star_border)),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => Screen(boardName: widget.boardName,taskName: widget.name,myDayIcon: myDayIcon,),
+              builder: (context) => TaskDetailsScreen(
+                task: widget.task,
+              ),
             ),
           );
         },

@@ -12,12 +12,15 @@ import 'package:twix/Widgets/task/custom_app_bar.dart';
 import 'package:twix/Widgets/task/custom_bottom_bar.dart';
 
 class HomeScreen extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     final TwixDB database = Provider.of<TwixDB>(context);
     return Scaffold(
       appBar: CustomAppBar(
-          height: 80.0, color: ThemeData.light().scaffoldBackgroundColor),
+        height: 80.0,
+        color: ThemeData.light().scaffoldBackgroundColor,
+      ),
       bottomNavigationBar: CustomBottomBar(
         listCallBack: () {
           _sheetDisplay(context, Icons.developer_board, 'Board', _insertBoard);
@@ -111,12 +114,13 @@ class HomeScreen extends StatelessWidget {
         final boards = snapshot.data ?? List();
         return ListView.builder(
           physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: boards.length,
-            itemBuilder: (_, index) {
-              final boardItem = boards[index];
-              return _buildBoardCard(context, boardItem);
-            },);
+          shrinkWrap: true,
+          itemCount: boards.length,
+          itemBuilder: (_, index) {
+            final boardItem = boards[index];
+            return _buildBoardCard(context, boardItem);
+          },
+        );
       },
     );
   }

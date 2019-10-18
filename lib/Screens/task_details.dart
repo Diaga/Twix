@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class Screen extends StatelessWidget {
-  final String boardName;
-  final String taskName;
-  final IconData myDayIcon;
+import 'package:twix/Database/database.dart';
+import 'package:twix/Database/DAOs/task_dao.dart';
 
-  Screen({this.boardName , this.taskName,this.myDayIcon});
+class TaskDetailsScreen extends StatelessWidget {
+  final TaskWithBoard task;
+
+  TaskDetailsScreen({this.task});
 
   @override
   Widget build(BuildContext context) {
+    final database = Provider.of<TwixDB>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          boardName,
+          task.board.name,
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
@@ -27,9 +30,9 @@ class Screen extends StatelessWidget {
               Expanded(
                 flex: 5,
                 child: Align(
-                    alignment: Alignment.centerLeft ,
+                    alignment: Alignment.centerLeft,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal:10.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Text('Created five minutes ago'),
                     )),
               ),
@@ -52,8 +55,10 @@ class Screen extends StatelessWidget {
               child: Center(
                 child: ListTile(
                   leading: Icon(Icons.check_circle_outline),
-                  title: Text(taskName),
-                  trailing: Icon(myDayIcon),
+                  title: Text(task.task.name),
+                  trailing: database.taskDao.isMyDay(task.task.myDayDate)
+                      ? Icon(Icons.star)
+                      : Icon(Icons.star_border),
                 ),
               ),
             ),

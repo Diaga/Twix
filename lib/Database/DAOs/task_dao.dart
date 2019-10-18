@@ -71,6 +71,12 @@ class TaskDao extends DatabaseAccessor<TwixDB> with _$TaskDaoMixin {
           ..where((row) => row.isDone.equals(true)))
         .watch();
   }
+
+  bool isMyDay(DateTime myDayDate) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return myDayDate == today;
+  }
 }
 
 class TaskWithBoard {

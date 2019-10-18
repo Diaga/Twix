@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:moor_flutter/moor_flutter.dart' as moor;
+import 'package:moor_flutter/moor_flutter.dart' hide Column;
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 
@@ -77,19 +77,19 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                         if (textEditingController.text.isNotEmpty) {
                           widget.action == 'normal'
                               ? database.taskDao.insertTask(TaskTableCompanion(
-                                  id: moor.Value(Uuid().v4()),
-                                  name: moor.Value(textEditingController.text),
-                                  dueDate: moor.Value(dueDate),
-                                  boardId: moor.Value(widget.boardId),
-                                  createdAt: moor.Value(today)))
+                                  id: Value(Uuid().v4()),
+                                  name: Value(textEditingController.text),
+                                  dueDate: Value(dueDate),
+                                  boardId: Value(widget.boardId),
+                                  createdAt: Value(today)))
                               : database.taskDao.insertTask(TaskTableCompanion(
-                                  id: moor.Value(Uuid().v4()),
-                                  name: moor.Value(textEditingController.text),
-                                  boardId: moor.Value(widget.boardId),
-                                  dueDate: moor.Value(dueDate),
-                                  myDayDate: moor.Value(DateTime(
+                                  id: Value(Uuid().v4()),
+                                  name: Value(textEditingController.text),
+                                  boardId: Value(widget.boardId),
+                                  dueDate: Value(dueDate),
+                                  myDayDate: Value(DateTime(
                                       today.year, today.month, today.day)),
-                                  createdAt: moor.Value(today)));
+                                  createdAt: Value(today)));
                           Navigator.pop(context);
                         }
                       },
