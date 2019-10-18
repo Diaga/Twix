@@ -25,6 +25,11 @@ class _TaskScreenState extends State<TaskScreen> {
   bool isMyDay;
   bool isAssignedToMe;
 
+  BoardTableData boardData;
+  List doneTasks;
+  List allTasks;
+  List<TaskWithBoard> tasks;
+
   @override
   void initState() {
     super.initState();
@@ -113,17 +118,22 @@ class _TaskScreenState extends State<TaskScreen> {
                 FutureBuilder(
                   future: boardFuture,
                   builder: (context, snapshot) {
+                    DateFormat format = DateFormat.yMMMd();
+
                     if (snapshot.connectionState == ConnectionState.active ||
                         snapshot.connectionState == ConnectionState.done) {
-                      if (snapshot.hasError) {
-                        return _buildBoardColumn('', '');
+                      if (!snapshot.hasError) {
+                        boardData = snapshot.data;
+                        DateTime dateTime = boardData.createdAt;
+                        return _buildBoardColumn(
+                            boardData?.name, format.format(dateTime));
                       }
-                      DateTime dateTime = snapshot.data.createdAt;
-                      DateFormat format = DateFormat.yMMMd();
-                      return _buildBoardColumn(
-                          snapshot.data.name, format.format(dateTime));
                     }
-                    return _buildBoardColumn('', '');
+                    return _buildBoardColumn(
+                        boardData != null ? boardData.name : '',
+                        boardData != null
+                            ? format.format(boardData.createdAt)
+                            : '');
                   },
                 ),
                 Padding(
@@ -143,11 +153,13 @@ class _TaskScreenState extends State<TaskScreen> {
                               if (snapshot.connectionState ==
                                   ConnectionState
                                       .active) if (!snapshot.hasError) {
-                                final data = snapshot.data ?? List();
+                                doneTasks = snapshot.data ?? List();
                                 return _buildCountDoneTasks(
-                                    data.length.toString());
+                                    doneTasks?.length.toString());
                               }
-                              return _buildCountDoneTasks('0');
+                              return _buildCountDoneTasks(doneTasks != null
+                                  ? doneTasks.length.toString()
+                                  : '');
                             }),
                         Align(
                           alignment: Alignment.center,
@@ -161,12 +173,14 @@ class _TaskScreenState extends State<TaskScreen> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState
-                                      .active) if (snapshot.hasError) {
-                                final data = snapshot.data ?? List();
+                                      .active) if (!snapshot.hasError) {
+                                allTasks = snapshot.data ?? List();
                                 return _buildCountAllTasks(
-                                    data.length.toString());
+                                    allTasks.length.toString());
                               }
-                              return _buildCountAllTasks('0');
+                              return _buildCountAllTasks(allTasks != null
+                                  ? allTasks.length.toString()
+                                  : '');
                             }),
                       ],
                     ),
@@ -188,10 +202,9 @@ class _TaskScreenState extends State<TaskScreen> {
     return StreamBuilder(
         stream: watchAllTaskList(database),
         builder: (context, AsyncSnapshot<List<TaskWithBoard>> snapshot) {
-          final tasks = snapshot.data ?? List();
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else {
+          if (snapshot.connectionState == ConnectionState.active) if (!snapshot
+              .hasError) {
+            tasks = snapshot.data ?? List();
             return ListView.builder(
               itemCount: tasks.length,
               itemBuilder: (_, index) {
@@ -200,6 +213,14 @@ class _TaskScreenState extends State<TaskScreen> {
               },
             );
           }
+          return tasks != null
+              ? ListView.builder(
+                  itemCount: tasks.length,
+                  itemBuilder: (_, index) {
+                    final taskItem = tasks[index];
+                    return _buildTaskCard(taskItem, database);
+                  })
+              : Center(child: CircularProgressIndicator());
         });
   }
 

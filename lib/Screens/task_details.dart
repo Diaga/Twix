@@ -21,7 +21,8 @@ class TaskDetailsScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
-        elevation: 0,iconTheme: IconThemeData(color: Colors.black),
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
@@ -80,7 +81,7 @@ class TaskDetailsScreen extends StatelessWidget {
                 ),
                 ListTile(
                   leading: Icon(Icons.calendar_today),
-                  title: Text('Add due date'),
+                  title: task.task.dueDate != null ? Text(task.task.dueDate.toString()) : Text('Add due date'),
                 ),
               ],
             ),
@@ -93,12 +94,15 @@ class TaskDetailsScreen extends StatelessWidget {
             width: double.infinity,
             child: Card(
               child: InkWell(
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => NoteEditor()));
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => NoteEditor(task: task)));
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text('Add note'),
+                    child: Text(task.task.notes),
                   )),
             ),
           ),
