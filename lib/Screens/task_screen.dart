@@ -186,23 +186,28 @@ class _TaskScreenState extends State<TaskScreen> {
   StreamBuilder<List<TaskWithBoard>> _buildTaskList(
       BuildContext context, TwixDB database) {
     return StreamBuilder(
-      stream: watchAllTaskList(database),
-      builder: (context, AsyncSnapshot<List<TaskWithBoard>> snapshot) {
-        final tasks = snapshot.data ?? List();
-        return ListView.builder(
-            itemCount: tasks.length,
-            itemBuilder: (_, index) {
-              final taskItem = tasks[index];
-              return _buildTaskCard(taskItem, database);
-            });
-      },
-    );
+        stream: watchAllTaskList(database),
+        builder: (context, AsyncSnapshot<List<TaskWithBoard>> snapshot) {
+          final tasks = snapshot.data ?? List();
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            return ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (_, index) {
+                final taskItem = tasks[index];
+                return _buildTaskCard(taskItem, database);
+              },
+            );
+          }
+        });
   }
 
   Widget _buildTaskCard(TaskWithBoard taskItem, TwixDB database) {
     final TaskCard taskCard = TaskCard(
       task: taskItem,
     );
+    IconData isCompletedIcon = Icons.check_circle_outline;
     return Builder(
         builder: (context) => Dismissible(
               key: ValueKey(taskCard.hashCode),
@@ -225,6 +230,9 @@ class _TaskScreenState extends State<TaskScreen> {
                       duration: Duration(milliseconds: 600),
                     ),
                   );
+                  setState(() {
+                    isCompletedIcon = Icons.check_circle;
+                  });
                 } else if (direction == DismissDirection.endToStart) {
                   // Logic to delete the task
                   database.taskDao.deleteTask(taskItem.task);

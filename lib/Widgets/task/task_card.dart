@@ -16,8 +16,9 @@ class TaskCard extends StatefulWidget {
 }
 
 class _TaskCardState extends State<TaskCard> {
-  IconData myDayIcon = Icons.star_border;
-
+  IconData isDayIcon = Icons.star_border;
+  IconData isCompletedIcon = Icons.check_circle_outline;
+  TextDecoration isStrikeThrough = TextDecoration.none;
   @override
   Widget build(BuildContext context) {
     final database = Provider.of<TwixDB>(context);
@@ -32,10 +33,10 @@ class _TaskCardState extends State<TaskCard> {
         trailing: GestureDetector(
             onTap: () {
               setState(() {
-                if (myDayIcon == Icons.star_border) {
-                  myDayIcon = Icons.star;
+                if (isDayIcon == Icons.star_border) {
+                  isDayIcon = Icons.star;
                 } else {
-                  myDayIcon = Icons.star_border;
+                  isDayIcon = Icons.star_border;
                 }
               });
             },
@@ -54,5 +55,13 @@ class _TaskCardState extends State<TaskCard> {
         },
       ),
     );
+  }
+  void updater(){
+    if(widget.task.task.isDone){
+      setState(() {
+        isCompletedIcon = Icons.check_circle;
+        isStrikeThrough = TextDecoration.lineThrough;
+      });
+    }
   }
 }

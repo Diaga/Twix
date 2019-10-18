@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:moor_flutter/moor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-
 import 'package:twix/Database/database.dart';
-
 import 'package:twix/Screens/task_screen.dart';
 import 'package:twix/Widgets/task/adder_sheet.dart';
 import 'package:twix/Widgets/task/board_list.dart';
 import 'package:twix/Widgets/task/custom_app_bar.dart';
 import 'package:twix/Widgets/task/custom_bottom_bar.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool isDivider = false;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +74,7 @@ class HomeScreen extends StatelessWidget {
           ),
           Divider(),
           _buildBoardList(context, database),
-          Divider(),
+          Visibility(visible: isDivider, child: Divider()),
           _buildGroupList(context, database)
         ],
       ),
@@ -112,15 +116,19 @@ class HomeScreen extends StatelessWidget {
       stream: database.boardDao.watchAllBoards(),
       builder: (context, AsyncSnapshot<List<BoardTableData>> snapshot) {
         final boards = snapshot.data ?? List();
-        return ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: boards.length,
-          itemBuilder: (_, index) {
-            final boardItem = boards[index];
-            return _buildBoardCard(context, boardItem);
-          },
-        );
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else {
+          return ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: boards.length,
+            itemBuilder: (_, index) {
+              final boardItem = boards[index];
+              return _buildBoardCard(context, boardItem);
+            },
+          );
+        }
       },
     );
   }
@@ -146,13 +154,14 @@ class HomeScreen extends StatelessWidget {
       builder: (context, AsyncSnapshot<List<GroupTableData>> snapshot) {
         final groups = snapshot.data ?? List();
         return ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: groups.length,
-            itemBuilder: (_, index) {
-              final groupItem = groups[index];
-              return _buildGroupCard(context, groupItem);
-            });
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: groups.length,
+          itemBuilder: (_, index) {
+            final groupItem = groups[index];
+            return _buildGroupCard(context, groupItem);
+          },
+        );
       },
     );
   }

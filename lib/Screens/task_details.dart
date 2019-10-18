@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:twix/Database/database.dart';
 import 'package:twix/Database/DAOs/task_dao.dart';
 
+import 'package:twix/Screens/note_editor.dart';
+
 class TaskDetailsScreen extends StatelessWidget {
   final TaskWithBoard task;
 
@@ -19,7 +21,7 @@ class TaskDetailsScreen extends StatelessWidget {
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
-        elevation: 0,
+        elevation: 0,iconTheme: IconThemeData(color: Colors.black),
       ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
@@ -46,7 +48,7 @@ class TaskDetailsScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: ListView(
+      body: Column(
         children: <Widget>[
           Container(
             height: 100,
@@ -90,10 +92,14 @@ class TaskDetailsScreen extends StatelessWidget {
             height: 200,
             width: double.infinity,
             child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text('Add note'),
-              ),
+              child: InkWell(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => NoteEditor()));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('Add note'),
+                  )),
             ),
           ),
         ],
