@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 
 import 'package:twix/Database/database.dart';
 
-import 'package:twix/Widgets/task/task_details.dart';
+import 'package:twix/Widgets/task_details.dart';
 
 class TaskAdderSheet extends StatefulWidget {
   final String boardId;
