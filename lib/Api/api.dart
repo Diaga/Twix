@@ -5,7 +5,7 @@ import 'package:http/http.dart';
 class Api {
   // AUTH
   static const String _registerToken =
-      'Token	ad63d5e0fcee5f235174c439f20f523fe5693628';
+      'Token	949251c663b71f8b27afd37a10af87f3e8ed6a95';
 
   static String _authToken = '';
 
