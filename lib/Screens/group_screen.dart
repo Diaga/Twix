@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:twix/Database/DAOs/group_user_dao.dart';
+
+import 'package:twix/Database/database.dart';
 
 class GroupScreen extends StatefulWidget {
+  final GroupTableData group;
+
+  const GroupScreen({Key key, this.group}) : super(key: key);
+
   @override
   _GroupScreenState createState() => _GroupScreenState();
 }
@@ -8,12 +16,15 @@ class GroupScreen extends StatefulWidget {
 class _GroupScreenState extends State<GroupScreen> {
   @override
   Widget build(BuildContext context) {
+    final database = Provider.of<TwixDB>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: ThemeData.light().scaffoldBackgroundColor,
+        backgroundColor: ThemeData
+            .light()
+            .scaffoldBackgroundColor,
         title: Text(
-          'Group name',
+          widget.group.name,
           style: TextStyle(color: Colors.black),
         ),
         actions: <Widget>[
@@ -28,35 +39,45 @@ class _GroupScreenState extends State<GroupScreen> {
           )
         ],
       ),
-      body: ListView(
-        children: <Widget>[
-          MemberCard(),
-          MemberCard(),
-          MemberCard(),
-          MemberCard(),
-          MemberCard(),
-          MemberCard(),
-          MemberCard(),
-          MemberCard(),
-          MemberCard(),
-          MemberCard(),
-        ],
-      ),
+      body: _buildGroupUserList(database),
     );
+  }
+
+  StreamBuilder<List<GroupWithUser>> _buildGroupUserList(TwixDB database) {
+    return StreamBuilder(
+        stream: database.groupUserDao.watchGroupUsersByGroupId(widget.group.id),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<GroupWithUser>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.active)
+            if (!snapshot.hasError) {
+            return ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (_, index) {
+                return MemberCard(
+                    name: snapshot.data[index].user.name,
+                    email: snapshot.data[index].user.email
+                );
+              },
+            );
+          }
+          return Center(child: CircularProgressIndicator(),);
+        });
   }
 }
 
 class MemberCard extends StatelessWidget {
-  const MemberCard({
-    Key key,
-  }) : super(key: key);
+  final String name;
+  final String email;
+
+  const MemberCard({Key key, @required this.name, @required this.email})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(),
-      title: Text('Member Name'),
-      subtitle: Text('Member email'),
+      title: Text(name),
+      subtitle: Text(email),
     );
   }
 }
@@ -81,10 +102,11 @@ class Search extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-          icon: Icon(Icons.close),
-          onPressed: () {
-            query = "";
-          },)
+        icon: Icon(Icons.close),
+        onPressed: () {
+          query = "";
+        },
+      )
     ];
   }
 
@@ -105,11 +127,11 @@ class Search extends SearchDelegate<String> {
   @override
   Widget buildSuggestions(BuildContext context) {
     final resultList =
-        membersList.where((p) => p.toLowerCase().contains(query)).toList();
+    membersList.where((p) => p.toLowerCase().contains(query)).toList();
     return ListView.builder(
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
-          onTap: (){
+          onTap: () {
             print('Added');
           },
           title: Text(resultList[index]),

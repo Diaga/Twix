@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:twix/Database/database.dart';
+
 import 'package:twix/Screens/task_screen.dart';
+import 'package:twix/Screens/group_screen.dart';
 
 import 'package:twix/Widgets/adder_sheet.dart';
 import 'package:twix/Widgets/board_list.dart';
@@ -107,10 +109,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _insertGroup(String groupName, TwixDB database) async {
     await database.groupDao.insertGroup(GroupTableCompanion(
-      id: Value(Uuid().v4()),
-      name: Value(groupName),
-      adminId: Value((await database.userDao.getLoggedInUser()).id)
-    ));
+        id: Value(Uuid().v4()),
+        name: Value(groupName),
+        adminId: Value((await database.userDao.getLoggedInUser()).id)));
   }
 
   StreamBuilder<List<BoardTableData>> _buildBoardList(
@@ -171,6 +172,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildGroupCard(BuildContext context, GroupTableData groupItem) {
     return BoardsList(
-        iconData: Icons.group, title: groupItem.name, callBack: () {});
+        iconData: Icons.group,
+        title: groupItem.name,
+        callBack: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => GroupScreen(
+                        group: groupItem,
+                      )));
+        });
   }
 }

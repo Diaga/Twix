@@ -7,5 +7,7 @@ part of 'group_user_dao.dart';
 // **************************************************************************
 
 mixin _$GroupUserDaoMixin on DatabaseAccessor<TwixDB> {
+  $UserTableTable get userTable => db.userTable;
+  $GroupTableTable get groupTable => db.groupTable;
   $GroupUserTableTable get groupUserTable => db.groupUserTable;
 }
