@@ -1,14 +1,11 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:moor_flutter/moor_flutter.dart' hide Column;
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
-
 import 'package:twix/Database/database.dart';
 import 'package:twix/Api/api.dart';
 import 'package:twix/Palette/palette.dart';
-
 import 'package:twix/Screens/home_screen.dart';
 
 class Login extends StatefulWidget {

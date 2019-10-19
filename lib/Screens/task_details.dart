@@ -6,10 +6,16 @@ import 'package:twix/Database/DAOs/task_dao.dart';
 
 import 'package:twix/Screens/note_editor.dart';
 
-class TaskDetailsScreen extends StatelessWidget {
+class TaskDetailsScreen extends StatefulWidget {
   final TaskWithBoard task;
 
   TaskDetailsScreen({this.task});
+
+  @override
+  _TaskDetailsScreenState createState() => _TaskDetailsScreenState();
+}
+
+class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +23,7 @@ class TaskDetailsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          task.board.name,
+          widget.task.board.name,
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
@@ -58,8 +64,8 @@ class TaskDetailsScreen extends StatelessWidget {
               child: Center(
                 child: ListTile(
                   leading: Icon(Icons.check_circle_outline),
-                  title: Text(task.task.name),
-                  trailing: database.taskDao.isMyDay(task.task.myDayDate)
+                  title: Text(widget.task.task.name),
+                  trailing: database.taskDao.isMyDay(widget.task.task.myDayDate)
                       ? Icon(Icons.star)
                       : Icon(Icons.star_border),
                 ),
@@ -81,7 +87,7 @@ class TaskDetailsScreen extends StatelessWidget {
                 ),
                 ListTile(
                   leading: Icon(Icons.calendar_today),
-                  title: task.task.dueDate != null ? Text(task.task.dueDate.toString()) : Text('Add due date'),
+                  title: widget.task.task.dueDate != null ? Text(widget.task.task.dueDate.toString()) : Text('Add due date'),
                 ),
               ],
             ),
@@ -98,11 +104,13 @@ class TaskDetailsScreen extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => NoteEditor(task: task)));
+                            builder: (context) => NoteEditor(task: widget.task)));
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(task.task.notes),
+                    child: Text(widget.task.task.notes != null || widget.task.task.notes == ''
+                        ? widget.task.task.notes
+                        : 'Add notes'),
                   )),
             ),
           ),

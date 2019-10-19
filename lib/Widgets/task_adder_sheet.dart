@@ -100,8 +100,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
             ),
             Container(
               height: 51,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
+              child: Row(
                 children: <Widget>[
                   TaskDetails(
                     iconData: Icons.calendar_today,
@@ -115,10 +114,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                     text: 'Remind Me',
                     callBack: selectTime,
                   ),
-                  TaskDetails(
-                    iconData: Icons.note,
-                    text: 'Add notes',
-                  ),
+
                 ],
               ),
             ),

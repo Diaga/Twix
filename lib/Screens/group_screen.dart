@@ -27,6 +27,7 @@ class _GroupScreenState extends State<GroupScreen> {
           widget.group.name,
           style: TextStyle(color: Colors.black),
         ),
+        iconTheme: IconThemeData(color: Colors.black),
         actions: <Widget>[
           IconButton(
             onPressed: () {
@@ -130,14 +131,39 @@ class Search extends SearchDelegate<String> {
     membersList.where((p) => p.toLowerCase().contains(query)).toList();
     return ListView.builder(
       itemBuilder: (BuildContext context, int index) {
-        return ListTile(
-          onTap: () {
-            print('Added');
-          },
-          title: Text(resultList[index]),
-        );
+        return AddMemberList(text: resultList[index],);
       },
       itemCount: resultList.length,
+    );
+  }
+}
+
+class AddMemberList extends StatefulWidget {
+
+
+  final String text;
+
+  AddMemberList({this.text});
+
+  @override
+  _AddMemberListState createState() => _AddMemberListState();
+}
+
+class _AddMemberListState extends State<AddMemberList> {
+  IconData iconData;
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      trailing: Icon(iconData),
+      onTap: () {
+        setState(() {
+          if (iconData == null){
+          iconData = Icons.check;}else{
+            iconData = null;
+          }
+        });
+      },
+      title: Text(widget.text),
     );
   }
 }
