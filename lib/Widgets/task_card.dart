@@ -48,7 +48,7 @@ class _TaskCardState extends State<TaskCard> {
         leading: Icon(Icons.hourglass_empty),
         title: Text(task.name),
         subtitle:
-            Text(isAssignedToMe ? 'Assiged Task' : widget.task.board.name),
+            Text(isAssignedToMe ? 'Assigned Task' : widget.task.board.name),
         dense: true,
         trailing: GestureDetector(
             onTap: () {

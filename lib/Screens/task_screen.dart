@@ -40,7 +40,13 @@ class _TaskScreenState extends State<TaskScreen> {
     isAssignedToMe = widget.action == 'Assigned To Me';
   }
 
+  test(TwixDB database) async {
+    var response = await database.assignedTaskDao
+        .getAllAssignedTasksByUserId(widget.loggedInUser.id);
+  }
+
   Future<BoardTableData> getBoard(TwixDB database) async {
+    test(database);
     return getBoardName
         ? await database.boardDao.getBoardById(widget.boardId)
         : await database.boardDao.getMyTasksBoard();
@@ -248,8 +254,7 @@ class _TaskScreenState extends State<TaskScreen> {
           .watchAllAssignedTasksByUserId(widget.loggedInUser.id),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active ||
-            snapshot.connectionState ==
-                ConnectionState.done) {
+            snapshot.connectionState == ConnectionState.done) {
           return ListView.builder(
             itemCount: snapshot.data == null ? 0 : snapshot.data.length,
             itemBuilder: (_, index) {
@@ -296,7 +301,8 @@ class _TaskScreenState extends State<TaskScreen> {
       AssignedTaskWithUser assignedTaskItem,
       TwixDB database}) {
     final TaskCard taskCard = TaskCard(
-      task: taskItem != null ? taskItem : assignedTaskItem,
+      task: taskItem != null ? taskItem : null,
+      assignedTask: assignedTaskItem != null ? assignedTaskItem : null,
     );
 
     IconData isCompletedIcon = Icons.check_circle_outline;

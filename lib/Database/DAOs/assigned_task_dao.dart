@@ -35,7 +35,7 @@ class AssignedTaskDao extends DatabaseAccessor<TwixDB>
           .map((rows) => rows.map((row) => AssignedTaskWithUser(
               user: row.readTable(userTable),
               task: row.readTable(taskTable),
-              assignedTask: row.readTable(assignedTaskTable))));
+              assignedTask: row.readTable(assignedTaskTable))).toList());
 
   Stream<List<AssignedTaskWithUser>> watchDoneAssignedTasksByUserId(
           String userId) =>
@@ -52,7 +52,7 @@ class AssignedTaskDao extends DatabaseAccessor<TwixDB>
           .map((rows) => rows.map((row) => AssignedTaskWithUser(
               user: row.readTable(userTable),
               task: row.readTable(taskTable),
-              assignedTask: row.readTable(assignedTaskTable))));
+              assignedTask: row.readTable(assignedTaskTable))).toList());
 
   Future<List<AssignedTaskWithUser>> getAllAssignedTasksByUserId(
           String userId) =>
