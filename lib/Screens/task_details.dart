@@ -21,11 +21,15 @@ class TaskDetailsScreen extends StatefulWidget {
 
 class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   bool useFallBack = false;
+  bool shouldDisable = false;
 
   @override
   void initState() {
     super.initState();
     useFallBack = widget.task == null;
+    shouldDisable = useFallBack || useFallBack
+        ? widget.taskFallBack.isDone
+        : widget.task.task.isDone;
   }
 
   @override
@@ -83,8 +87,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                 ),
               ),
             ),
-            body: ListView(
-              children: <Widget>[
+            body: AbsorbPointer(
+              absorbing: shouldDisable,
+              child: ListView(children: <Widget>[
                 Container(
                   child: Card(
                     margin: EdgeInsets.zero,
@@ -161,7 +166,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     ),
                   ),
                 ),
-              ],
+              ]),
             ),
           );
         });
