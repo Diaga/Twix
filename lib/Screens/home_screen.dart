@@ -58,20 +58,22 @@ class _HomeScreenState extends State<HomeScreen> {
       final taskRemindMe = assignedTask['remind_me'];
       final taskBoardId = assignedTask['task']['board']['id'];
       final taskNotes = assignedTask['task']['notes'];
+      final taskExists = (await database.taskDao.getTaskById(taskId)) != null;
 
       if (userId != loggedInUser.id)
         await database.userDao.insertUser(UserTableCompanion(
             id: Value(userId), name: Value(userName), email: Value(userEmail)));
 
-      await database.taskDao.insertTask(TaskTableCompanion(
-          id: Value(taskId),
-          name: Value(taskName),
-          isDone: Value(taskIsDone),
-          dueDate: Value(taskDueDate),
-          remindMe: Value(taskRemindMe),
-          boardId: Value(taskBoardId),
-          notes: Value(taskNotes),
-          createdAt: Value(DateTime.now())));
+      if (!taskExists)
+        await database.taskDao.insertTask(TaskTableCompanion(
+            id: Value(taskId),
+            name: Value(taskName),
+            isDone: Value(taskIsDone),
+            dueDate: Value(taskDueDate),
+            remindMe: Value(taskRemindMe),
+            boardId: Value(taskBoardId),
+            notes: Value(taskNotes),
+            createdAt: Value(DateTime.now())));
 
       await database.assignedTaskDao.insertAssignedTask(
           AssignedTaskTableCompanion(

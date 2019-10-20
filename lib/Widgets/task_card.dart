@@ -67,8 +67,10 @@ class _TaskCardState extends State<TaskCard> {
             : IconButton(
                 icon: Icon(Icons.star_border),
                 onPressed: () {
+                  var today = DateTime.now();
+                  today = DateTime(today.year, today.month, today.day);
                   database.taskDao
-                      .updateTask(task.copyWith(myDayDate: DateTime.now()));
+                      .updateTask(task.copyWith(myDayDate: today));
                   setState(() {});
                 },
               ),

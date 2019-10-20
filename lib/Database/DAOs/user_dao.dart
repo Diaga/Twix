@@ -14,6 +14,9 @@ class UserDao extends DatabaseAccessor<TwixDB> with _$UserDaoMixin {
       (select(userTable)..where((user) => isNotNull(user.password)))
           .getSingle();
 
+  Future<UserTableData> getUserById(String id) =>
+      (select(userTable)..where((user) => user.id.equals(id))).getSingle();
+
   Stream<UserTableData> watchLoggedInUser() =>
       (select(userTable)..where((user) => isNotNull(user.password)))
           .watchSingle();

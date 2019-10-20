@@ -246,17 +246,14 @@ class _TaskScreenState extends State<TaskScreen> {
       stream: database.assignedTaskDao
           .watchAllAssignedTasksByUserId(widget.loggedInUser.id),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.active ||
-            snapshot.connectionState == ConnectionState.done) {
+        final tasks = snapshot.data ?? List();
           return ListView.builder(
             itemCount: snapshot.data == null ? 0 : snapshot.data.length,
             itemBuilder: (_, index) {
               return _buildTaskCard(
-                  assignedTaskItem: snapshot.data[index], database: database);
+                  assignedTaskItem: tasks[index], database: database);
             },
           );
-        }
-        return Center(child: CircularProgressIndicator());
       },
     );
   }
@@ -266,8 +263,6 @@ class _TaskScreenState extends State<TaskScreen> {
     return StreamBuilder(
         stream: watchAllTaskList(database),
         builder: (context, AsyncSnapshot<List<TaskWithBoard>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.active) if (!snapshot
-              .hasError) {
             tasks = snapshot.data ?? List();
             return ListView.builder(
               itemCount: tasks.length,
@@ -276,16 +271,6 @@ class _TaskScreenState extends State<TaskScreen> {
                 return _buildTaskCard(taskItem: taskItem, database: database);
               },
             );
-          }
-          return tasks != null
-              ? ListView.builder(
-                  itemCount: tasks.length,
-                  itemBuilder: (_, index) {
-                    final taskItem = tasks[index];
-                    return _buildTaskCard(
-                        taskItem: taskItem, database: database);
-                  })
-              : Center(child: CircularProgressIndicator());
         });
   }
 
