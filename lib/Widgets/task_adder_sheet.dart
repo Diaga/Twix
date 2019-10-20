@@ -11,9 +11,13 @@ import 'package:twix/Widgets/task_details.dart';
 class TaskAdderSheet extends StatefulWidget {
   final String boardId;
   final String action;
+  final Function showNotification;
 
   const TaskAdderSheet(
-      {Key key, @required this.boardId, this.action = 'normal'})
+      {Key key,
+      @required this.boardId,
+      this.action = 'normal',
+      this.showNotification})
       : super(key: key);
 
   @override
@@ -96,6 +100,13 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                                   remindMe: Value(remindMeDateTime),
                                   createdAt: Value(today)));
                           Navigator.pop(context);
+                          if (remindMeDateTime != null) {
+                            widget.showNotification(
+                                title: 'Twix reminder!',
+                                task:
+                                    'You have to complete ${textEditingController.text}!',
+                                time: remindMeDateTime);
+                          }
                         }
                       },
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -6,6 +7,7 @@ import 'package:twix/Database/database.dart';
 import 'package:twix/Database/DAOs/task_dao.dart';
 import 'package:twix/Database/DAOs/assigned_task_dao.dart';
 
+import 'package:twix/Screens/home_screen.dart';
 import 'package:twix/Widgets/onswipe_container.dart';
 import 'package:twix/Widgets/task_adder_sheet.dart';
 import 'package:twix/Widgets/task_card.dart';
@@ -32,12 +34,45 @@ class _TaskScreenState extends State<TaskScreen> {
   List allTasks;
   List<TaskWithBoard> tasks;
 
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
   @override
   void initState() {
     super.initState();
     getBoardName = widget.action == 'normal';
     isMyDay = widget.action == 'My Day';
     isAssignedToMe = widget.action == 'Assigned To Me';
+
+    var initializationSettingsAndroid =
+    new AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettingsIOS = new IOSInitializationSettings();
+    var initializationSettings = new InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: onSelectNotification);
+  }
+
+  Future showNotification({String title, String task, DateTime time}) async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'channel ID', 'channel Name', 'channel Description');
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    NotificationDetails platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.schedule(
+      0,
+      title,
+      task,
+      time,
+      platformChannelSpecifics,
+    );
+  }
+
+  Future onSelectNotification(String payload) async {
+    await Navigator.push(
+      context,
+      new MaterialPageRoute(builder: (context) => HomeScreen()),
+    );
   }
 
   Future<BoardTableData> getBoard(TwixDB database) async {
@@ -49,9 +84,7 @@ class _TaskScreenState extends State<TaskScreen> {
   Stream<List<TaskTableData>> watchAllTaskListNoJoin(TwixDB database) {
     return getBoardName
         ? database.taskDao.watchAllTasksByBoardIdNoJoin(widget.boardId)
-        : isMyDay
-            ? database.taskDao.watchAllMyDayTasks()
-            : null;
+        : isMyDay ? database.taskDao.watchAllMyDayTasks() : null;
   }
 
   Stream<List<TaskTableData>> watchDoneTaskList(TwixDB database) {
@@ -64,8 +97,8 @@ class _TaskScreenState extends State<TaskScreen> {
     return getBoardName
         ? database.taskDao.watchAllTasksByBoardId(widget.boardId)
         : isMyDay
-            ? database.taskDao.watchAllMyDayTasks()
-            : database.taskDao.watchAllMyDayTasks();
+        ? database.taskDao.watchAllMyDayTasks()
+        : database.taskDao.watchAllMyDayTasks();
   }
 
   @override
@@ -81,7 +114,9 @@ class _TaskScreenState extends State<TaskScreen> {
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: ThemeData.light().scaffoldBackgroundColor,
+        backgroundColor: ThemeData
+            .light()
+            .scaffoldBackgroundColor,
         elevation: 0,
         actions: <Widget>[
           IconButton(
@@ -97,23 +132,28 @@ class _TaskScreenState extends State<TaskScreen> {
       floatingActionButton: isAssignedToMe
           ? null
           : FloatingActionButton(
-              onPressed: () async {
-                boardId = (await getBoard(database)).id;
-                showModalBottomSheet(
-                    context: (context),
-                    isScrollControlled: true,
-                    builder: (context) => TaskAdderSheet(
-                          boardId: boardId,
-                          action: widget.action,
-                        ));
-              },
-              backgroundColor: Color(0xFF3C6AFF),
-              child: Icon(Icons.add),
-            ),
+        onPressed: () async {
+          boardId = (await getBoard(database)).id;
+          showModalBottomSheet(
+              context: (context),
+              isScrollControlled: true,
+              builder: (context) =>
+                  TaskAdderSheet(
+                      boardId: boardId,
+                      action: widget.action,
+                      showNotification: showNotification
+                  ));
+        },
+        backgroundColor: Color(0xFF3C6AFF),
+        child: Icon(Icons.add),
+      ),
       body: Column(
         children: <Widget>[
           Container(
-            height: MediaQuery.of(context).size.height * 0.20,
+            height: MediaQuery
+                .of(context)
+                .size
+                .height * 0.20,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -155,36 +195,36 @@ class _TaskScreenState extends State<TaskScreen> {
                       children: <Widget>[
                         isAssignedToMe
                             ? StreamBuilder(
-                                stream: database.assignedTaskDao
-                                    .watchDoneAssignedTasksByUserId(
-                                        widget.loggedInUser.id),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                          ConnectionState.done ||
-                                      snapshot.connectionState ==
-                                          ConnectionState.active) {
-                                    return _buildCountDoneTasks(
-                                        snapshot.data == null
-                                            ? '0'
-                                            : snapshot.data.length.toString());
-                                  }
-                                  return _buildCountAllTasks('0');
-                                },
-                              )
+                          stream: database.assignedTaskDao
+                              .watchDoneAssignedTasksByUserId(
+                              widget.loggedInUser.id),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done ||
+                                snapshot.connectionState ==
+                                    ConnectionState.active) {
+                              return _buildCountDoneTasks(
+                                  snapshot.data == null
+                                      ? '0'
+                                      : snapshot.data.length.toString());
+                            }
+                            return _buildCountAllTasks('0');
+                          },
+                        )
                             : StreamBuilder(
-                                stream: watchDoneTaskList(database),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState
-                                          .active) if (!snapshot.hasError) {
-                                    doneTasks = snapshot.data ?? List();
-                                    return _buildCountDoneTasks(
-                                        doneTasks?.length.toString());
-                                  }
-                                  return _buildCountDoneTasks(doneTasks != null
-                                      ? doneTasks.length.toString()
-                                      : '');
-                                }),
+                            stream: watchDoneTaskList(database),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState
+                                      .active) if (!snapshot.hasError) {
+                                doneTasks = snapshot.data ?? List();
+                                return _buildCountDoneTasks(
+                                    doneTasks?.length.toString());
+                              }
+                              return _buildCountDoneTasks(doneTasks != null
+                                  ? doneTasks.length.toString()
+                                  : '');
+                            }),
                         Align(
                           alignment: Alignment.center,
                           child: Text(
@@ -194,36 +234,36 @@ class _TaskScreenState extends State<TaskScreen> {
                         ),
                         isAssignedToMe
                             ? StreamBuilder(
-                                stream: database.assignedTaskDao
-                                    .watchAllAssignedTasksByUserId(
-                                        widget.loggedInUser.id),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                          ConnectionState.done ||
-                                      snapshot.connectionState ==
-                                          ConnectionState.active) {
-                                    return _buildCountAllTasks(
-                                        snapshot.data == null
-                                            ? '0'
-                                            : snapshot.data.length.toString());
-                                  }
-                                  return _buildCountAllTasks('0');
-                                },
-                              )
+                          stream: database.assignedTaskDao
+                              .watchAllAssignedTasksByUserId(
+                              widget.loggedInUser.id),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done ||
+                                snapshot.connectionState ==
+                                    ConnectionState.active) {
+                              return _buildCountAllTasks(
+                                  snapshot.data == null
+                                      ? '0'
+                                      : snapshot.data.length.toString());
+                            }
+                            return _buildCountAllTasks('0');
+                          },
+                        )
                             : StreamBuilder(
-                                stream: watchAllTaskList(database),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState
-                                          .active) if (!snapshot.hasError) {
-                                    allTasks = snapshot.data ?? List();
-                                    return _buildCountAllTasks(
-                                        allTasks.length.toString());
-                                  }
-                                  return _buildCountAllTasks(allTasks != null
-                                      ? allTasks.length.toString()
-                                      : '');
-                                }),
+                            stream: watchAllTaskList(database),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState
+                                      .active) if (!snapshot.hasError) {
+                                allTasks = snapshot.data ?? List();
+                                return _buildCountAllTasks(
+                                    allTasks.length.toString());
+                              }
+                              return _buildCountAllTasks(allTasks != null
+                                  ? allTasks.length.toString()
+                                  : '');
+                            }),
                       ],
                     ),
                   ),
@@ -232,7 +272,10 @@ class _TaskScreenState extends State<TaskScreen> {
             ),
           ),
           Container(
-              height: MediaQuery.of(context).size.height * 0.65,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * 0.65,
               child: isAssignedToMe
                   ? _buildAssignedTaskList(context, database)
                   : _buildTaskList(context, database)),
@@ -248,45 +291,49 @@ class _TaskScreenState extends State<TaskScreen> {
           .watchAllAssignedTasksByUserId(widget.loggedInUser.id),
       builder: (context, snapshot) {
         final tasks = snapshot.data ?? List();
-          return ListView.builder(
-            itemCount: snapshot.data == null ? 0 : snapshot.data.length,
-            itemBuilder: (_, index) {
-              return _buildTaskCard(
-                  assignedTaskItem: tasks[index], database: database);
-            },
-          );
+        return ListView.builder(
+          itemCount: snapshot.data == null ? 0 : snapshot.data.length,
+          itemBuilder: (_, index) {
+            return _buildTaskCard(
+                assignedTaskItem: tasks[index], database: database);
+          },
+        );
       },
     );
   }
 
-  StreamBuilder<List<TaskWithBoard>> _buildTaskList(
-      BuildContext context, TwixDB database) {
+  StreamBuilder<List<TaskWithBoard>> _buildTaskList(BuildContext context,
+      TwixDB database) {
     return StreamBuilder(
         stream: watchAllTaskList(database),
         builder: (context, AsyncSnapshot<List<TaskWithBoard>> snapshot) {
-            tasks = snapshot.data ?? List();
-            return ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (_, index) {
-                final taskItem = tasks[index];
-                return _buildTaskCard(taskItem: taskItem, database: database);
-              },
-            );
+          tasks = snapshot.data ?? List();
+          return ListView.builder(
+            itemCount: tasks.length,
+            itemBuilder: (_, index) {
+              final taskItem = tasks[index];
+              return _buildTaskCard(taskItem: taskItem, database: database);
+            },
+          );
         });
   }
 
-  Widget _buildTaskCard(
-      {TaskWithBoard taskItem,
-      AssignedTaskWithUser assignedTaskItem,
-      TwixDB database}) {
+  Widget _buildTaskCard({TaskWithBoard taskItem,
+    AssignedTaskWithUser assignedTaskItem,
+    TwixDB database}) {
     final TaskCard taskCard = TaskCard(
       task: taskItem != null ? taskItem : null,
       assignedTask: assignedTaskItem != null ? assignedTaskItem : null,
     );
-
+    bool isDone =
+    taskItem == null ? assignedTaskItem.task.isDone : taskItem.task.isDone;
+    DismissDirection dismissDirection =
+    isDone ? DismissDirection.endToStart : DismissDirection.horizontal;
     return Builder(
-        builder: (context) => Dismissible(
+        builder: (context) =>
+            Dismissible(
               key: ValueKey(taskCard.hashCode),
+              direction: dismissDirection,
               background: OnSwipeContainer(
                 color: Colors.blue,
                 iconData: Icons.check,

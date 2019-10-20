@@ -194,6 +194,8 @@ class _HomeScreenState extends State<HomeScreen> {
         stream: database.boardDao.watchAllBoards(),
         builder: (context, AsyncSnapshot<List<BoardTableData>> snapshot) {
           boards = snapshot.data ?? List();
+          if (boards.length > 0) HoldData.isDividerA = true;
+          else HoldData.isDividerA = false;
           return ListView.builder(
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
@@ -226,6 +228,8 @@ class _HomeScreenState extends State<HomeScreen> {
       stream: database.groupDao.watchAllGroups(),
       builder: (context, AsyncSnapshot<List<GroupTableData>> snapshot) {
         groups = snapshot.data ?? List();
+        if (groups.length > 0) HoldData.isDividerG = true;
+        else HoldData.isDividerG = false;
         return ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -252,4 +256,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       )));
         });
   }
+}
+
+class HoldData {
+  static bool isDividerA = false;
+  static bool isDividerG = false;
 }

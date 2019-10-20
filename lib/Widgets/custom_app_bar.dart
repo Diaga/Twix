@@ -20,8 +20,11 @@ class CustomAppBar extends PreferredSize {
         children: <Widget>[
           Expanded(
               child: Padding(
+            child: CircleAvatar(
+              backgroundColor: color,
+              backgroundImage: AssetImage('images/splash_image.png'),
+            ),
             padding: const EdgeInsets.all(5.0),
-            child: CircleAvatar(),
           )),
           Expanded(
             flex: 5,
