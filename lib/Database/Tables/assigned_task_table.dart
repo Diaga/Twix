@@ -9,8 +9,7 @@ class AssignedTaskTable extends Table {
   // REQUIRED
   TextColumn get taskId => text()();
 
-  // REQUIRED
-  TextColumn get groupId => text()();
+  TextColumn get groupId => text().nullable()();
 
   // REQUIRED
   TextColumn get userId => text()();

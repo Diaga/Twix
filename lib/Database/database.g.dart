@@ -513,7 +513,7 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
       this.myDayDate,
       @required this.isDone,
       @required this.createdAt,
-      @required this.boardId,
+      this.boardId,
       this.assignedTo,
       @required this.isSync});
   factory TaskTableData.fromData(
@@ -727,13 +727,12 @@ class TaskTableCompanion extends UpdateCompanion<TaskTableData> {
     this.myDayDate = const Value.absent(),
     this.isDone = const Value.absent(),
     @required DateTime createdAt,
-    @required String boardId,
+    this.boardId = const Value.absent(),
     this.assignedTo = const Value.absent(),
     this.isSync = const Value.absent(),
   })  : id = Value(id),
         name = Value(name),
-        createdAt = Value(createdAt),
-        boardId = Value(boardId);
+        createdAt = Value(createdAt);
   TaskTableCompanion copyWith(
       {Value<String> id,
       Value<String> name,
@@ -865,8 +864,8 @@ class $TaskTableTable extends TaskTable
   @override
   GeneratedTextColumn get boardId => _boardId ??= _constructBoardId();
   GeneratedTextColumn _constructBoardId() {
-    return GeneratedTextColumn('board_id', $tableName, false,
-        $customConstraints: 'NOT NULL REFERENCES board_table(id)');
+    return GeneratedTextColumn('board_id', $tableName, true,
+        $customConstraints: 'NULLABLE REFERENCES board_table(id)');
   }
 
   final VerificationMeta _assignedToMeta = const VerificationMeta('assignedTo');
@@ -884,7 +883,7 @@ class $TaskTableTable extends TaskTable
   GeneratedBoolColumn get isSync => _isSync ??= _constructIsSync();
   GeneratedBoolColumn _constructIsSync() {
     return GeneratedBoolColumn('is_sync', $tableName, false,
-        defaultValue: Constant(false));
+        defaultValue: const Constant(false));
   }
 
   @override
@@ -1502,7 +1501,7 @@ class AssignedTaskTableData extends DataClass
   AssignedTaskTableData(
       {@required this.id,
       @required this.taskId,
-      @required this.groupId,
+      this.groupId,
       @required this.userId,
       @required this.isDone,
       @required this.isSync});
@@ -1636,13 +1635,12 @@ class AssignedTaskTableCompanion
   AssignedTaskTableCompanion.insert({
     @required String id,
     @required String taskId,
-    @required String groupId,
+    this.groupId = const Value.absent(),
     @required String userId,
     @required bool isDone,
     this.isSync = const Value.absent(),
   })  : id = Value(id),
         taskId = Value(taskId),
-        groupId = Value(groupId),
         userId = Value(userId),
         isDone = Value(isDone);
   AssignedTaskTableCompanion copyWith(
@@ -1700,7 +1698,7 @@ class $AssignedTaskTableTable extends AssignedTaskTable
     return GeneratedTextColumn(
       'group_id',
       $tableName,
-      false,
+      true,
     );
   }
 

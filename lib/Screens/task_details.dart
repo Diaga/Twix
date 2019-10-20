@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:moor_flutter/moor_flutter.dart' hide Column;
 
+import 'package:twix/Api/api.dart';
 import 'package:twix/Database/database.dart';
 import 'package:twix/Database/DAOs/task_dao.dart';
 
 import 'package:twix/Screens/note_editor.dart';
+import 'package:uuid/uuid.dart';
 
 class TaskDetailsScreen extends StatefulWidget {
   final TaskWithBoard task;
@@ -74,48 +77,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           Card(
             margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
             child: ListTile(
-              onTap: (){
+              onTap: () {
                 showModalBottomSheet(
-                    context: context, builder: (context) => Container(
-                  child: ListView(
-                    children: <Widget>[
-                      ListTile(
-                        leading: Icon(Icons.group),
-                        title: Text('Group name'),),
-                      ListTile(
-                        leading: Icon(Icons.group),
-                        title: Text('Group name'),),
-                      ListTile(
-                        leading: Icon(Icons.group),
-                        title: Text('Group name'),),
-                      ListTile(
-                        leading: Icon(Icons.group),
-                        title: Text('Group name'),),
-                      ListTile(
-                        leading: Icon(Icons.group),
-                        title: Text('Group name'),),
-                      ListTile(
-                        leading: Icon(Icons.group),
-                        title: Text('Group name'),),
-                      ListTile(
-                        leading: Icon(Icons.group),
-                        title: Text('Group name'),),
-                      ListTile(
-                        leading: Icon(Icons.group),
-                        title: Text('Group name'),),
-                      ListTile(
-                        leading: Icon(Icons.group),
-                        title: Text('Group name'),),
-                      ListTile(
-                        leading: Icon(Icons.group),
-                        title: Text('Group name'),),
-
-                    ],
-                  ),
-                ));
+                    context: context,
+                    builder: (context) => Container(
+                          child: _buildGroupList(database),
+                        ));
               },
               leading: Icon(Icons.assignment_ind),
-              title: Text('Assigned to none'),
+              title: Text('Assign task'),
             ),
           ),
           Card(
@@ -164,5 +134,85 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         ],
       ),
     );
+  }
+
+  StreamBuilder _buildGroupList(TwixDB database) {
+    return StreamBuilder(
+      stream: database.groupDao.watchAllGroups(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.done ||
+            snapshot.connectionState == ConnectionState.active) {
+          return ListView.builder(
+            itemCount: snapshot.data.length,
+            itemBuilder: (_, index) {
+              return GroupListTile(
+                  group: snapshot.data[index], task: widget.task);
+            },
+          );
+        }
+        return CircularProgressIndicator();
+      },
+    );
+  }
+}
+
+class GroupListTile extends StatefulWidget {
+  final GroupTableData group;
+  final TaskWithBoard task;
+
+  const GroupListTile({Key key, this.group, this.task}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => GroupListTileState();
+}
+
+class GroupListTileState extends State<GroupListTile> {
+  @override
+  Widget build(BuildContext context) {
+    final database = Provider.of<TwixDB>(context);
+    return FutureBuilder(
+        future: database.taskDao.getTaskById(widget.task.task.id),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.done ||
+              snapshot.connectionState ==
+                  ConnectionState.active) if (!snapshot.hasError) {
+            if (snapshot.data.assignedTo == null) {
+              return ListTile(
+                  leading: Icon(Icons.group),
+                  title: Text(widget.group.name),
+                  onTap: () async {
+                    var response = await Api.createTask(
+                        id: widget.task.task.id,
+                        name: widget.task.task.name,
+                        isDone: widget.task.task.isDone,
+                        dueDate: widget.task.task.dueDate,
+                        remindMe: widget.task.task.remindMe,
+                        boardId: widget.task.board.id,
+                        isAssigned: true,
+                        groupId: widget.group.id);
+                    print(response.body);
+                    database.taskDao.updateTask(
+                        widget.task.task.copyWith(assignedTo: widget.group.id));
+                    setState(() {});
+                  });
+            }
+            return ListTile(
+              leading: Icon(Icons.group),
+              title: Text(widget.group.name),
+              trailing: Icon(Icons.check),
+              onTap: () async {
+                Api.deleteTask(widget.task.task.id);
+                database.taskDao.updateTask(widget.task.task
+                    .createCompanion(false)
+                    .copyWith(assignedTo: Value(null)));
+                setState(() {});
+              },
+            );
+          }
+          return ListTile(
+            leading: Icon(Icons.group),
+            title: Text(widget.group.name),
+          );
+        });
   }
 }

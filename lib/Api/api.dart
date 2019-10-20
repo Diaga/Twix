@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
@@ -6,6 +7,7 @@ class Api {
   // AUTH
   static const String _registerToken =
       'Token	949251c663b71f8b27afd37a10af87f3e8ed6a95';
+  static const String _contentType = 'application/json';
 
   static String _authToken = '';
 
@@ -30,8 +32,15 @@ class Api {
 
   static String _groupRemove(String id) => '${_groupDetail(id)}remove/';
 
+  static const String _boardView = '${_link}twix/board/';
+
+  static String _boardDetail(String id) => '$_boardView$id/';
+
   static const String _taskView = '${_link}twix/task/';
-  static const String _assignedTaskView = '${_link}twix/assigned/tasks/';
+
+  static String _taskDetail(String id) => '$_taskView$id/';
+
+  static const String _assignedTaskView = '${_link}twix/tasks/assigned/';
 
   static String _assignedTaskDetail(String id) => '$_assignedTaskView$id';
 
@@ -45,8 +54,12 @@ class Api {
   static Future<Response> createUser(
       String id, String name, String email, String password) {
     return post(_userView,
-        body: {'id': id, 'name': name, 'email': email, 'password': password},
-        headers: {HttpHeaders.authorizationHeader: _registerToken});
+        body: jsonEncode(
+            {'id': id, 'name': name, 'email': email, 'password': password}),
+        headers: {
+          HttpHeaders.authorizationHeader: _registerToken,
+          HttpHeaders.contentTypeHeader: 'application/json'
+        });
   }
 
   static Future<Response> getToken(String email, String password) {
@@ -54,12 +67,31 @@ class Api {
   }
 
   static Future<Response> getAllUsers({String email = ''}) {
-    print(_authToken);
     Uri uri = Uri.https(_authority, 'api/users', {'email': email});
-    return get(uri, headers: {HttpHeaders.authorizationHeader: _authToken});
+    return get(uri, headers: {
+      HttpHeaders.authorizationHeader: _authToken,
+      HttpHeaders.contentTypeHeader: 'application/json'
+    });
   }
 
   // Twix App
+
+  static Future<Response> createBoard({
+      String id, String name, String userId, bool isPersonal}) {
+    return post(_boardView, body: jsonEncode({
+      'id': id,
+      'name': name,
+      'user': userId,
+      'is_personal': isPersonal
+    }), headers: {
+      HttpHeaders.authorizationHeader: _authToken,
+      HttpHeaders.contentTypeHeader: 'application/json'
+    });
+  }
+
+  static Future<Response> deleteBoard(String id) {
+    return delete(_boardDetail(id));
+  }
 
   static Future<Response> createTask(
       {String id,
@@ -70,47 +102,64 @@ class Api {
       String boardId,
       bool isAssigned,
       String groupId}) {
-    return post(_taskView, body: {
-      'id': id,
-      'name': name,
-      'is_done': isDone,
-      'due_date': dueDate,
-      'remind_me': remindMe,
-      'board_id': boardId,
-      'is_assigned': isAssigned,
-      'group_id': groupId
-    }, headers: {
-      HttpHeaders.authorizationHeader: _authToken
-    });
+    return post(_taskView,
+        body: jsonEncode({
+          'id': id,
+          'name': name,
+          'is_done': isDone,
+          'due_date': dueDate,
+          'remind_me': remindMe,
+          'board_id': boardId,
+          'is_assigned': isAssigned,
+          'group_id': groupId
+        }),
+        headers: {
+          HttpHeaders.authorizationHeader: _authToken,
+          HttpHeaders.contentTypeHeader: 'application/json'
+        });
+  }
+
+  static Future<Response> deleteTask(String id) {
+    return delete(_taskDetail(id));
   }
 
   static Future<Response> viewAssignedTask() {
-    return get(_assignedTaskView,
-        headers: {HttpHeaders.authorizationHeader: _authToken});
+    return get(_assignedTaskView, headers: {
+      HttpHeaders.authorizationHeader: _authToken,
+      HttpHeaders.contentTypeHeader: 'application/json'
+    });
   }
 
   static Future<Response> updateAssignedTask(String id, bool isDone) {
     return patch(_assignedTaskDetail(id),
-        body: {'is_done': isDone},
-        headers: {HttpHeaders.authorizationHeader: _authToken});
+        body: jsonEncode({'is_done': isDone}),
+        headers: {
+          HttpHeaders.authorizationHeader: _authToken,
+          HttpHeaders.contentTypeHeader: 'application/json'
+        });
   }
 
   static Future<Response> createGroup(String id, String name, String adminId) {
     return post(_groupView,
-        body: {'id': id, 'name': name, 'admin_id': adminId},
-        headers: {HttpHeaders.authorizationHeader: _authToken});
+        body: jsonEncode({'id': id, 'name': name, 'admin_id': adminId}),
+        headers: {
+          HttpHeaders.authorizationHeader: _authToken,
+          HttpHeaders.contentTypeHeader: 'application/json'
+        });
   }
 
   static Future<Response> addToGroup(String id, String user) {
-    return post(_groupAdd(id),
-        body: {'user': user},
-        headers: {HttpHeaders.authorizationHeader: _authToken});
+    return post(_groupAdd(id), body: jsonEncode({'user': user}), headers: {
+      HttpHeaders.authorizationHeader: _authToken,
+      HttpHeaders.contentTypeHeader: 'application/json'
+    });
   }
 
   static Future<Response> removeFromGroup(String id, String user) {
-    return post(_groupRemove(id),
-        body: {'user': user},
-        headers: {HttpHeaders.authorizationHeader: _authToken});
+    return post(_groupRemove(id), body: jsonEncode({'user': user}), headers: {
+      HttpHeaders.authorizationHeader: _authToken,
+      HttpHeaders.contentTypeHeader: 'application/json'
+    });
   }
 }
 

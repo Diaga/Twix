@@ -18,8 +18,12 @@ class UserDao extends DatabaseAccessor<TwixDB> with _$UserDaoMixin {
       (select(userTable)..where((user) => isNotNull(user.password)))
           .watchSingle();
 
+  Stream<UserTableData> watchUserByEmail(String email) =>
+      (select(userTable)..where((user) => user.email.equals(email)))
+          .watchSingle();
+
   Future<int> insertUser(Insertable<UserTableData> user) =>
-      into(userTable).insert(user);
+      into(userTable).insert(user, orReplace: true);
 
   Future updateUser(Insertable<UserTableData> user) =>
       update(userTable).replace(user);

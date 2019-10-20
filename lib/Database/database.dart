@@ -37,8 +37,9 @@ class TwixDB extends _$TwixDB {
       onUpgrade: (migrator, to, from) async {},
       beforeOpen: (details) async {
         if (details.wasCreated) {
+          final id = Uuid().v4();
           await into(boardTable).insert(BoardTableCompanion(
-              id: Value(Uuid().v4()),
+              id: Value(id),
               name: Value('My Tasks'),
               isMyTasks: Value(true),
               createdAt: Value(DateTime.now())));

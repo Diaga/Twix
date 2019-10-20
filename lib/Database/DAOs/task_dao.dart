@@ -12,13 +12,16 @@ class TaskDao extends DatabaseAccessor<TwixDB> with _$TaskDaoMixin {
   TaskDao(TwixDB db) : super(db);
 
   Future<int> insertTask(Insertable<TaskTableData> task) =>
-      into(taskTable).insert(task);
+      into(taskTable).insert(task, orReplace: true);
 
   Future updateTask(Insertable<TaskTableData> task) =>
       update(taskTable).replace(task);
 
   Future deleteTask(Insertable<TaskTableData> task) =>
       delete(taskTable).delete(task);
+
+  Future<TaskTableData> getTaskById(String id) =>
+      (select(taskTable)..where((row) => row.id.equals(id))).getSingle();
 
   Stream<List<TaskWithBoard>> watchAllTasksByBoardId(String boardId) =>
       (select(taskTable)..where((row) => row.boardId.equals(boardId)))

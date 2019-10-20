@@ -23,7 +23,8 @@ class CustomAppBar extends PreferredSize {
               child: Padding(
             padding: const EdgeInsets.all(5.0),
             child: CircleAvatar(),
-          )),
+          )
+          ),
           Expanded(
             flex: 5,
             child: Padding(
@@ -64,6 +65,7 @@ class CustomAppBar extends PreferredSize {
   Widget _buildUserNameAndEmail(String name, String email) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text(
           name,

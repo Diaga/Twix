@@ -23,11 +23,11 @@ class TaskTable extends Table {
 
   // REQUIRED
   TextColumn get boardId =>
-      text().customConstraint('NOT NULL REFERENCES board_table(id)')();
+      text().nullable().customConstraint('NULLABLE REFERENCES board_table(id)')();
 
   TextColumn get assignedTo => text()
       .nullable()
       .customConstraint('NULLABLE REFERENCES group_table(id)')();
 
-  BoolColumn get isSync => boolean().withDefault(Constant(false))();
+  BoolColumn get isSync => boolean().withDefault(const Constant(false))();
 }
