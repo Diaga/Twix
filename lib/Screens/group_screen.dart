@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:twix/Database/DAOs/group_user_dao.dart';
 
 import 'package:twix/Database/database.dart';
+import 'package:twix/Api/api.dart';
+import 'package:http/http.dart';
 
 class GroupScreen extends StatefulWidget {
   final GroupTableData group;
@@ -20,9 +24,7 @@ class _GroupScreenState extends State<GroupScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: ThemeData
-            .light()
-            .scaffoldBackgroundColor,
+        backgroundColor: ThemeData.light().scaffoldBackgroundColor,
         title: Text(
           widget.group.name,
           style: TextStyle(color: Colors.black),
@@ -49,19 +51,20 @@ class _GroupScreenState extends State<GroupScreen> {
         stream: database.groupUserDao.watchGroupUsersByGroupId(widget.group.id),
         builder: (BuildContext context,
             AsyncSnapshot<List<GroupWithUser>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.active)
-            if (!snapshot.hasError) {
+          if (snapshot.connectionState == ConnectionState.active) if (!snapshot
+              .hasError) {
             return ListView.builder(
               itemCount: snapshot.data.length,
               itemBuilder: (_, index) {
                 return MemberCard(
                     name: snapshot.data[index].user.name,
-                    email: snapshot.data[index].user.email
-                );
+                    email: snapshot.data[index].user.email);
               },
             );
           }
-          return Center(child: CircularProgressIndicator(),);
+          return Center(
+            child: CircularProgressIndicator(),
+          );
         });
   }
 }
@@ -84,20 +87,6 @@ class MemberCard extends StatelessWidget {
 }
 
 class Search extends SearchDelegate<String> {
-  // This List is to just test the search functionality
-  final membersList = [
-    ("Indian rupee"),
-    ("United States dollar"),
-    ("Australian dollar"),
-    ("Euro"),
-    ("British pound"),
-    ("Yemeni rial"),
-    ("Japanese yen"),
-    ("Hong Kong dollar"),
-    ("Hong Kong dollar"),
-    ("British pound"),
-    ("Yemeni rial")
-  ];
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -127,20 +116,27 @@ class Search extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final resultList =
-    membersList.where((p) => p.toLowerCase().contains(query)).toList();
-    return ListView.builder(
-      itemBuilder: (BuildContext context, int index) {
-        return AddMemberList(text: resultList[index],);
-      },
-      itemCount: resultList.length,
-    );
+    return FutureBuilder(
+        future: Api.getAllUsers(email: query),
+        builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
+          if (snapshot.connectionState == ConnectionState.active ||
+              snapshot.connectionState == ConnectionState.done) {
+            var data = jsonDecode(snapshot.data.body);
+            return ListView.builder(
+              itemBuilder: (BuildContext context, int index) {
+                return AddMemberList(
+                  text: data[index]['email'],
+                );
+              },
+              itemCount: data.length,
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        });
   }
 }
 
 class AddMemberList extends StatefulWidget {
-
-
   final String text;
 
   AddMemberList({this.text});
@@ -151,14 +147,16 @@ class AddMemberList extends StatefulWidget {
 
 class _AddMemberListState extends State<AddMemberList> {
   IconData iconData;
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
       trailing: Icon(iconData),
       onTap: () {
         setState(() {
-          if (iconData == null){
-          iconData = Icons.check;}else{
+          if (iconData == null) {
+            iconData = Icons.check;
+          } else {
             iconData = null;
           }
         });

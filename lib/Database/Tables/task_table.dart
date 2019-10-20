@@ -28,4 +28,6 @@ class TaskTable extends Table {
   TextColumn get assignedTo => text()
       .nullable()
       .customConstraint('NULLABLE REFERENCES group_table(id)')();
+
+  BoolColumn get isSync => boolean().withDefault(Constant(false))();
 }

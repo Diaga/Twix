@@ -256,18 +256,25 @@ class GroupTableData extends DataClass implements Insertable<GroupTableData> {
   final String id;
   final String name;
   final String adminId;
+  final bool isSync;
   GroupTableData(
-      {@required this.id, @required this.name, @required this.adminId});
+      {@required this.id,
+      @required this.name,
+      @required this.adminId,
+      @required this.isSync});
   factory GroupTableData.fromData(
       Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final stringType = db.typeSystem.forDartType<String>();
+    final boolType = db.typeSystem.forDartType<bool>();
     return GroupTableData(
       id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       adminId: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}admin_id']),
+      isSync:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}is_sync']),
     );
   }
   factory GroupTableData.fromJson(Map<String, dynamic> json,
@@ -276,6 +283,7 @@ class GroupTableData extends DataClass implements Insertable<GroupTableData> {
       id: serializer.fromJson<String>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       adminId: serializer.fromJson<String>(json['adminId']),
+      isSync: serializer.fromJson<bool>(json['isSync']),
     );
   }
   @override
@@ -285,6 +293,7 @@ class GroupTableData extends DataClass implements Insertable<GroupTableData> {
       'id': serializer.toJson<String>(id),
       'name': serializer.toJson<String>(name),
       'adminId': serializer.toJson<String>(adminId),
+      'isSync': serializer.toJson<bool>(isSync),
     };
   }
 
@@ -296,59 +305,72 @@ class GroupTableData extends DataClass implements Insertable<GroupTableData> {
       adminId: adminId == null && nullToAbsent
           ? const Value.absent()
           : Value(adminId),
+      isSync:
+          isSync == null && nullToAbsent ? const Value.absent() : Value(isSync),
     );
   }
 
-  GroupTableData copyWith({String id, String name, String adminId}) =>
+  GroupTableData copyWith(
+          {String id, String name, String adminId, bool isSync}) =>
       GroupTableData(
         id: id ?? this.id,
         name: name ?? this.name,
         adminId: adminId ?? this.adminId,
+        isSync: isSync ?? this.isSync,
       );
   @override
   String toString() {
     return (StringBuffer('GroupTableData(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('adminId: $adminId')
+          ..write('adminId: $adminId, ')
+          ..write('isSync: $isSync')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(name.hashCode, adminId.hashCode)));
+  int get hashCode => $mrjf($mrjc(id.hashCode,
+      $mrjc(name.hashCode, $mrjc(adminId.hashCode, isSync.hashCode))));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
       (other is GroupTableData &&
           other.id == this.id &&
           other.name == this.name &&
-          other.adminId == this.adminId);
+          other.adminId == this.adminId &&
+          other.isSync == this.isSync);
 }
 
 class GroupTableCompanion extends UpdateCompanion<GroupTableData> {
   final Value<String> id;
   final Value<String> name;
   final Value<String> adminId;
+  final Value<bool> isSync;
   const GroupTableCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.adminId = const Value.absent(),
+    this.isSync = const Value.absent(),
   });
   GroupTableCompanion.insert({
     @required String id,
     @required String name,
     @required String adminId,
+    this.isSync = const Value.absent(),
   })  : id = Value(id),
         name = Value(name),
         adminId = Value(adminId);
   GroupTableCompanion copyWith(
-      {Value<String> id, Value<String> name, Value<String> adminId}) {
+      {Value<String> id,
+      Value<String> name,
+      Value<String> adminId,
+      Value<bool> isSync}) {
     return GroupTableCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       adminId: adminId ?? this.adminId,
+      isSync: isSync ?? this.isSync,
     );
   }
 }
@@ -391,8 +413,17 @@ class $GroupTableTable extends GroupTable
         $customConstraints: 'NOT NULL REFERENCES user_table(id)');
   }
 
+  final VerificationMeta _isSyncMeta = const VerificationMeta('isSync');
+  GeneratedBoolColumn _isSync;
   @override
-  List<GeneratedColumn> get $columns => [id, name, adminId];
+  GeneratedBoolColumn get isSync => _isSync ??= _constructIsSync();
+  GeneratedBoolColumn _constructIsSync() {
+    return GeneratedBoolColumn('is_sync', $tableName, false,
+        defaultValue: Constant(false));
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, name, adminId, isSync];
   @override
   $GroupTableTable get asDslTable => this;
   @override
@@ -420,6 +451,12 @@ class $GroupTableTable extends GroupTable
     } else if (adminId.isRequired && isInserting) {
       context.missing(_adminIdMeta);
     }
+    if (d.isSync.present) {
+      context.handle(
+          _isSyncMeta, isSync.isAcceptableValue(d.isSync.value, _isSyncMeta));
+    } else if (isSync.isRequired && isInserting) {
+      context.missing(_isSyncMeta);
+    }
     return context;
   }
 
@@ -443,6 +480,9 @@ class $GroupTableTable extends GroupTable
     if (d.adminId.present) {
       map['admin_id'] = Variable<String, StringType>(d.adminId.value);
     }
+    if (d.isSync.present) {
+      map['is_sync'] = Variable<bool, BoolType>(d.isSync.value);
+    }
     return map;
   }
 
@@ -463,6 +503,7 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
   final DateTime createdAt;
   final String boardId;
   final String assignedTo;
+  final bool isSync;
   TaskTableData(
       {@required this.id,
       @required this.name,
@@ -473,7 +514,8 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
       @required this.isDone,
       @required this.createdAt,
       @required this.boardId,
-      this.assignedTo});
+      this.assignedTo,
+      @required this.isSync});
   factory TaskTableData.fromData(
       Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
@@ -500,6 +542,8 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
           .mapFromDatabaseResponse(data['${effectivePrefix}board_id']),
       assignedTo: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}assigned_to']),
+      isSync:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}is_sync']),
     );
   }
   factory TaskTableData.fromJson(Map<String, dynamic> json,
@@ -515,6 +559,7 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       boardId: serializer.fromJson<String>(json['boardId']),
       assignedTo: serializer.fromJson<String>(json['assignedTo']),
+      isSync: serializer.fromJson<bool>(json['isSync']),
     );
   }
   @override
@@ -531,6 +576,7 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'boardId': serializer.toJson<String>(boardId),
       'assignedTo': serializer.toJson<String>(assignedTo),
+      'isSync': serializer.toJson<bool>(isSync),
     };
   }
 
@@ -561,6 +607,8 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
       assignedTo: assignedTo == null && nullToAbsent
           ? const Value.absent()
           : Value(assignedTo),
+      isSync:
+          isSync == null && nullToAbsent ? const Value.absent() : Value(isSync),
     );
   }
 
@@ -574,7 +622,8 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
           bool isDone,
           DateTime createdAt,
           String boardId,
-          String assignedTo}) =>
+          String assignedTo,
+          bool isSync}) =>
       TaskTableData(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -586,6 +635,7 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
         createdAt: createdAt ?? this.createdAt,
         boardId: boardId ?? this.boardId,
         assignedTo: assignedTo ?? this.assignedTo,
+        isSync: isSync ?? this.isSync,
       );
   @override
   String toString() {
@@ -599,7 +649,8 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
           ..write('isDone: $isDone, ')
           ..write('createdAt: $createdAt, ')
           ..write('boardId: $boardId, ')
-          ..write('assignedTo: $assignedTo')
+          ..write('assignedTo: $assignedTo, ')
+          ..write('isSync: $isSync')
           ..write(')'))
         .toString();
   }
@@ -621,8 +672,10 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
                               isDone.hashCode,
                               $mrjc(
                                   createdAt.hashCode,
-                                  $mrjc(boardId.hashCode,
-                                      assignedTo.hashCode))))))))));
+                                  $mrjc(
+                                      boardId.hashCode,
+                                      $mrjc(assignedTo.hashCode,
+                                          isSync.hashCode)))))))))));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
@@ -636,7 +689,8 @@ class TaskTableData extends DataClass implements Insertable<TaskTableData> {
           other.isDone == this.isDone &&
           other.createdAt == this.createdAt &&
           other.boardId == this.boardId &&
-          other.assignedTo == this.assignedTo);
+          other.assignedTo == this.assignedTo &&
+          other.isSync == this.isSync);
 }
 
 class TaskTableCompanion extends UpdateCompanion<TaskTableData> {
@@ -650,6 +704,7 @@ class TaskTableCompanion extends UpdateCompanion<TaskTableData> {
   final Value<DateTime> createdAt;
   final Value<String> boardId;
   final Value<String> assignedTo;
+  final Value<bool> isSync;
   const TaskTableCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -661,6 +716,7 @@ class TaskTableCompanion extends UpdateCompanion<TaskTableData> {
     this.createdAt = const Value.absent(),
     this.boardId = const Value.absent(),
     this.assignedTo = const Value.absent(),
+    this.isSync = const Value.absent(),
   });
   TaskTableCompanion.insert({
     @required String id,
@@ -673,6 +729,7 @@ class TaskTableCompanion extends UpdateCompanion<TaskTableData> {
     @required DateTime createdAt,
     @required String boardId,
     this.assignedTo = const Value.absent(),
+    this.isSync = const Value.absent(),
   })  : id = Value(id),
         name = Value(name),
         createdAt = Value(createdAt),
@@ -687,7 +744,8 @@ class TaskTableCompanion extends UpdateCompanion<TaskTableData> {
       Value<bool> isDone,
       Value<DateTime> createdAt,
       Value<String> boardId,
-      Value<String> assignedTo}) {
+      Value<String> assignedTo,
+      Value<bool> isSync}) {
     return TaskTableCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -699,6 +757,7 @@ class TaskTableCompanion extends UpdateCompanion<TaskTableData> {
       createdAt: createdAt ?? this.createdAt,
       boardId: boardId ?? this.boardId,
       assignedTo: assignedTo ?? this.assignedTo,
+      isSync: isSync ?? this.isSync,
     );
   }
 }
@@ -819,6 +878,15 @@ class $TaskTableTable extends TaskTable
         $customConstraints: 'NULLABLE REFERENCES group_table(id)');
   }
 
+  final VerificationMeta _isSyncMeta = const VerificationMeta('isSync');
+  GeneratedBoolColumn _isSync;
+  @override
+  GeneratedBoolColumn get isSync => _isSync ??= _constructIsSync();
+  GeneratedBoolColumn _constructIsSync() {
+    return GeneratedBoolColumn('is_sync', $tableName, false,
+        defaultValue: Constant(false));
+  }
+
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -830,7 +898,8 @@ class $TaskTableTable extends TaskTable
         isDone,
         createdAt,
         boardId,
-        assignedTo
+        assignedTo,
+        isSync
       ];
   @override
   $TaskTableTable get asDslTable => this;
@@ -901,6 +970,12 @@ class $TaskTableTable extends TaskTable
     } else if (assignedTo.isRequired && isInserting) {
       context.missing(_assignedToMeta);
     }
+    if (d.isSync.present) {
+      context.handle(
+          _isSyncMeta, isSync.isAcceptableValue(d.isSync.value, _isSyncMeta));
+    } else if (isSync.isRequired && isInserting) {
+      context.missing(_isSyncMeta);
+    }
     return context;
   }
 
@@ -944,6 +1019,9 @@ class $TaskTableTable extends TaskTable
     }
     if (d.assignedTo.present) {
       map['assigned_to'] = Variable<String, StringType>(d.assignedTo.value);
+    }
+    if (d.isSync.present) {
+      map['is_sync'] = Variable<bool, BoolType>(d.isSync.value);
     }
     return map;
   }
@@ -1413,6 +1491,341 @@ class $GroupUserTableTable extends GroupUserTable
   }
 }
 
+class AssignedTaskTableData extends DataClass
+    implements Insertable<AssignedTaskTableData> {
+  final String id;
+  final String taskId;
+  final String groupId;
+  final String userId;
+  final bool isDone;
+  final bool isSync;
+  AssignedTaskTableData(
+      {@required this.id,
+      @required this.taskId,
+      @required this.groupId,
+      @required this.userId,
+      @required this.isDone,
+      @required this.isSync});
+  factory AssignedTaskTableData.fromData(
+      Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final stringType = db.typeSystem.forDartType<String>();
+    final boolType = db.typeSystem.forDartType<bool>();
+    return AssignedTaskTableData(
+      id: stringType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      taskId:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}task_id']),
+      groupId: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}group_id']),
+      userId:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}user_id']),
+      isDone:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}is_done']),
+      isSync:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}is_sync']),
+    );
+  }
+  factory AssignedTaskTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
+    return AssignedTaskTableData(
+      id: serializer.fromJson<String>(json['id']),
+      taskId: serializer.fromJson<String>(json['taskId']),
+      groupId: serializer.fromJson<String>(json['groupId']),
+      userId: serializer.fromJson<String>(json['userId']),
+      isDone: serializer.fromJson<bool>(json['isDone']),
+      isSync: serializer.fromJson<bool>(json['isSync']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson(
+      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
+    return {
+      'id': serializer.toJson<String>(id),
+      'taskId': serializer.toJson<String>(taskId),
+      'groupId': serializer.toJson<String>(groupId),
+      'userId': serializer.toJson<String>(userId),
+      'isDone': serializer.toJson<bool>(isDone),
+      'isSync': serializer.toJson<bool>(isSync),
+    };
+  }
+
+  @override
+  AssignedTaskTableCompanion createCompanion(bool nullToAbsent) {
+    return AssignedTaskTableCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      taskId:
+          taskId == null && nullToAbsent ? const Value.absent() : Value(taskId),
+      groupId: groupId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(groupId),
+      userId:
+          userId == null && nullToAbsent ? const Value.absent() : Value(userId),
+      isDone:
+          isDone == null && nullToAbsent ? const Value.absent() : Value(isDone),
+      isSync:
+          isSync == null && nullToAbsent ? const Value.absent() : Value(isSync),
+    );
+  }
+
+  AssignedTaskTableData copyWith(
+          {String id,
+          String taskId,
+          String groupId,
+          String userId,
+          bool isDone,
+          bool isSync}) =>
+      AssignedTaskTableData(
+        id: id ?? this.id,
+        taskId: taskId ?? this.taskId,
+        groupId: groupId ?? this.groupId,
+        userId: userId ?? this.userId,
+        isDone: isDone ?? this.isDone,
+        isSync: isSync ?? this.isSync,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('AssignedTaskTableData(')
+          ..write('id: $id, ')
+          ..write('taskId: $taskId, ')
+          ..write('groupId: $groupId, ')
+          ..write('userId: $userId, ')
+          ..write('isDone: $isDone, ')
+          ..write('isSync: $isSync')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(
+      id.hashCode,
+      $mrjc(
+          taskId.hashCode,
+          $mrjc(
+              groupId.hashCode,
+              $mrjc(
+                  userId.hashCode, $mrjc(isDone.hashCode, isSync.hashCode))))));
+  @override
+  bool operator ==(other) =>
+      identical(this, other) ||
+      (other is AssignedTaskTableData &&
+          other.id == this.id &&
+          other.taskId == this.taskId &&
+          other.groupId == this.groupId &&
+          other.userId == this.userId &&
+          other.isDone == this.isDone &&
+          other.isSync == this.isSync);
+}
+
+class AssignedTaskTableCompanion
+    extends UpdateCompanion<AssignedTaskTableData> {
+  final Value<String> id;
+  final Value<String> taskId;
+  final Value<String> groupId;
+  final Value<String> userId;
+  final Value<bool> isDone;
+  final Value<bool> isSync;
+  const AssignedTaskTableCompanion({
+    this.id = const Value.absent(),
+    this.taskId = const Value.absent(),
+    this.groupId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.isDone = const Value.absent(),
+    this.isSync = const Value.absent(),
+  });
+  AssignedTaskTableCompanion.insert({
+    @required String id,
+    @required String taskId,
+    @required String groupId,
+    @required String userId,
+    @required bool isDone,
+    this.isSync = const Value.absent(),
+  })  : id = Value(id),
+        taskId = Value(taskId),
+        groupId = Value(groupId),
+        userId = Value(userId),
+        isDone = Value(isDone);
+  AssignedTaskTableCompanion copyWith(
+      {Value<String> id,
+      Value<String> taskId,
+      Value<String> groupId,
+      Value<String> userId,
+      Value<bool> isDone,
+      Value<bool> isSync}) {
+    return AssignedTaskTableCompanion(
+      id: id ?? this.id,
+      taskId: taskId ?? this.taskId,
+      groupId: groupId ?? this.groupId,
+      userId: userId ?? this.userId,
+      isDone: isDone ?? this.isDone,
+      isSync: isSync ?? this.isSync,
+    );
+  }
+}
+
+class $AssignedTaskTableTable extends AssignedTaskTable
+    with TableInfo<$AssignedTaskTableTable, AssignedTaskTableData> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $AssignedTaskTableTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  GeneratedTextColumn _id;
+  @override
+  GeneratedTextColumn get id => _id ??= _constructId();
+  GeneratedTextColumn _constructId() {
+    return GeneratedTextColumn(
+      'id',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  GeneratedTextColumn _taskId;
+  @override
+  GeneratedTextColumn get taskId => _taskId ??= _constructTaskId();
+  GeneratedTextColumn _constructTaskId() {
+    return GeneratedTextColumn(
+      'task_id',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _groupIdMeta = const VerificationMeta('groupId');
+  GeneratedTextColumn _groupId;
+  @override
+  GeneratedTextColumn get groupId => _groupId ??= _constructGroupId();
+  GeneratedTextColumn _constructGroupId() {
+    return GeneratedTextColumn(
+      'group_id',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  GeneratedTextColumn _userId;
+  @override
+  GeneratedTextColumn get userId => _userId ??= _constructUserId();
+  GeneratedTextColumn _constructUserId() {
+    return GeneratedTextColumn(
+      'user_id',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _isDoneMeta = const VerificationMeta('isDone');
+  GeneratedBoolColumn _isDone;
+  @override
+  GeneratedBoolColumn get isDone => _isDone ??= _constructIsDone();
+  GeneratedBoolColumn _constructIsDone() {
+    return GeneratedBoolColumn(
+      'is_done',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _isSyncMeta = const VerificationMeta('isSync');
+  GeneratedBoolColumn _isSync;
+  @override
+  GeneratedBoolColumn get isSync => _isSync ??= _constructIsSync();
+  GeneratedBoolColumn _constructIsSync() {
+    return GeneratedBoolColumn('is_sync', $tableName, false,
+        defaultValue: Constant(false));
+  }
+
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, taskId, groupId, userId, isDone, isSync];
+  @override
+  $AssignedTaskTableTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'assigned_task_table';
+  @override
+  final String actualTableName = 'assigned_task_table';
+  @override
+  VerificationContext validateIntegrity(AssignedTaskTableCompanion d,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    if (d.id.present) {
+      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    } else if (id.isRequired && isInserting) {
+      context.missing(_idMeta);
+    }
+    if (d.taskId.present) {
+      context.handle(
+          _taskIdMeta, taskId.isAcceptableValue(d.taskId.value, _taskIdMeta));
+    } else if (taskId.isRequired && isInserting) {
+      context.missing(_taskIdMeta);
+    }
+    if (d.groupId.present) {
+      context.handle(_groupIdMeta,
+          groupId.isAcceptableValue(d.groupId.value, _groupIdMeta));
+    } else if (groupId.isRequired && isInserting) {
+      context.missing(_groupIdMeta);
+    }
+    if (d.userId.present) {
+      context.handle(
+          _userIdMeta, userId.isAcceptableValue(d.userId.value, _userIdMeta));
+    } else if (userId.isRequired && isInserting) {
+      context.missing(_userIdMeta);
+    }
+    if (d.isDone.present) {
+      context.handle(
+          _isDoneMeta, isDone.isAcceptableValue(d.isDone.value, _isDoneMeta));
+    } else if (isDone.isRequired && isInserting) {
+      context.missing(_isDoneMeta);
+    }
+    if (d.isSync.present) {
+      context.handle(
+          _isSyncMeta, isSync.isAcceptableValue(d.isSync.value, _isSyncMeta));
+    } else if (isSync.isRequired && isInserting) {
+      context.missing(_isSyncMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AssignedTaskTableData map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return AssignedTaskTableData.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  Map<String, Variable> entityToSql(AssignedTaskTableCompanion d) {
+    final map = <String, Variable>{};
+    if (d.id.present) {
+      map['id'] = Variable<String, StringType>(d.id.value);
+    }
+    if (d.taskId.present) {
+      map['task_id'] = Variable<String, StringType>(d.taskId.value);
+    }
+    if (d.groupId.present) {
+      map['group_id'] = Variable<String, StringType>(d.groupId.value);
+    }
+    if (d.userId.present) {
+      map['user_id'] = Variable<String, StringType>(d.userId.value);
+    }
+    if (d.isDone.present) {
+      map['is_done'] = Variable<bool, BoolType>(d.isDone.value);
+    }
+    if (d.isSync.present) {
+      map['is_sync'] = Variable<bool, BoolType>(d.isSync.value);
+    }
+    return map;
+  }
+
+  @override
+  $AssignedTaskTableTable createAlias(String alias) {
+    return $AssignedTaskTableTable(_db, alias);
+  }
+}
+
 abstract class _$TwixDB extends GeneratedDatabase {
   _$TwixDB(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   $BoardTableTable _boardTable;
@@ -1426,6 +1839,9 @@ abstract class _$TwixDB extends GeneratedDatabase {
   $GroupUserTableTable _groupUserTable;
   $GroupUserTableTable get groupUserTable =>
       _groupUserTable ??= $GroupUserTableTable(this);
+  $AssignedTaskTableTable _assignedTaskTable;
+  $AssignedTaskTableTable get assignedTaskTable =>
+      _assignedTaskTable ??= $AssignedTaskTableTable(this);
   BoardDao _boardDao;
   BoardDao get boardDao => _boardDao ??= BoardDao(this as TwixDB);
   GroupDao _groupDao;
@@ -1437,7 +1853,16 @@ abstract class _$TwixDB extends GeneratedDatabase {
   GroupUserDao _groupUserDao;
   GroupUserDao get groupUserDao =>
       _groupUserDao ??= GroupUserDao(this as TwixDB);
+  AssignedTaskDao _assignedTaskDao;
+  AssignedTaskDao get assignedTaskDao =>
+      _assignedTaskDao ??= AssignedTaskDao(this as TwixDB);
   @override
-  List<TableInfo> get allTables =>
-      [boardTable, groupTable, taskTable, userTable, groupUserTable];
+  List<TableInfo> get allTables => [
+        boardTable,
+        groupTable,
+        taskTable,
+        userTable,
+        groupUserTable,
+        assignedTaskTable
+      ];
 }

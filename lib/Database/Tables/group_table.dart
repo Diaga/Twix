@@ -10,4 +10,7 @@ class GroupTable extends Table {
 
   TextColumn get adminId =>
       text().customConstraint('NOT NULL REFERENCES user_table(id)')();
+
+  BoolColumn get isSync =>
+      boolean().withDefault(Constant(false))();
 }
