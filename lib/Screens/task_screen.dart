@@ -40,13 +40,7 @@ class _TaskScreenState extends State<TaskScreen> {
     isAssignedToMe = widget.action == 'Assigned To Me';
   }
 
-  test(TwixDB database) async {
-    var response = await database.assignedTaskDao
-        .getAllAssignedTasksByUserId(widget.loggedInUser.id);
-  }
-
   Future<BoardTableData> getBoard(TwixDB database) async {
-    test(database);
     return getBoardName
         ? await database.boardDao.getBoardById(widget.boardId)
         : await database.boardDao.getMyTasksBoard();
@@ -305,7 +299,6 @@ class _TaskScreenState extends State<TaskScreen> {
       assignedTask: assignedTaskItem != null ? assignedTaskItem : null,
     );
 
-    IconData isCompletedIcon = Icons.check_circle_outline;
     return Builder(
         builder: (context) => Dismissible(
               key: ValueKey(taskCard.hashCode),
@@ -328,9 +321,6 @@ class _TaskScreenState extends State<TaskScreen> {
                       duration: Duration(milliseconds: 600),
                     ),
                   );
-                  setState(() {
-                    isCompletedIcon = Icons.check_circle;
-                  });
                 } else if (direction == DismissDirection.endToStart) {
                   // Logic to delete the task
                   database.taskDao.deleteTask(taskItem.task);

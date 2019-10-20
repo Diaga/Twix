@@ -45,7 +45,9 @@ class _TaskCardState extends State<TaskCard> {
       margin: EdgeInsets.all(8.0),
       color: Colors.white,
       child: ListTile(
-        leading: Icon(Icons.hourglass_empty),
+        leading: task.isDone
+            ? Icon(Icons.check_circle_outline)
+            : Icon(Icons.hourglass_empty),
         title: Text(task.name),
         subtitle:
             Text(isAssignedToMe ? 'Assigned Task' : widget.task.board.name),

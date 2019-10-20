@@ -32,6 +32,8 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
   DateTime reminderDate;
   TimeOfDay reminderTime;
 
+  DateTime remindMeDateTime;
+
   @override
   void initState() {
     super.initState();
@@ -81,6 +83,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                                   name: Value(textEditingController.text),
                                   dueDate: Value(dueDate),
                                   boardId: Value(widget.boardId),
+                                  remindMe: Value(remindMeDateTime),
                                   createdAt: Value(today)))
                               : database.taskDao.insertTask(TaskTableCompanion(
                                   id: Value(Uuid().v4()),
@@ -89,6 +92,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                                   dueDate: Value(dueDate),
                                   myDayDate: Value(DateTime(
                                       today.year, today.month, today.day)),
+                                  remindMe: Value(remindMeDateTime),
                                   createdAt: Value(today)));
                           Navigator.pop(context);
                         }
@@ -107,14 +111,16 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                     text: dueDate == null
                         ? 'Set due date'
                         : DateFormat.yMMMEd().format(dueDate).toString(),
-                    callBack: selectDate,
+                    callBack: selectDueDate,
                   ),
                   TaskDetails(
                     iconData: Icons.add_alert,
-                    text: 'Remind Me',
-                    callBack: selectTime,
+                    text: remindMeDateTime == null
+                        ? 'Remind Me'
+                        : '${DateFormat.yMd().format(remindMeDateTime).toString()} '
+                            '${DateFormat.jm().format(remindMeDateTime).toString()}',
+                    callBack: selectRemindDate,
                   ),
-
                 ],
               ),
             ),
@@ -130,7 +136,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
     super.dispose();
   }
 
-  Future selectDate() async {
+  Future selectDueDate() async {
     var selected = await showDatePicker(
         context: (context),
         initialDate: initialDate,
@@ -142,13 +148,27 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
       });
   }
 
-  Future selectTime() async {
+  Future selectRemindDate() async {
+    var selected = await showDatePicker(
+        context: (context),
+        initialDate: initialDate,
+        firstDate: DateTime(2000, 1),
+        lastDate: DateTime(2050, 1));
+    if (selected != null && selected != reminderDate) {
+      reminderDate = selected;
+      selectRemindTime();
+    }
+  }
+
+  Future selectRemindTime() async {
     var selected =
         await showTimePicker(context: context, initialTime: initialTime);
     if (selected != null && selected != reminderTime) {
       setState(() {
         reminderTime = selected;
       });
+      remindMeDateTime = DateTime(reminderDate.year, reminderDate.month,
+          reminderDate.day, reminderTime.hour, reminderTime.minute);
     }
   }
 }
