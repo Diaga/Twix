@@ -16,7 +16,6 @@ class TaskDetailsScreen extends StatefulWidget {
 }
 
 class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
-
   @override
   Widget build(BuildContext context) {
     final database = Provider.of<TwixDB>(context);
@@ -55,7 +54,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           ),
         ),
       ),
-      body: Column(
+      body: ListView(
         children: <Widget>[
           Container(
             height: 100,
@@ -72,10 +71,55 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
               ),
             ),
           ),
-          SizedBox(
-            height: 20,
+          Card(
+            margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
+            child: ListTile(
+              onTap: (){
+                showModalBottomSheet(
+                    context: context, builder: (context) => Container(
+                  child: ListView(
+                    children: <Widget>[
+                      ListTile(
+                        leading: Icon(Icons.group),
+                        title: Text('Group name'),),
+                      ListTile(
+                        leading: Icon(Icons.group),
+                        title: Text('Group name'),),
+                      ListTile(
+                        leading: Icon(Icons.group),
+                        title: Text('Group name'),),
+                      ListTile(
+                        leading: Icon(Icons.group),
+                        title: Text('Group name'),),
+                      ListTile(
+                        leading: Icon(Icons.group),
+                        title: Text('Group name'),),
+                      ListTile(
+                        leading: Icon(Icons.group),
+                        title: Text('Group name'),),
+                      ListTile(
+                        leading: Icon(Icons.group),
+                        title: Text('Group name'),),
+                      ListTile(
+                        leading: Icon(Icons.group),
+                        title: Text('Group name'),),
+                      ListTile(
+                        leading: Icon(Icons.group),
+                        title: Text('Group name'),),
+                      ListTile(
+                        leading: Icon(Icons.group),
+                        title: Text('Group name'),),
+
+                    ],
+                  ),
+                ));
+              },
+              leading: Icon(Icons.assignment_ind),
+              title: Text('Assigned to none'),
+            ),
           ),
           Card(
+            margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
             child: Column(
               children: <Widget>[
                 ListTile(
@@ -87,31 +131,34 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                 ),
                 ListTile(
                   leading: Icon(Icons.calendar_today),
-                  title: widget.task.task.dueDate != null ? Text(widget.task.task.dueDate.toString()) : Text('Add due date'),
+                  title: widget.task.task.dueDate != null
+                      ? Text(widget.task.task.dueDate.toString())
+                      : Text('Add due date'),
                 ),
               ],
             ),
           ),
-          SizedBox(
-            height: 20,
-          ),
           Container(
             height: 200,
             width: double.infinity,
+            margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
             child: Card(
+              margin: EdgeInsets.zero,
               child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => NoteEditor(task: widget.task)));
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(widget.task.task.notes != null || widget.task.task.notes == ''
-                        ? widget.task.task.notes
-                        : 'Add notes'),
-                  )),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NoteEditor(task: widget.task)));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(widget.task.task.notes != null ||
+                          widget.task.task.notes == ''
+                      ? widget.task.task.notes
+                      : 'Add notes'),
+                ),
+              ),
             ),
           ),
         ],

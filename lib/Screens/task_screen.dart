@@ -81,14 +81,14 @@ class _TaskScreenState extends State<TaskScreen> {
           'Tasks',
           style: TextStyle(color: Colors.black),
         ),
-        automaticallyImplyLeading: false,
+        iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: ThemeData.light().scaffoldBackgroundColor,
         elevation: 0,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.clear),
+            icon: Icon(Icons.delete_outline),
             onPressed: () {
-              Navigator.pop(context);
+              // TODO: Delete functionality for a board
             },
             color: Colors.black,
           )

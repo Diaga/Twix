@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import 'package:twix/Database/database.dart';
 import 'package:twix/Database/DAOs/task_dao.dart';
-import 'package:twix/Screens/task_details.dart';
 
 class NoteEditor extends StatelessWidget {
   final TaskWithBoard task;
