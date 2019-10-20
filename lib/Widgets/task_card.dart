@@ -49,7 +49,10 @@ class _TaskCardState extends State<TaskCard> {
         leading: task.isDone
             ? Icon(Icons.check_circle_outline)
             : Icon(Icons.hourglass_empty),
-        title: Text(task.name),
+        title: Text(task.name,
+            style: task.isDone
+                ? TextStyle(decoration: TextDecoration.lineThrough)
+                : null),
         subtitle:
             Text(isAssignedToMe ? 'Assigned Task' : widget.task.board.name),
         dense: true,
@@ -69,8 +72,7 @@ class _TaskCardState extends State<TaskCard> {
                 onPressed: () {
                   var today = DateTime.now();
                   today = DateTime(today.year, today.month, today.day);
-                  database.taskDao
-                      .updateTask(task.copyWith(myDayDate: today));
+                  database.taskDao.updateTask(task.copyWith(myDayDate: today));
                   setState(() {});
                 },
               ),
