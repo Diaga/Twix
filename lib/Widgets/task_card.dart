@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:moor_flutter/moor_flutter.dart' hide Column;
 
 import 'package:twix/Database/database.dart';
 
@@ -52,19 +53,25 @@ class _TaskCardState extends State<TaskCard> {
         subtitle:
             Text(isAssignedToMe ? 'Assigned Task' : widget.task.board.name),
         dense: true,
-        trailing: GestureDetector(
-            onTap: () {
-              setState(() {
-                if (isDayIcon == Icons.star_border) {
-                  isDayIcon = Icons.star;
-                } else {
-                  isDayIcon = Icons.star_border;
-                }
-              });
-            },
-            child: database.taskDao.isMyDay(task.myDayDate)
-                ? Icon(Icons.star)
-                : Icon(Icons.star_border)),
+        trailing: database.taskDao.isMyDay(task.myDayDate)
+            ? IconButton(
+                icon: Icon(Icons.star),
+                onPressed: () {
+                  print(database.taskDao.isMyDay(task.myDayDate));
+                  database.taskDao.updateTask(task
+                      .createCompanion(false)
+                      .copyWith(myDayDate: Value(null)));
+                  setState(() {});
+                },
+              )
+            : IconButton(
+                icon: Icon(Icons.star_border),
+                onPressed: () {
+                  database.taskDao
+                      .updateTask(task.copyWith(myDayDate: DateTime.now()));
+                  setState(() {});
+                },
+              ),
         onTap: () {
           Navigator.push(
             context,

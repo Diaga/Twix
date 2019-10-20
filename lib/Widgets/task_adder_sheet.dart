@@ -75,7 +75,8 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                     child: IconButton(
                       icon: Icon(Icons.arrow_upward),
                       onPressed: () async {
-                        final today = DateTime.now();
+                        today = DateTime.now();
+                        today = DateTime(today.year, today.month, today.day);
                         if (textEditingController.text.isNotEmpty) {
                           widget.action == 'normal'
                               ? database.taskDao.insertTask(TaskTableCompanion(
