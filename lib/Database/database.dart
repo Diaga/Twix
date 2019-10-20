@@ -5,20 +5,22 @@ import 'package:twix/Database/Tables/group_table.dart';
 import 'package:twix/Database/Tables/task_table.dart';
 import 'package:twix/Database/Tables/user_table.dart';
 import 'package:twix/Database/Tables/group_user_table.dart';
+import 'package:twix/Database/Tables/assigned_task_table.dart';
 
 import 'package:twix/Database/DAOs/board_dao.dart';
 import 'package:twix/Database/DAOs/group_dao.dart';
 import 'package:twix/Database/DAOs/task_dao.dart';
 import 'package:twix/Database/DAOs/user_dao.dart';
 import 'package:twix/Database/DAOs/group_user_dao.dart';
+import 'package:twix/Database/DAOs/assigned_task_dao.dart';
 
 import 'package:uuid/uuid.dart';
 
 part 'database.g.dart';
 
 @UseMoor(
-    tables: [BoardTable, GroupTable, TaskTable, UserTable, GroupUserTable],
-    daos: [BoardDao, GroupDao, TaskDao, UserDao, GroupUserDao])
+    tables: [BoardTable, GroupTable, TaskTable, UserTable, GroupUserTable, AssignedTaskTable],
+    daos: [BoardDao, GroupDao, TaskDao, UserDao, GroupUserDao, AssignedTaskDao])
 class TwixDB extends _$TwixDB {
   TwixDB()
       : super((FlutterQueryExecutor.inDatabaseFolder(

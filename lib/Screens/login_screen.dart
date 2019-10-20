@@ -145,12 +145,14 @@ class LoginState extends State<Login> {
     final bool result =
         response.statusCode == 201 && responseToken.statusCode == 200;
     if (result) {
+      String authToken = jsonDecode(responseToken.body)['token'];
       await database.userDao.insertUser(UserTableCompanion(
           id: Value(id),
           name: Value(nameController.text),
           email: Value(emailController.text),
           password: Value(passwordController.text),
-          token: Value(jsonDecode(responseToken.body)['token'])));
+          token: Value(authToken)));
+      Api.setAuthToken(authToken);
     }
     return result;
   }

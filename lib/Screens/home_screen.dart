@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:moor_flutter/moor_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+
 import 'package:twix/Database/database.dart';
+import 'package:twix/Api/api.dart';
+
 import 'package:twix/Screens/task_screen.dart';
 import 'package:twix/Screens/group_screen.dart';
 import 'package:twix/Widgets/adder_sheet.dart';
@@ -18,9 +21,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isDivider = false;
 
+  setAuthToken(TwixDB database) async {
+    Api.setAuthToken((await database.userDao.getLoggedInUser()).token);
+  }
+
   @override
   Widget build(BuildContext context) {
     final TwixDB database = Provider.of<TwixDB>(context);
+    setAuthToken(database);
     return Scaffold(
       appBar: CustomAppBar(
         height: 80.0,
@@ -105,10 +113,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _insertGroup(String groupName, TwixDB database) async {
+    final id = Uuid().v4();
+    final adminId = (await database.userDao.getLoggedInUser()).id;
     await database.groupDao.insertGroup(GroupTableCompanion(
-        id: Value(Uuid().v4()),
-        name: Value(groupName),
-        adminId: Value((await database.userDao.getLoggedInUser()).id)));
+        id: Value(id), name: Value(groupName), adminId: Value(adminId)));
+    await Api.createGroup(id, groupName, adminId);
   }
 
   StreamBuilder<List<BoardTableData>> _buildBoardList(
