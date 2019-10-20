@@ -72,7 +72,6 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             body: ListView(
               children: <Widget>[
                 Container(
-                  height: 100,
                   child: Card(
                     margin: EdgeInsets.zero,
                     child: Center(
@@ -161,18 +160,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     return StreamBuilder(
       stream: database.groupDao.watchAllGroups(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.done ||
-            snapshot.connectionState == ConnectionState.active) {
+          final groups = snapshot.data ?? List();
           return ListView.builder(
-            itemCount: snapshot.data.length,
+            itemCount: groups.length,
             itemBuilder: (_, index) {
               return GroupListTile(
-                  group: snapshot.data[index], task: widget.task);
+                  group: groups[index], task: widget.task);
             },
           );
         }
-        return CircularProgressIndicator();
-      },
     );
   }
 }
@@ -202,6 +198,10 @@ class GroupListTileState extends State<GroupListTile> {
                   leading: Icon(Icons.group),
                   title: Text(widget.group.name),
                   onTap: () async {
+                    database.taskDao.updateTask(
+                        widget.task.task.copyWith(assignedTo: widget.group.id));
+                    setState(() {});
+                    await Api.deleteTask(widget.task.task.id);
                     await Api.createTask(
                         id: widget.task.task.id,
                         name: widget.task.task.name,
@@ -211,9 +211,6 @@ class GroupListTileState extends State<GroupListTile> {
                         boardId: widget.task.board.id,
                         isAssigned: true,
                         groupId: widget.group.id);
-                    database.taskDao.updateTask(
-                        widget.task.task.copyWith(assignedTo: widget.group.id));
-                    setState(() {});
                   });
             }
             return ListTile(
@@ -221,11 +218,11 @@ class GroupListTileState extends State<GroupListTile> {
               title: Text(widget.group.name),
               trailing: Icon(Icons.check),
               onTap: () async {
-                Api.deleteTask(widget.task.task.id);
                 database.taskDao.updateTask(widget.task.task
                     .createCompanion(false)
                     .copyWith(assignedTo: Value(null)));
                 setState(() {});
+                await Api.deleteTask(widget.task.task.id);
               },
             );
           }

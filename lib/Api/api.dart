@@ -76,17 +76,19 @@ class Api {
 
   // Twix App
 
-  static Future<Response> createBoard({
-      String id, String name, String userId, bool isPersonal}) {
-    return post(_boardView, body: jsonEncode({
-      'id': id,
-      'name': name,
-      'user': userId,
-      'is_personal': isPersonal
-    }), headers: {
-      HttpHeaders.authorizationHeader: _authToken,
-      HttpHeaders.contentTypeHeader: 'application/json'
-    });
+  static Future<Response> createBoard(
+      {String id, String name, String userId, bool isPersonal}) {
+    return post(_boardView,
+        body: jsonEncode({
+          'id': id,
+          'name': name,
+          'user': userId,
+          'is_personal': isPersonal
+        }),
+        headers: {
+          HttpHeaders.authorizationHeader: _authToken,
+          HttpHeaders.contentTypeHeader: 'application/json'
+        });
   }
 
   static Future<Response> deleteBoard(String id) {
@@ -120,7 +122,10 @@ class Api {
   }
 
   static Future<Response> deleteTask(String id) {
-    return delete(_taskDetail(id));
+    return delete(_taskDetail(id), headers: {
+      HttpHeaders.authorizationHeader: _authToken,
+      HttpHeaders.contentTypeHeader: 'application/json'
+    });
   }
 
   static Future<Response> viewAssignedTask() {

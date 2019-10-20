@@ -46,13 +46,12 @@ class _TaskScreenState extends State<TaskScreen> {
         : await database.boardDao.getMyTasksBoard();
   }
 
-  // TODO: Update for assigned to me
   Stream<List<TaskTableData>> watchAllTaskListNoJoin(TwixDB database) {
     return getBoardName
         ? database.taskDao.watchAllTasksByBoardIdNoJoin(widget.boardId)
         : isMyDay
             ? database.taskDao.watchAllMyDayTasks()
-            : database.taskDao.watchAllMyDayTasks();
+            : null;
   }
 
   Stream<List<TaskTableData>> watchDoneTaskList(TwixDB database) {
