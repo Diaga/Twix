@@ -20,11 +20,6 @@ class TaskDetailsScreen extends StatefulWidget {
 
 class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   @override
-  void initState() async {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final database = Provider.of<TwixDB>(context);
     return FutureBuilder(
