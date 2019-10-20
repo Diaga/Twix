@@ -16,30 +16,28 @@ class NoteEditor extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Notes',
+          task.task.notes != null ? task.task.notes : 'Notes',
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: ThemeData
-            .light()
-            .scaffoldBackgroundColor,
+        backgroundColor: ThemeData.light().scaffoldBackgroundColor,
         elevation: 0,
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.check),onPressed: (){
-            String notes = '';
-            if (notesController.text.isNotEmpty) {
-              notes = notesController.text;
-            }
-            database.taskDao.updateTask(task.task.copyWith(
-                notes: notes
-            ));
-            Navigator.pop(context);
-          },)
+          IconButton(
+            icon: Icon(Icons.check),
+            onPressed: () async {
+              if (notesController.text.isNotEmpty) {
+                await database.taskDao.updateTask(
+                    task.task.copyWith(notes: notesController.text));
+              }
+              Navigator.pop(context);
+            },
+          )
         ],
       ),
       body: Container(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: TextField(
             autofocus: true,
             keyboardType: TextInputType.multiline,

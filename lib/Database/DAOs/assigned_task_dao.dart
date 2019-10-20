@@ -24,17 +24,17 @@ class AssignedTaskDao extends DatabaseAccessor<TwixDB>
 
   Stream<List<AssignedTaskWithUser>> watchAllAssignedTasksByUserId(
           String userId) =>
-      (select(assignedTaskTable)
-            ..where((row) => row.userId.equals(userId))
-            ..orderBy([
-              (t) => OrderingTerm(expression: t.isDone, mode: OrderingMode.desc),
-            ]))
-          .join([
-            innerJoin(
-                userTable, assignedTaskTable.userId.equalsExp(userTable.id)),
-            innerJoin(
-                taskTable, assignedTaskTable.taskId.equalsExp(taskTable.id))
-          ])
+      ((select(assignedTaskTable)
+                ..where((row) => row.userId.equals(userId))
+                ..orderBy([
+                  (t) => OrderingTerm(
+                      expression: t.isDone, mode: OrderingMode.desc),
+                  (t) => OrderingTerm(expression: t.taskId)
+                ]))
+              .join([
+        innerJoin(userTable, assignedTaskTable.userId.equalsExp(userTable.id)),
+        innerJoin(taskTable, assignedTaskTable.taskId.equalsExp(taskTable.id))
+      ]))
           .watch()
           .map((rows) => rows
               .map((row) => AssignedTaskWithUser(
