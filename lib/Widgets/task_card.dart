@@ -82,7 +82,7 @@ class _TaskCardState extends State<TaskCard> {
             MaterialPageRoute(
               builder: (context) => TaskDetailsScreen(
                 task: widget.task,
-                taskFallBack: widget.assignedTask.task,
+                taskFallBack: widget.assignedTask?.task,
               ),
             ),
           );
