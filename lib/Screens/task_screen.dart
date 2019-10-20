@@ -87,7 +87,8 @@ class _TaskScreenState extends State<TaskScreen> {
           IconButton(
             icon: Icon(Icons.delete_outline),
             onPressed: () {
-              // TODO: Delete functionality for a board
+              database.boardDao.deleteBoard(boardData);
+              Navigator.pop(context);
             },
             color: Colors.black,
           )

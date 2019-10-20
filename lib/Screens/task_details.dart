@@ -11,19 +11,29 @@ import 'package:twix/Screens/note_editor.dart';
 
 class TaskDetailsScreen extends StatefulWidget {
   final TaskWithBoard task;
+  final TaskTableData taskFallBack;
 
-  TaskDetailsScreen({this.task});
+  TaskDetailsScreen({this.task, this.taskFallBack});
 
   @override
   _TaskDetailsScreenState createState() => _TaskDetailsScreenState();
 }
 
 class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
+  bool useFallBack = false;
+
+  @override
+  void initState() {
+    super.initState();
+    useFallBack = widget.task == null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final database = Provider.of<TwixDB>(context);
     return FutureBuilder(
-        future: database.taskDao.getTaskById(widget.task.task.id),
+        future: database.taskDao.getTaskById(
+            useFallBack ? widget.taskFallBack.id : widget.task.task.id),
         builder: (context, snapshot) {
           final task = snapshot.data ??
               TaskTableData(
@@ -35,7 +45,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           return Scaffold(
             appBar: AppBar(
               title: Text(
-                widget.task.board.name,
+                useFallBack ? 'Assigned To Me' : widget.task.board.name,
                 style: TextStyle(color: Colors.black),
               ),
               backgroundColor: Colors.white,
@@ -61,7 +71,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     ),
                     Expanded(
                       child: InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          database.taskDao.deleteTask(
+                              useFallBack ? widget.task : widget.task.task);
+                          Navigator.pop(context);
+                        },
                         child: Icon(Icons.delete_outline),
                       ),
                     ),
@@ -119,9 +133,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                   child: ListTile(
                     leading: Icon(Icons.calendar_today),
                     title: task.dueDate != null
-                        ? Text(DateFormat.yMMMEd()
-                            .format(task.dueDate)
-                            .toString())
+                        ? Text(
+                            DateFormat.yMMMEd().format(task.dueDate).toString())
                         : Text('Add due date'),
                     onTap: () {},
                   ),
@@ -137,13 +150,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    NoteEditor(task: task)));
+                                builder: (context) => NoteEditor(task: task)));
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
-                        child: Text(task.notes != null ||
-                                task.notes == ''
+                        child: Text(task.notes != null || task.notes == ''
                             ? task.notes
                             : 'Add notes'),
                       ),
@@ -158,18 +169,16 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
 
   StreamBuilder _buildGroupList(TwixDB database) {
     return StreamBuilder(
-      stream: database.groupDao.watchAllGroups(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        stream: database.groupDao.watchAllGroups(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
           final groups = snapshot.data ?? List();
           return ListView.builder(
             itemCount: groups.length,
             itemBuilder: (_, index) {
-              return GroupListTile(
-                  group: groups[index], task: widget.task);
+              return GroupListTile(group: groups[index], task: widget.task);
             },
           );
-        }
-    );
+        });
   }
 }
 
