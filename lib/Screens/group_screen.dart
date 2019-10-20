@@ -129,6 +129,7 @@ class Search extends SearchDelegate<String> {
           if (snapshot.connectionState == ConnectionState.active ||
               snapshot.connectionState == ConnectionState.done) {
             var data = jsonDecode(snapshot.data.body);
+            print(data);
             return ListView.builder(
               itemBuilder: (BuildContext context, int index) {
                 return AddMemberList(

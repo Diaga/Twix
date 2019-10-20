@@ -74,9 +74,9 @@ class LoginState extends State<Login> {
                   height: MediaQuery.of(context).size.height * 0.35,
                   child: Column(
                     children: <Widget>[
-                      _buildTextField('Name', nameController),
-                      _buildTextField('Email', emailController),
-                      _buildTextField('Password', passwordController),
+                      _buildTextField('Name', nameController,false),
+                      _buildTextField('Email', emailController,false),
+                      _buildTextField('Password', passwordController,true),
                     ],
                   ),
                 ),
@@ -124,13 +124,15 @@ class LoginState extends State<Login> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller) {
+  Widget _buildTextField(String label, TextEditingController controller, bool obscureText) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5),
       child: TextField(
+        obscureText: obscureText,
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
+
         ),
       ),
     );
