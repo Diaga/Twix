@@ -23,8 +23,7 @@ class CustomAppBar extends PreferredSize {
               child: Padding(
             padding: const EdgeInsets.all(5.0),
             child: CircleAvatar(),
-          )
-          ),
+          )),
           Expanded(
             flex: 5,
             child: Padding(
@@ -52,12 +51,14 @@ class CustomAppBar extends PreferredSize {
       stream: database.userDao.watchLoggedInUser(),
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.active ||
-            snapshot.connectionState ==
-                ConnectionState.done) if (!snapshot.hasError) {
-          return _buildUserNameAndEmail(
-              snapshot.data.name, snapshot.data.email);
+            snapshot.connectionState == ConnectionState.done) if (!snapshot
+                .hasError &&
+            snapshot.data != null) {
+          User.name = snapshot.data.name;
+          User.email = snapshot.data.email;
+          return _buildUserNameAndEmail(User.name, User.email);
         }
-        return _buildUserNameAndEmail('', '');
+        return _buildUserNameAndEmail(User.name, User.email);
       },
     );
   }
@@ -78,4 +79,9 @@ class CustomAppBar extends PreferredSize {
       ],
     );
   }
+}
+
+class User {
+  static String name = '';
+  static String email = '';
 }

@@ -56,6 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final taskBoardId = assignedTask['task']['board']['id'];
       final taskNotes = assignedTask['task']['notes'];
 
+      if (userId != loggedInUser.id)
       await database.userDao.insertUser(UserTableCompanion(
           id: Value(userId), name: Value(userName), email: Value(userEmail)));
 
@@ -142,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Divider(),
           _buildBoardList(context, database),
-          Visibility(visible: isDivider, child: Divider()),
+          Divider(),
           _buildGroupList(context, database)
         ],
       ),
