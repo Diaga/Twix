@@ -181,7 +181,7 @@ class GroupListTileState extends State<GroupListTile> {
                   leading: Icon(Icons.group),
                   title: Text(widget.group.name),
                   onTap: () async {
-                    var response = await Api.createTask(
+                    await Api.createTask(
                         id: widget.task.task.id,
                         name: widget.task.task.name,
                         isDone: widget.task.task.isDone,
@@ -190,7 +190,6 @@ class GroupListTileState extends State<GroupListTile> {
                         boardId: widget.task.board.id,
                         isAssigned: true,
                         groupId: widget.group.id);
-                    print(response.body);
                     database.taskDao.updateTask(
                         widget.task.task.copyWith(assignedTo: widget.group.id));
                     setState(() {});
