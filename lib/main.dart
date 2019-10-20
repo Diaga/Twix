@@ -30,12 +30,21 @@ class Twix extends StatelessWidget {
     return FutureBuilder(
         future: database.userDao.getLoggedInUser(),
         builder: (context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) if (!snapshot
-              .hasError) if (snapshot.hasData) {
-            Api.setAuthToken(snapshot.data.token);
+          if (snapshot.connectionState == ConnectionState.done ||
+              snapshot.connectionState ==
+                  ConnectionState.active) if (!snapshot.hasError) if (snapshot
+              .hasData) {
+            StaticData.user = snapshot.data;
+            Api.setAuthToken(StaticData.user.token);
             return HomeScreen();
+          } else {
+            return Login();
           }
-          return Login();
+          return Container();
         });
   }
+}
+
+class StaticData {
+  static UserTableData user;
 }

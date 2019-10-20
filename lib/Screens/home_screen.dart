@@ -25,6 +25,9 @@ class _HomeScreenState extends State<HomeScreen> {
   UserTableData loggedInUser;
   BoardTableData myTasksBoard;
 
+  List<BoardTableData> boards;
+  List<GroupTableData> groups;
+
   setAuthToken(TwixDB database) async {
     loggedInUser = await database.userDao.getLoggedInUser();
     Api.setAuthToken(loggedInUser.token);
@@ -57,8 +60,8 @@ class _HomeScreenState extends State<HomeScreen> {
       final taskNotes = assignedTask['task']['notes'];
 
       if (userId != loggedInUser.id)
-      await database.userDao.insertUser(UserTableCompanion(
-          id: Value(userId), name: Value(userName), email: Value(userEmail)));
+        await database.userDao.insertUser(UserTableCompanion(
+            id: Value(userId), name: Value(userName), email: Value(userEmail)));
 
       await database.taskDao.insertTask(TaskTableCompanion(
           id: Value(taskId),
@@ -186,12 +189,9 @@ class _HomeScreenState extends State<HomeScreen> {
   StreamBuilder<List<BoardTableData>> _buildBoardList(
       BuildContext context, TwixDB database) {
     return StreamBuilder(
-      stream: database.boardDao.watchAllBoards(),
-      builder: (context, AsyncSnapshot<List<BoardTableData>> snapshot) {
-        final boards = snapshot.data ?? List();
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else {
+        stream: database.boardDao.watchAllBoards(),
+        builder: (context, AsyncSnapshot<List<BoardTableData>> snapshot) {
+          boards = snapshot.data ?? List();
           return ListView.builder(
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
@@ -201,9 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return _buildBoardCard(context, boardItem);
             },
           );
-        }
-      },
-    );
+        });
   }
 
   Widget _buildBoardCard(BuildContext context, BoardTableData boardItem) {
@@ -225,7 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return StreamBuilder(
       stream: database.groupDao.watchAllGroups(),
       builder: (context, AsyncSnapshot<List<GroupTableData>> snapshot) {
-        final groups = snapshot.data ?? List();
+        groups = snapshot.data ?? List();
         return ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
