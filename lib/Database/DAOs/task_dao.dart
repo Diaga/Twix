@@ -24,19 +24,28 @@ class TaskDao extends DatabaseAccessor<TwixDB> with _$TaskDaoMixin {
       (select(taskTable)..where((row) => row.id.equals(id))).getSingle();
 
   Stream<List<TaskWithBoard>> watchAllTasksByBoardId(String boardId) =>
-      (select(taskTable)..where((row) => row.boardId.equals(boardId)))
+      (select(taskTable)
+            ..where((row) => row.boardId.equals(boardId))
+            ..orderBy([
+              (t) => OrderingTerm(expression: t.isDone, mode: OrderingMode.asc)
+            ]))
           .join([
-        innerJoin(boardTable, taskTable.boardId.equalsExp(boardTable.id)),
-      ])
+            innerJoin(boardTable, taskTable.boardId.equalsExp(boardTable.id)),
+          ])
           .watch()
           .map((rows) => rows
-          .map((row) => TaskWithBoard(
-          task: row.readTable(taskTable),
-          board: row.readTable(boardTable)))
-          .toList());
+              .map((row) => TaskWithBoard(
+                  task: row.readTable(taskTable),
+                  board: row.readTable(boardTable)))
+              .toList());
 
   Stream<List<TaskTableData>> watchAllTasksByBoardIdNoJoin(String boardId) =>
-      (select(taskTable)..where((row) => row.boardId.equals(boardId))).watch();
+      (select(taskTable)
+            ..where((row) => row.boardId.equals(boardId))
+            ..orderBy([
+              (t) => OrderingTerm(expression: t.isDone, mode: OrderingMode.asc)
+            ]))
+          .watch();
 
   Stream<List<TaskTableData>> watchDoneTasksByBoardId(String boardId) =>
       (select(taskTable)
@@ -47,7 +56,11 @@ class TaskDao extends DatabaseAccessor<TwixDB> with _$TaskDaoMixin {
   Stream<List<TaskWithBoard>> watchAllMyDayTasks() {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    return (select(taskTable)..where((row) => row.myDayDate.equals(today)))
+    return (select(taskTable)
+          ..where((row) => row.myDayDate.equals(today))
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.isDone, mode: OrderingMode.asc)
+          ]))
         .join([
           innerJoin(boardTable, taskTable.boardId.equalsExp(boardTable.id)),
         ])
@@ -80,7 +93,8 @@ class TaskDao extends DatabaseAccessor<TwixDB> with _$TaskDaoMixin {
     final today = DateTime(now.year, now.month, now.day);
     DateTime myDayDateRefined;
     if (myDayDate != null)
-      myDayDateRefined = DateTime(myDayDate.year, myDayDate.month, myDayDate.day);
+      myDayDateRefined =
+          DateTime(myDayDate.year, myDayDate.month, myDayDate.day);
     return myDayDateRefined == today;
   }
 }
