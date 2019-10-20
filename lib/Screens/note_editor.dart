@@ -5,7 +5,7 @@ import 'package:twix/Database/database.dart';
 import 'package:twix/Database/DAOs/task_dao.dart';
 
 class NoteEditor extends StatelessWidget {
-  final TaskWithBoard task;
+  final TaskTableData task;
   final TextEditingController notesController = TextEditingController();
 
   NoteEditor({Key key, this.task}) : super(key: key);
@@ -16,7 +16,7 @@ class NoteEditor extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          task.task.notes != null ? task.task.notes : 'Notes',
+          task.notes != null ? task.notes : 'Notes',
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: IconThemeData(color: Colors.black),
@@ -28,7 +28,7 @@ class NoteEditor extends StatelessWidget {
             onPressed: () async {
               if (notesController.text.isNotEmpty) {
                 await database.taskDao.updateTask(
-                    task.task.copyWith(notes: notesController.text));
+                    task.copyWith(notes: notesController.text));
               }
               Navigator.pop(context);
             },
