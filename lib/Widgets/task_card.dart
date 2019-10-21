@@ -8,6 +8,7 @@ import 'package:twix/Database/DAOs/task_dao.dart';
 import 'package:twix/Database/DAOs/assigned_task_dao.dart';
 
 import 'package:twix/Screens/task_details.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TaskCard extends StatefulWidget {
   final TaskWithBoard task;
@@ -48,7 +49,7 @@ class _TaskCardState extends State<TaskCard> {
       child: ListTile(
         leading: task.isDone
             ? Icon(Icons.check_circle_outline)
-            : Icon(Icons.hourglass_empty),
+            : Icon(FontAwesomeIcons.circle),
         title: Text(task.name,
             style: task.isDone
                 ? TextStyle(decoration: TextDecoration.lineThrough)

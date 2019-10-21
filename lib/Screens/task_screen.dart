@@ -8,6 +8,7 @@ import 'package:twix/Database/DAOs/task_dao.dart';
 import 'package:twix/Database/DAOs/assigned_task_dao.dart';
 
 import 'package:twix/Screens/home_screen.dart';
+import 'package:twix/Widgets/custom_scroll_behaviour.dart';
 import 'package:twix/Widgets/onswipe_container.dart';
 import 'package:twix/Widgets/task_adder_sheet.dart';
 import 'package:twix/Widgets/task_card.dart';
@@ -291,12 +292,15 @@ class _TaskScreenState extends State<TaskScreen> {
           .watchAllAssignedTasksByUserId(widget.loggedInUser.id),
       builder: (context, snapshot) {
         final tasks = snapshot.data ?? List();
-        return ListView.builder(
-          itemCount: snapshot.data == null ? 0 : snapshot.data.length,
-          itemBuilder: (_, index) {
-            return _buildTaskCard(
-                assignedTaskItem: tasks[index], database: database);
-          },
+        return ScrollConfiguration(
+          behavior: CustomScrollBehaviour(),
+          child: ListView.builder(
+            itemCount: snapshot.data == null ? 0 : snapshot.data.length,
+            itemBuilder: (_, index) {
+              return _buildTaskCard(
+                  assignedTaskItem: tasks[index], database: database);
+            },
+          ),
         );
       },
     );
@@ -308,12 +312,15 @@ class _TaskScreenState extends State<TaskScreen> {
         stream: watchAllTaskList(database),
         builder: (context, AsyncSnapshot<List<TaskWithBoard>> snapshot) {
           tasks = snapshot.data ?? List();
-          return ListView.builder(
-            itemCount: tasks.length,
-            itemBuilder: (_, index) {
-              final taskItem = tasks[index];
-              return _buildTaskCard(taskItem: taskItem, database: database);
-            },
+          return ScrollConfiguration(
+            behavior: CustomScrollBehaviour(),
+            child: ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (_, index) {
+                final taskItem = tasks[index];
+                return _buildTaskCard(taskItem: taskItem, database: database);
+              },
+            ),
           );
         });
   }

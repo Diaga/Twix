@@ -19,9 +19,18 @@ class Twix extends StatelessWidget {
         builder: (_) => TwixDB(),
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          home: Scaffold(
-            body: Builder(builder: (context) => _buildMainScreen(context)),
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            pageTransitionsTheme: PageTransitionsTheme(
+                builders: {
+                  TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+                }
+            ),
           ),
+          home:Login(),
+//          home: Scaffold(
+//            body: Builder(builder: (context) => _buildMainScreen(context)),
+//          ),
         ));
   }
 
@@ -41,7 +50,7 @@ class Twix extends StatelessWidget {
             return Login();
           }
           return Container();
-        });
+        },);
   }
 }
 
