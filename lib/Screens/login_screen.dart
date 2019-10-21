@@ -32,7 +32,6 @@ class LoginState extends State<Login> {
   Widget build(BuildContext context) {
     final database = Provider.of<TwixDB>(context);
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: SafeArea(
@@ -45,10 +44,14 @@ class LoginState extends State<Login> {
                   Container(
                     height: MediaQuery.of(context).size.height * 0.20,
                     child: Center(
-                      child: Image(
-                        image: AssetImage('images/splash_image.png',),
-                        height: 100,
-                      ),
+                      child: Hero(
+                          tag: 'avatar',
+                          child: Image(
+                            image: AssetImage(
+                              'images/splash_image.png',
+                            ),
+                            height: 100,
+                          )),
                     ),
                   ),
                   Container(
@@ -78,9 +81,9 @@ class LoginState extends State<Login> {
                     height: MediaQuery.of(context).size.height * 0.35,
                     child: Column(
                       children: <Widget>[
-                        _buildTextField('Name', nameController,false),
-                        _buildTextField('Email', emailController,false),
-                        _buildTextField('Password', passwordController,true),
+                        _buildTextField('Name', nameController, false),
+                        _buildTextField('Email', emailController, false),
+                        _buildTextField('Password', passwordController, true),
                       ],
                     ),
                   ),
@@ -135,7 +138,8 @@ class LoginState extends State<Login> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, bool obscureText) {
+  Widget _buildTextField(
+      String label, TextEditingController controller, bool obscureText) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5),
       child: TextField(
@@ -143,7 +147,6 @@ class LoginState extends State<Login> {
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-
         ),
       ),
     );
