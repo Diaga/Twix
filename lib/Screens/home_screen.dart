@@ -15,6 +15,9 @@ import 'package:twix/Widgets/board_list.dart';
 import 'package:twix/Widgets/custom_app_bar.dart';
 import 'package:twix/Widgets/custom_bottom_bar.dart';
 
+import '../Widgets/build_board_card.dart';
+import '../Widgets/build_group_card.dart';
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -146,11 +149,9 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-          Divider(),
+          Divider(indent: 20,endIndent: 20,),
           _buildBoardList(context, database),
-          Visibility(
-              visible: HoldData.isDividerA,
-              child: Divider()),
+          Visibility(visible: HoldData.isDividerA, child: Divider(indent: 20,endIndent: 20,)),
           _buildGroupList(context, database)
         ],
       ),
@@ -193,37 +194,24 @@ class _HomeScreenState extends State<HomeScreen> {
   StreamBuilder<List<BoardTableData>> _buildBoardList(
       BuildContext context, TwixDB database) {
     return StreamBuilder(
-        stream: database.boardDao.watchAllBoards(),
-        builder: (context, AsyncSnapshot<List<BoardTableData>> snapshot) {
-          boards = snapshot.data ?? List();
-          if (boards.length > 0)
-            HoldData.isDividerA = true;
-          else
-            HoldData.isDividerA = false;
-          return ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: boards.length,
-            itemBuilder: (_, index) {
-              final boardItem = boards[index];
-              return _buildBoardCard(context, boardItem);
-            },
-          );
-        });
-  }
-
-  Widget _buildBoardCard(BuildContext context, BoardTableData boardItem) {
-    return BoardsList(
-        iconData: Icons.developer_board,
-        title: boardItem.name,
-        callBack: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => TaskScreen(
-                        boardId: boardItem.id,
-                      )));
-        });
+      stream: database.boardDao.watchAllBoards(),
+      builder: (context, AsyncSnapshot<List<BoardTableData>> snapshot) {
+        boards = snapshot.data ?? List();
+        if (boards.length > 0)
+          HoldData.isDividerA = true;
+        else
+          HoldData.isDividerA = false;
+        return ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: boards.length,
+          itemBuilder: (_, index) {
+            final boardItem = boards[index];
+            return BuildBoardCard(boardItem: boardItem);
+          },
+        );
+      },
+    );
   }
 
   StreamBuilder<List<GroupTableData>> _buildGroupList(
@@ -242,25 +230,11 @@ class _HomeScreenState extends State<HomeScreen> {
           itemCount: groups.length,
           itemBuilder: (_, index) {
             final groupItem = groups[index];
-            return _buildGroupCard(context, groupItem);
+            return BuildGroupCard(groupItem: groupItem);
           },
         );
       },
     );
-  }
-
-  Widget _buildGroupCard(BuildContext context, GroupTableData groupItem) {
-    return BoardsList(
-        iconData: Icons.group,
-        title: groupItem.name,
-        callBack: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => GroupScreen(
-                        group: groupItem,
-                      )));
-        });
   }
 }
 

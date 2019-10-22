@@ -15,7 +15,7 @@ class NoteEditor extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          task.notes != null ? task.notes : 'Notes',
+          'Notes',
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: IconThemeData(color: Colors.black),
@@ -35,6 +35,7 @@ class NoteEditor extends StatelessWidget {
         ],
       ),
       body: Container(
+        height: double.infinity,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: TextField(
@@ -44,7 +45,7 @@ class NoteEditor extends StatelessWidget {
             decoration: InputDecoration(
               border: InputBorder.none,
             ),
-            controller: notesController,
+            controller: notesController..text = task.notes,
           ),
         ),
       ),

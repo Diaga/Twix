@@ -72,7 +72,7 @@ class CustomAppBar extends PreferredSize {
   Widget _buildUserNameAndEmail(String name, String email) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Text(
           name,
@@ -80,7 +80,7 @@ class CustomAppBar extends PreferredSize {
         ),
         Text(
           email,
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black,fontSize: 12),
         ),
       ],
     );

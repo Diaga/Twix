@@ -33,7 +33,6 @@ class LoginState extends State<Login> {
   Widget build(BuildContext context) {
     final database = Provider.of<TwixDB>(context);
     return Scaffold(
-      //resizeToAvoidBottomPadding: false,
       body: Builder(
         builder: (context) => ModalProgressHUD(
           inAsyncCall: showSpinner,
@@ -43,7 +42,6 @@ class LoginState extends State<Login> {
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
                     Container(
                       height: MediaQuery.of(context).size.height * 0.20,
@@ -66,14 +64,16 @@ class LoginState extends State<Login> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 30.0),
                             child: Text(
                               'Welcome!',
                               style: TextStyle(fontSize: 30),
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 30.0),
                             child: Text(
                               'Sign up to continue...',
                               style: TextStyle(color: Colors.grey),
@@ -100,37 +100,33 @@ class LoginState extends State<Login> {
                             side: BorderSide(color: Colors.white)),
                         color: Color.fromRGBO(249, 157, 33, 100),
                         onPressed: () async {
-//                          if (Connect.getConnection) {
-//                            if (_validateFields()) {
-//                              setState(() {
-//                                showSpinner = true;
-//                              });
-//                              if (await (_actionSignUp(database))) {
-//                                Navigator.pushReplacement(
-//                                  context,
-//                                  MaterialPageRoute(
-//                                    builder: (context) => HomeScreen(),
-//                                  ),
-//                                );
-//                              }
-//                            } else {
-//                              final snackBar = SnackBar(
-//                                  content: Text(
-//                                      'Please fill the above fields correctly!'));
-//                              Scaffold.of(context).showSnackBar(snackBar);
-//                            }
-//                          } else {
-//                            final snackBar = SnackBar(
-//                                content: Text(
-//                                    'You must be connected to the internet to proceed!'));
-//                            Scaffold.of(context).showSnackBar(snackBar);
-//                          }
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HomeScreen(),
-                            ),
-                          );
+                          if (Connect.getConnection) {
+                            if (_validateFields()) {
+                              setState(() {
+                                showSpinner = true;
+                              });
+                              if (await (_actionSignUp(database))) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HomeScreen(),
+                                  ),
+                                );
+                              }
+                            } else {
+                              final snackBar = SnackBar(
+                                content: Text(
+                                    'Please fill the above fields correctly!'),
+                              );
+                              Scaffold.of(context).showSnackBar(snackBar);
+                            }
+                          } else {
+                            final snackBar = SnackBar(
+                              content: Text(
+                                  'You must be connected to the internet to proceed!'),
+                            );
+                            Scaffold.of(context).showSnackBar(snackBar);
+                          }
                         },
                         child: Text(
                           'SIGN UP',
@@ -180,6 +176,7 @@ class LoginState extends State<Login> {
           token: Value(authToken)));
       Api.setAuthToken(authToken);
     }
+    print(result);
     return result;
   }
 

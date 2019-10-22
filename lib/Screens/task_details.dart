@@ -3,11 +3,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:moor_flutter/moor_flutter.dart' hide Column;
-
 import 'package:twix/Api/api.dart';
 import 'package:twix/Database/database.dart';
 import 'package:twix/Database/DAOs/task_dao.dart';
-
 import 'package:twix/Screens/note_editor.dart';
 import 'package:twix/Widgets/custom_scroll_behaviour.dart';
 
@@ -38,62 +36,65 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   Widget build(BuildContext context) {
     final database = Provider.of<TwixDB>(context);
     return FutureBuilder(
-        future: database.taskDao.getTaskById(
-            useFallBack ? widget.taskFallBack.id : widget.task.task.id),
-        builder: (context, snapshot) {
-          final task = snapshot.data ??
-              TaskTableData(
-                  name: '',
-                  id: '',
-                  isDone: false,
-                  isSync: false,
-                  createdAt: DateTime.now());
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                useFallBack ? 'Assigned To Me' : widget.task.board.name,
-                style: TextStyle(color: Colors.black),
-              ),
-              backgroundColor: Colors.white,
-              elevation: 0,
-              iconTheme: IconThemeData(color: Colors.black),
+      future: database.taskDao.getTaskById(
+          useFallBack ? widget.taskFallBack.id : widget.task.task.id),
+      builder: (context, snapshot) {
+        final task = snapshot.data ??
+            TaskTableData(
+              name: '',
+              id: '',
+              isDone: false,
+              isSync: false,
+              createdAt: DateTime.now(),
+            );
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              useFallBack ? 'Assigned To Me' : widget.task.board.name,
+              style: TextStyle(color: Colors.black),
             ),
-            bottomNavigationBar: BottomAppBar(
-              child: Container(
-                height: 56,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Expanded(
-                      flex: 5,
-                      child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 10.0),
-                            child: Text(
-                                'Created on ${DateFormat.yMd().format(task.createdAt).toString()}'),
-                          )),
-                    ),
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          database.taskDao.deleteTask(
-                              useFallBack ? widget.task : widget.task.task);
-                          Navigator.pop(context);
-                        },
-                        child: Icon(Icons.delete_outline),
+            backgroundColor: Colors.white,
+            elevation: 0,
+            iconTheme: IconThemeData(color: Colors.black),
+          ),
+          bottomNavigationBar: BottomAppBar(
+            child: Container(
+              height: 56,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Expanded(
+                    flex: 5,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Text(
+                          'Created on ${DateFormat.yMMMEd().format(task.createdAt).toString()}',
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () {
+                        database.taskDao.deleteTask(
+                            useFallBack ? widget.task : widget.task.task);
+                        Navigator.pop(context);
+                      },
+                      child: Icon(Icons.delete_outline),
+                    ),
+                  ),
+                ],
               ),
             ),
-            body: AbsorbPointer(
-              absorbing: shouldDisable,
-              child: ScrollConfiguration(
-                behavior: CustomScrollBehaviour(),
-                child: ListView(children: <Widget>[
+          ),
+          body: AbsorbPointer(
+            absorbing: shouldDisable,
+            child: ScrollConfiguration(
+              behavior: CustomScrollBehaviour(),
+              child: ListView(
+                children: <Widget>[
                   Container(
                     height: 80,
                     child: Card(
@@ -113,40 +114,70 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                   ),
                   Card(
                     margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
-                    child: ListTile(
-                      onTap: () {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (context) => Container(
-                                  child: _buildGroupList(database),
-                                ));
-                      },
-                      leading: Icon(Icons.assignment_ind),
-                      title: task.assignedTo != null
-                          ? Text('Assigned')
-                          : Text('Assign task'),
-                    ),
-                  ),
-                  Card(
-                    margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
-                    child: ListTile(
-                      leading: Icon(FontAwesomeIcons.bell),
-                      title: task.dueDate != null
-                          ? Text(
-                              '${DateFormat.yMd().format(task.remindMe).toString()} ${DateFormat.jm().format(task.remindMe).toString()}')
-                          : Text('Add due date'),
-                      onTap: () {},
-                    ),
-                  ),
-                  Card(
-                    margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
-                    child: ListTile(
-                      leading: Icon(Icons.calendar_today),
-                      title: task.dueDate != null
-                          ? Text(
-                              DateFormat.yMMMEd().format(task.dueDate).toString())
-                          : Text('Add due date'),
-                      onTap: () {},
+                    child: Column(
+                      children: <Widget>[
+                        ListTile(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (context) => Container(
+                                child: ScrollConfiguration(
+                                  behavior: CustomScrollBehaviour(),
+                                  child: ListView(
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          height: 50,
+                                          child: Center(
+                                            child: Text(
+                                              'Groups',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        child: _buildGroupList(database),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          leading: Icon(Icons.assignment_ind),
+                          title: task.assignedTo != null
+                              ? Text('Assigned')
+                              : Text('Assign task'),
+                        ),
+                        Divider(
+                          indent: 70,
+                        ),
+                        ListTile(
+                          leading: Icon(FontAwesomeIcons.bell),
+                          title: task.dueDate != null
+                              ? Text(
+                                  '${DateFormat.MMMEd().format(task.remindMe).toString()},'
+                                  ' ${DateFormat.jm().format(task.remindMe).toString()}')
+                              : Text('No reminder'),
+                          onTap: () {},
+                        ),
+                        Divider(
+                          indent: 70,
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.calendar_today),
+                          title: task.dueDate != null
+                              ? Text(DateFormat.yMMMEd()
+                                  .format(task.dueDate)
+                                  .toString())
+                              : Text('No due date'),
+                          onTap: () {},
+                        ),
+                      ],
                     ),
                   ),
                   Container(
@@ -160,21 +191,28 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => NoteEditor(task: task)));
+                                  builder: (context) =>
+                                      NoteEditor(task: task)));
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
-                          child: task.notes != null || task.notes == '' ? Text(task.notes)
-                              : Text('Add notes',style: TextStyle(color: Colors.grey),),
+                          child: task.notes != null || task.notes == ''
+                              ? Text(task.notes)
+                              : Text(
+                                  'Add notes',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
                         ),
                       ),
                     ),
                   ),
-                ]),
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   StreamBuilder _buildGroupList(TwixDB database) {
@@ -182,11 +220,15 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         stream: database.groupDao.watchAllGroups(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           final groups = snapshot.data ?? List();
-          return ListView.builder(
-            itemCount: groups.length,
-            itemBuilder: (_, index) {
-              return GroupListTile(group: groups[index], task: widget.task);
-            },
+          return ScrollConfiguration(
+            behavior: CustomScrollBehaviour(),
+            child: ListView.builder(
+              itemCount: groups.length,
+              shrinkWrap: true,
+              itemBuilder: (_, index) {
+                return GroupListTile(group: groups[index], task: widget.task);
+              },
+            ),
           );
         });
   }
@@ -207,32 +249,38 @@ class GroupListTileState extends State<GroupListTile> {
   Widget build(BuildContext context) {
     final database = Provider.of<TwixDB>(context);
     return FutureBuilder(
-        future: database.taskDao.getTaskById(widget.task.task.id),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.done ||
-              snapshot.connectionState ==
-                  ConnectionState.active) if (!snapshot.hasError) {
-            if (snapshot.data.assignedTo == null) {
-              return ListTile(
-                  leading: Icon(Icons.group),
-                  title: Text(widget.group.name),
-                  onTap: () async {
-                    database.taskDao.updateTask(
-                        widget.task.task.copyWith(assignedTo: widget.group.id));
-                    setState(() {});
-                    await Api.deleteTask(widget.task.task.id);
-                    await Api.createTask(
-                        id: widget.task.task.id,
-                        name: widget.task.task.name,
-                        isDone: widget.task.task.isDone,
-                        dueDate: widget.task.task.dueDate,
-                        remindMe: widget.task.task.remindMe,
-                        boardId: widget.task.board.id,
-                        isAssigned: true,
-                        groupId: widget.group.id);
-                  });
-            }
-            return ListTile(
+      future: database.taskDao.getTaskById(widget.task.task.id),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.done ||
+            snapshot.connectionState ==
+                ConnectionState.active) if (!snapshot.hasError) {
+          if (snapshot.data.assignedTo == null) {
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListTile(
+                leading: Icon(Icons.group),
+                title: Text(widget.group.name),
+                onTap: () async {
+                  database.taskDao.updateTask(
+                      widget.task.task.copyWith(assignedTo: widget.group.id));
+                  setState(() {});
+                  await Api.deleteTask(widget.task.task.id);
+                  await Api.createTask(
+                      id: widget.task.task.id,
+                      name: widget.task.task.name,
+                      isDone: widget.task.task.isDone,
+                      dueDate: widget.task.task.dueDate,
+                      remindMe: widget.task.task.remindMe,
+                      boardId: widget.task.board.id,
+                      isAssigned: true,
+                      groupId: widget.group.id);
+                },
+              ),
+            );
+          }
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListTile(
               leading: Icon(Icons.group),
               title: Text(widget.group.name),
               trailing: Icon(Icons.check),
@@ -243,12 +291,17 @@ class GroupListTileState extends State<GroupListTile> {
                 setState(() {});
                 await Api.deleteTask(widget.task.task.id);
               },
-            );
-          }
-          return ListTile(
+            ),
+          );
+        }
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListTile(
             leading: Icon(Icons.group),
             title: Text(widget.group.name),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }

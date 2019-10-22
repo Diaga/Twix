@@ -8,6 +8,7 @@ import 'package:moor_flutter/moor_flutter.dart' hide Column;
 import 'package:twix/Database/database.dart';
 import 'package:twix/Api/api.dart';
 import 'package:twix/Database/DAOs/group_user_dao.dart';
+import 'package:twix/Widgets/custom_scroll_behaviour.dart';
 
 class GroupScreen extends StatefulWidget {
   final GroupTableData group;
@@ -56,13 +57,16 @@ class _GroupScreenState extends State<GroupScreen> {
           if (snapshot.connectionState == ConnectionState.active ||
               snapshot.connectionState ==
                   ConnectionState.done) if (!snapshot.hasError) {
-            return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (_, index) {
-                return MemberCard(
-                    name: snapshot.data[index].user.name,
-                    email: snapshot.data[index].user.email);
-              },
+            return ScrollConfiguration(
+              behavior: CustomScrollBehaviour(),
+              child: ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (_, index) {
+                  return MemberCard(
+                      name: snapshot.data[index].user.name,
+                      email: snapshot.data[index].user.email);
+                },
+              ),
             );
           }
           return Center(
@@ -81,10 +85,13 @@ class MemberCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: CircleAvatar(),
-      title: Text(name),
-      subtitle: Text(email),
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: ListTile(
+        leading: CircleAvatar(backgroundImage: AssetImage('images/default_avatar.jpg'),),
+        title: Text(name),
+        subtitle: Text(email),
+      ),
     );
   }
 }

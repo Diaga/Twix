@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:moor_flutter/moor_flutter.dart' hide Column;
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
-
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:twix/Database/database.dart';
 
 import 'package:twix/Widgets/task_details.dart';
@@ -90,15 +90,20 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                                   boardId: Value(widget.boardId),
                                   remindMe: Value(remindMeDateTime),
                                   createdAt: Value(today)))
-                              : database.taskDao.insertTask(TaskTableCompanion(
-                                  id: Value(Uuid().v4()),
-                                  name: Value(textEditingController.text),
-                                  boardId: Value(widget.boardId),
-                                  dueDate: Value(dueDate),
-                                  myDayDate: Value(DateTime(
-                                      today.year, today.month, today.day)),
-                                  remindMe: Value(remindMeDateTime),
-                                  createdAt: Value(today)));
+                              : database.taskDao.insertTask(
+                                  TaskTableCompanion(
+                                    id: Value(Uuid().v4()),
+                                    name: Value(textEditingController.text),
+                                    boardId: Value(widget.boardId),
+                                    dueDate: Value(dueDate),
+                                    myDayDate: Value(
+                                      DateTime(
+                                          today.year, today.month, today.day),
+                                    ),
+                                    remindMe: Value(remindMeDateTime),
+                                    createdAt: Value(today),
+                                  ),
+                                );
                           Navigator.pop(context);
                           if (remindMeDateTime != null) {
                             widget.showNotification(
@@ -126,10 +131,10 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                     callBack: selectDueDate,
                   ),
                   TaskDetails(
-                    iconData: Icons.add_alert,
+                    iconData: FontAwesomeIcons.bell,
                     text: remindMeDateTime == null
                         ? 'Remind Me'
-                        : '${DateFormat.yMd().format(remindMeDateTime).toString()} '
+                        : '${DateFormat.MMMEd().format(remindMeDateTime).toString()}, '
                             '${DateFormat.jm().format(remindMeDateTime).toString()}',
                     callBack: selectRemindDate,
                   ),

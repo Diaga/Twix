@@ -20,7 +20,7 @@ class TaskCard extends StatefulWidget {
   _TaskCardState createState() => _TaskCardState();
 }
 
-class _TaskCardState extends State<TaskCard> {
+class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin{
   IconData isDayIcon = Icons.star_border;
   IconData isCompletedIcon = Icons.check_circle_outline;
   TextDecoration isStrikeThrough = TextDecoration.none;
@@ -28,6 +28,8 @@ class _TaskCardState extends State<TaskCard> {
   bool isAssignedToMe;
   TaskTableData task;
   BoardTableData board;
+
+
 
   @override
   void initState() {
@@ -38,6 +40,8 @@ class _TaskCardState extends State<TaskCard> {
     } else {
       task = widget.task.task;
     }
+
+
   }
 
   @override

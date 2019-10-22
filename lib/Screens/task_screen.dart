@@ -8,6 +8,7 @@ import 'package:twix/Database/DAOs/task_dao.dart';
 import 'package:twix/Database/DAOs/assigned_task_dao.dart';
 
 import 'package:twix/Screens/home_screen.dart';
+import 'package:twix/Widgets/build_task_card.dart';
 import 'package:twix/Widgets/custom_scroll_behaviour.dart';
 import 'package:twix/Widgets/onswipe_container.dart';
 import 'package:twix/Widgets/task_adder_sheet.dart';
@@ -297,7 +298,7 @@ class _TaskScreenState extends State<TaskScreen> {
           child: ListView.builder(
             itemCount: snapshot.data == null ? 0 : snapshot.data.length,
             itemBuilder: (_, index) {
-              return _buildTaskCard(
+              return BuildTaskCard(
                   assignedTaskItem: tasks[index], database: database);
             },
           ),
@@ -318,68 +319,14 @@ class _TaskScreenState extends State<TaskScreen> {
               itemCount: tasks.length,
               itemBuilder: (_, index) {
                 final taskItem = tasks[index];
-                return _buildTaskCard(taskItem: taskItem, database: database);
+                return BuildTaskCard(taskItem: taskItem, database: database);
               },
             ),
           );
-        });
-  }
-
-  Widget _buildTaskCard({TaskWithBoard taskItem,
-    AssignedTaskWithUser assignedTaskItem,
-    TwixDB database}) {
-    final TaskCard taskCard = TaskCard(
-      task: taskItem != null ? taskItem : null,
-      assignedTask: assignedTaskItem != null ? assignedTaskItem : null,
+        },
     );
-    bool isDone =
-    taskItem == null ? assignedTaskItem.task.isDone : taskItem.task.isDone;
-    DismissDirection dismissDirection =
-    isDone ? DismissDirection.endToStart : DismissDirection.horizontal;
-    return Builder(
-        builder: (context) =>
-            Dismissible(
-              key: ValueKey(taskCard.hashCode),
-              direction: dismissDirection,
-              background: OnSwipeContainer(
-                color: Colors.blue,
-                iconData: Icons.check,
-                alignment: Alignment.centerLeft,
-              ),
-              child: taskCard,
-              onDismissed: (DismissDirection direction) {
-                if (direction == DismissDirection.startToEnd) {
-                  // Logic to update the task to isDone
-                  database.taskDao
-                      .updateTask(taskItem.task.copyWith(isDone: true));
-
-                  // Display snack bar
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Done"),
-                      duration: Duration(milliseconds: 600),
-                    ),
-                  );
-                } else if (direction == DismissDirection.endToStart) {
-                  // Logic to delete the task
-                  database.taskDao.deleteTask(taskItem.task);
-
-                  // Display snack bar
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Deleted"),
-                      duration: Duration(milliseconds: 600),
-                    ),
-                  );
-                }
-              },
-              secondaryBackground: OnSwipeContainer(
-                color: Colors.red,
-                iconData: Icons.delete,
-                alignment: Alignment.centerRight,
-              ),
-            ));
   }
+
 
   Widget _buildBoardColumn(String boardName, String createdAt) {
     return Column(
