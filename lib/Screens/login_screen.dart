@@ -32,95 +32,102 @@ class LoginState extends State<Login> {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: SafeArea(
-        child: ListView(
-          children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.20,
-                  child: Center(
-                    child: Icon(
-                      Icons.edit,
-                      size: 60,
+          child: ListView(
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.20,
+                    child: Center(
+                      child: Image(
+                        image: AssetImage('images/splash_image.png',),
+                        height: 100,
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.15,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                        child: Text(
-                          'Welcome!',
-                          style: TextStyle(fontSize: 30),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                          child: Text(
+                            'Welcome!',
+                            style: TextStyle(fontSize: 30),
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                        child: Text(
-                          'Sign up to continue...',
-                          style: TextStyle(color: Colors.grey),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                          child: Text(
+                            'Sign up to continue...',
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.35,
-                  child: Column(
-                    children: <Widget>[
-                      _buildTextField('Name', nameController,false),
-                      _buildTextField('Email', emailController,false),
-                      _buildTextField('Password', passwordController,true),
-                    ],
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.35,
+                    child: Column(
+                      children: <Widget>[
+                        _buildTextField('Name', nameController,false),
+                        _buildTextField('Email', emailController,false),
+                        _buildTextField('Password', passwordController,true),
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.08,
-                  width: MediaQuery.of(context).size.width,
-                  margin: EdgeInsets.all(15),
-                  child: FlatButton(
-                    color: Palette.primaryColor,
-                    onPressed: () async {
-                      if (Connect.getConnection) {
-                        if (_validateFields()) {
-                          if (await (_actionSignUp(database))) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HomeScreen(),
-                              ),
-                            );
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.08,
+                    width: MediaQuery.of(context).size.width,
+                    margin: EdgeInsets.all(15),
+                    child: FlatButton(
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(3.0),
+                          side: BorderSide(color: Colors.white)),
+                      color: Color.fromRGBO(249, 157, 33, 100),
+                      onPressed: () async {
+                        setState(() {
+                          showSpinner = true;
+                        });
+                        if (Connect.getConnection) {
+                          if (_validateFields()) {
+                            if (await (_actionSignUp(database))) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomeScreen(),
+                                ),
+                              );
+                            }
+                          } else {
+                            final snackBar = SnackBar(
+                                content: Text(
+                                    'Please fill the above fields correctly!'));
+                            Scaffold.of(context).showSnackBar(snackBar);
                           }
                         } else {
                           final snackBar = SnackBar(
                               content: Text(
-                                  'Please fill the above fields correctly!'));
+                                  'You must be connected to the internet to proceed!'));
                           Scaffold.of(context).showSnackBar(snackBar);
                         }
-                      } else {
-                        final snackBar = SnackBar(
-                            content: Text(
-                                'You must be connected to the internet to proceed!'));
-                        Scaffold.of(context).showSnackBar(snackBar);
-                      }
-                    },
-                    child: Text(
-                      'SIGN UP',
-                      style: TextStyle(color: Colors.white),
+                      },
+                      child: Text(
+                        'SIGN UP',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
+
     );
   }
 
