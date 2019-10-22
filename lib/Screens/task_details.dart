@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:moor_flutter/moor_flutter.dart' hide Column;
@@ -8,6 +9,7 @@ import 'package:twix/Database/database.dart';
 import 'package:twix/Database/DAOs/task_dao.dart';
 
 import 'package:twix/Screens/note_editor.dart';
+import 'package:twix/Widgets/custom_scroll_behaviour.dart';
 
 class TaskDetailsScreen extends StatefulWidget {
   final TaskWithBoard task;
@@ -89,84 +91,87 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             ),
             body: AbsorbPointer(
               absorbing: shouldDisable,
-              child: ListView(children: <Widget>[
-                Container(
-                  child: Card(
-                    margin: EdgeInsets.zero,
-                    child: Center(
-                      child: ListTile(
-                        leading: task.isDone
-                            ? Icon(Icons.check_circle_outline)
-                            : Icon(Icons.hourglass_empty),
-                        title: Text(task.name),
-                        trailing: database.taskDao.isMyDay(task.myDayDate)
-                            ? Icon(Icons.star)
-                            : Icon(Icons.star_border),
+              child: ScrollConfiguration(
+                behavior: CustomScrollBehaviour(),
+                child: ListView(children: <Widget>[
+                  Container(
+                    height: 80,
+                    child: Card(
+                      margin: EdgeInsets.zero,
+                      child: Center(
+                        child: ListTile(
+                          leading: task.isDone
+                              ? Icon(Icons.check_circle_outline)
+                              : Icon(FontAwesomeIcons.circle),
+                          title: Text(task.name),
+                          trailing: database.taskDao.isMyDay(task.myDayDate)
+                              ? Icon(Icons.star)
+                              : Icon(Icons.star_border),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Card(
-                  margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
-                  child: ListTile(
-                    onTap: () {
-                      showModalBottomSheet(
-                          context: context,
-                          builder: (context) => Container(
-                                child: _buildGroupList(database),
-                              ));
-                    },
-                    leading: Icon(Icons.assignment_ind),
-                    title: task.assignedTo != null
-                        ? Text('Assigned')
-                        : Text('Assign task'),
-                  ),
-                ),
-                Card(
-                  margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
-                  child: ListTile(
-                    leading: Icon(Icons.add_alert),
-                    title: task.dueDate != null
-                        ? Text(
-                            '${DateFormat.yMd().format(task.remindMe).toString()} ${DateFormat.jm().format(task.remindMe).toString()}')
-                        : Text('Add due date'),
-                    onTap: () {},
-                  ),
-                ),
-                Card(
-                  margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
-                  child: ListTile(
-                    leading: Icon(Icons.calendar_today),
-                    title: task.dueDate != null
-                        ? Text(
-                            DateFormat.yMMMEd().format(task.dueDate).toString())
-                        : Text('Add due date'),
-                    onTap: () {},
-                  ),
-                ),
-                Container(
-                  height: 200,
-                  width: double.infinity,
-                  margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
-                  child: Card(
-                    margin: EdgeInsets.zero,
-                    child: InkWell(
+                  Card(
+                    margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
+                    child: ListTile(
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => NoteEditor(task: task)));
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (context) => Container(
+                                  child: _buildGroupList(database),
+                                ));
                       },
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(task.notes != null || task.notes == ''
-                            ? task.notes
-                            : 'Add notes'),
+                      leading: Icon(Icons.assignment_ind),
+                      title: task.assignedTo != null
+                          ? Text('Assigned')
+                          : Text('Assign task'),
+                    ),
+                  ),
+                  Card(
+                    margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
+                    child: ListTile(
+                      leading: Icon(FontAwesomeIcons.bell),
+                      title: task.dueDate != null
+                          ? Text(
+                              '${DateFormat.yMd().format(task.remindMe).toString()} ${DateFormat.jm().format(task.remindMe).toString()}')
+                          : Text('Add due date'),
+                      onTap: () {},
+                    ),
+                  ),
+                  Card(
+                    margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
+                    child: ListTile(
+                      leading: Icon(Icons.calendar_today),
+                      title: task.dueDate != null
+                          ? Text(
+                              DateFormat.yMMMEd().format(task.dueDate).toString())
+                          : Text('Add due date'),
+                      onTap: () {},
+                    ),
+                  ),
+                  Container(
+                    height: 200,
+                    width: double.infinity,
+                    margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
+                    child: Card(
+                      margin: EdgeInsets.zero,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => NoteEditor(task: task)));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: task.notes != null || task.notes == '' ? Text(task.notes)
+                              : Text('Add notes',style: TextStyle(color: Colors.grey),),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ]),
+                ]),
+              ),
             ),
           );
         });

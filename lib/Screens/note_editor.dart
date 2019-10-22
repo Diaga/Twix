@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:twix/Database/database.dart';
-import 'package:twix/Database/DAOs/task_dao.dart';
 
 class NoteEditor extends StatelessWidget {
   final TaskTableData task;

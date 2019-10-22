@@ -12,7 +12,7 @@ class CustomAppBar extends PreferredSize {
   Widget build(BuildContext context) {
     final database = Provider.of<TwixDB>(context);
     return Container(
-      padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
+      //padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
       height: height,
       color: color,
       child: Row(
@@ -20,9 +20,13 @@ class CustomAppBar extends PreferredSize {
         children: <Widget>[
           Expanded(
               child: Padding(
-            child: CircleAvatar(
-              backgroundColor: color,
-              backgroundImage: AssetImage('images/splash_image.png'),
+            child: Hero(
+              tag: 'icon',
+              child: CircleAvatar(
+                backgroundColor: Colors.white,
+                backgroundImage: AssetImage('images/splash_image.png'),
+                radius: 1,
+              ),
             ),
             padding: const EdgeInsets.all(5.0),
           )),

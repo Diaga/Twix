@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
         child: Scaffold(
       appBar: CustomAppBar(
-        height: 80.0,
+        height: 60.0,
         color: ThemeData.light().scaffoldBackgroundColor,
       ),
       bottomNavigationBar: CustomBottomBar(
@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ListView(
         children: <Widget>[
           BoardsList(
-            iconData: Icons.wb_sunny,
+            iconData: Icons.today,
             title: 'My Day',
             callBack: () {
               Navigator.push(
@@ -148,7 +148,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Divider(),
           _buildBoardList(context, database),
-          Divider(),
+          Visibility(
+              visible: HoldData.isDividerA,
+              child: Divider()),
           _buildGroupList(context, database)
         ],
       ),
@@ -194,8 +196,10 @@ class _HomeScreenState extends State<HomeScreen> {
         stream: database.boardDao.watchAllBoards(),
         builder: (context, AsyncSnapshot<List<BoardTableData>> snapshot) {
           boards = snapshot.data ?? List();
-          if (boards.length > 0) HoldData.isDividerA = true;
-          else HoldData.isDividerA = false;
+          if (boards.length > 0)
+            HoldData.isDividerA = true;
+          else
+            HoldData.isDividerA = false;
           return ListView.builder(
             physics: NeverScrollableScrollPhysics(),
             shrinkWrap: true,
@@ -228,8 +232,10 @@ class _HomeScreenState extends State<HomeScreen> {
       stream: database.groupDao.watchAllGroups(),
       builder: (context, AsyncSnapshot<List<GroupTableData>> snapshot) {
         groups = snapshot.data ?? List();
-        if (groups.length > 0) HoldData.isDividerG = true;
-        else HoldData.isDividerG = false;
+        if (groups.length > 0)
+          HoldData.isDividerG = true;
+        else
+          HoldData.isDividerG = false;
         return ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,

@@ -6,6 +6,7 @@ import 'package:twix/Api/api.dart';
 
 import 'package:twix/Screens/login_screen.dart';
 import 'package:twix/Screens/home_screen.dart';
+import 'package:twix/Screens/splash_screen.dart';
 
 void main() async {
   Connect.isConnected();
@@ -19,6 +20,12 @@ class Twix extends StatelessWidget {
         builder: (_) => TwixDB(),
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            pageTransitionsTheme: PageTransitionsTheme(builders: {
+              TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            }),
+          ),
           home: Scaffold(
             body: Builder(builder: (context) => _buildMainScreen(context)),
           ),
@@ -26,6 +33,7 @@ class Twix extends StatelessWidget {
   }
 
   Widget _buildMainScreen(BuildContext context) {
+    Connect.isConnected();
     final database = Provider.of<TwixDB>(context);
     return FutureBuilder(
         future: database.userDao.getLoggedInUser(),

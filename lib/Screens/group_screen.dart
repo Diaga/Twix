@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart';
-import 'package:uuid/uuid.dart';
 import 'package:moor_flutter/moor_flutter.dart' hide Column;
 
 import 'package:twix/Database/database.dart';
