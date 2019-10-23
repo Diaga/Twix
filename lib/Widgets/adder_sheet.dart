@@ -61,7 +61,7 @@ class _AdderSheetState extends State<AdderSheet> {
             Align(
                 alignment: Alignment.centerRight,
                 child: FlatButton(
-                    child: Text('Done'),
+                    child: Text('Done',style: TextStyle(fontWeight: FontWeight.bold),),
                     onPressed: () {
                       if (textEditingController.text.isNotEmpty)
                         widget.callBack(textEditingController.text, database);

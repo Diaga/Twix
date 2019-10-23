@@ -21,9 +21,6 @@ class TaskCard extends StatefulWidget {
 }
 
 class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin{
-  IconData isDayIcon = Icons.star_border;
-  IconData isCompletedIcon = Icons.check_circle_outline;
-  TextDecoration isStrikeThrough = TextDecoration.none;
 
   bool isAssignedToMe;
   TaskTableData task;
@@ -51,9 +48,12 @@ class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin
       margin: EdgeInsets.all(8.0),
       color: Colors.white,
       child: ListTile(
-        leading: task.isDone
-            ? Icon(Icons.check_circle_outline)
-            : Icon(FontAwesomeIcons.circle),
+        leading: Padding(
+          padding: const EdgeInsets.all(7.0),
+          child: task.isDone
+              ? Icon(Icons.check_circle_outline)
+              : Icon(FontAwesomeIcons.circle),
+        ),
         title: Text(task.name,
             style: task.isDone
                 ? TextStyle(decoration: TextDecoration.lineThrough)
@@ -63,7 +63,7 @@ class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin
         dense: true,
         trailing: database.taskDao.isMyDay(task.myDayDate)
             ? IconButton(
-                icon: Icon(Icons.star),
+                icon: Icon(Icons.star,color: Colors.orange,),
                 onPressed: () {
                   print(database.taskDao.isMyDay(task.myDayDate));
                   database.taskDao.updateTask(task
@@ -96,12 +96,4 @@ class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin
     );
   }
 
-  void updater() {
-    if (task.isDone) {
-      setState(() {
-        isCompletedIcon = Icons.check_circle;
-        isStrikeThrough = TextDecoration.lineThrough;
-      });
-    }
-  }
 }

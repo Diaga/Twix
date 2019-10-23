@@ -27,11 +27,12 @@ class CustomBottomBar extends StatelessWidget {
                       child: Icon(
                         Icons.add,
                         size: 25,
+                        color: Colors.indigoAccent,
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text('New Board'),
+                      child: Text('New Board',style: TextStyle(color: Colors.indigoAccent),),
                     ),
                   ],
                 ),
@@ -40,7 +41,7 @@ class CustomBottomBar extends StatelessWidget {
             Expanded(
               child: InkWell(
                 onTap: groupCallBack,
-                child: Icon(Icons.group_add),
+                child: Icon(Icons.group_add,color: Colors.indigoAccent,),
               ),
             ),
           ],

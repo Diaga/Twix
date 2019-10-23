@@ -122,12 +122,12 @@ class _TaskScreenState extends State<TaskScreen> {
         elevation: 0,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.delete_outline),
+            icon: Icon(Icons.delete_outline,),
             onPressed: () {
               database.boardDao.deleteBoard(boardData);
               Navigator.pop(context);
             },
-            color: Colors.black,
+              color: Colors.red,
           )
         ],
       ),
@@ -144,9 +144,9 @@ class _TaskScreenState extends State<TaskScreen> {
                       boardId: boardId,
                       action: widget.action,
                       showNotification: showNotification
-                  ));
+                  ),);
         },
-        backgroundColor: Color(0xFF3C6AFF),
+        backgroundColor: Colors.indigo,
         child: Icon(Icons.add),
       ),
       body: Column(
@@ -190,7 +190,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     height: 80,
                     width: 80,
                     decoration: BoxDecoration(
-                      color: Color(0xFF3C6AFF),
+                      color: Colors.indigo,
                       shape: BoxShape.circle,
                     ),
                     child: Stack(
@@ -337,7 +337,7 @@ class _TaskScreenState extends State<TaskScreen> {
           padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 18),
           child: Text(
             boardName,
-            style: TextStyle(fontSize: 20),
+            style: TextStyle(fontSize: 20,fontWeight: FontWeight.w600),
           ),
         ),
         Padding(

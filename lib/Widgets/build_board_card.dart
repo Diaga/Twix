@@ -35,6 +35,7 @@ class _BuildBoardCardState extends State<BuildBoardCard> with SingleTickerProvid
       child: BoardsList(
           iconData: Icons.developer_board,
           title: widget.boardItem.name,
+          color: Colors.indigo,
           callBack: () {
             Navigator.push(
               context,
