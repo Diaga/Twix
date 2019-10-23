@@ -23,6 +23,9 @@ class TaskDao extends DatabaseAccessor<TwixDB> with _$TaskDaoMixin {
   Future<TaskTableData> getTaskById(String id) =>
       (select(taskTable)..where((row) => row.id.equals(id))).getSingle();
 
+  Future<List<TaskTableData>> getAllTasks(String like) =>
+      (select(taskTable)..where((row) => row.name.like('$like%'))).get();
+
   Stream<List<TaskWithBoard>> watchAllTasksByBoardId(String boardId) =>
       (select(taskTable)
             ..where((row) => row.boardId.equals(boardId))

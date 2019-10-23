@@ -57,17 +57,18 @@ class _GroupScreenState extends State<GroupScreen> {
           if (snapshot.connectionState == ConnectionState.active ||
               snapshot.connectionState ==
                   ConnectionState.done) if (!snapshot.hasError) {
-            return ScrollConfiguration(
-              behavior: CustomScrollBehaviour(),
-              child: ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (_, index) {
-                  return MemberCard(
-                      name: snapshot.data[index].user.name,
-                      email: snapshot.data[index].user.email);
-                },
-              ),
-            );
+            if (Connect.getConnection)
+              return ScrollConfiguration(
+                behavior: CustomScrollBehaviour(),
+                child: ListView.builder(
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (_, index) {
+                    return MemberCard(
+                        name: snapshot.data[index].user.name,
+                        email: snapshot.data[index].user.email);
+                  },
+                ),
+              );
           }
           return Center(
             child: CircularProgressIndicator(),
@@ -88,7 +89,9 @@ class MemberCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(5.0),
       child: ListTile(
-        leading: CircleAvatar(backgroundImage: AssetImage('images/default_avatar.jpg'),),
+        leading: CircleAvatar(
+          backgroundImage: AssetImage('images/default_avatar.jpg'),
+        ),
         title: Text(name),
         subtitle: Text(email),
       ),
@@ -135,7 +138,6 @@ class Search extends SearchDelegate<String> {
           if (snapshot.connectionState == ConnectionState.active ||
               snapshot.connectionState == ConnectionState.done) {
             var data = jsonDecode(snapshot.data.body);
-            print(data);
             return ListView.builder(
               itemBuilder: (BuildContext context, int index) {
                 return AddMemberList(

@@ -158,7 +158,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                         ),
                         ListTile(
                           leading: Icon(FontAwesomeIcons.bell),
-                          title: task.dueDate != null
+                          title: task.remindMe != null
                               ? Text(
                                   '${DateFormat.MMMEd().format(task.remindMe).toString()},'
                                   ' ${DateFormat.jm().format(task.remindMe).toString()}')

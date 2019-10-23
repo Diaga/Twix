@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:twix/Database/database.dart';
 
 class CustomAppBar extends PreferredSize {
@@ -39,7 +40,9 @@ class CustomAppBar extends PreferredSize {
           Expanded(
             child: Material(
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  showSearch(context: context, delegate: Search());
+                },
                 child: Icon(Icons.search),
               ),
             ),
@@ -80,9 +83,72 @@ class CustomAppBar extends PreferredSize {
         ),
         Text(
           email,
-          style: TextStyle(color: Colors.black,fontSize: 12),
+          style: TextStyle(color: Colors.black, fontSize: 12),
         ),
       ],
+    );
+  }
+}
+
+class Search extends SearchDelegate<String> {
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(Icons.close),
+        onPressed: () {
+          query = "";
+        },
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+        onPressed: () {
+          close(context, null);
+        },
+        icon: Icon(Icons.arrow_back));
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return null;
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final database = Provider.of<TwixDB>(context);
+    return FutureBuilder(
+        future: database.taskDao.getAllTasks(query),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<TaskTableData>> snapshot) {
+          var data = snapshot.data ?? List();
+          return ListView.builder(
+            itemBuilder: (BuildContext context, int index) {
+              return TaskSearchCard(
+                task: data[index],
+              );
+            },
+            itemCount: data.length,
+          );
+        });
+  }
+}
+
+class TaskSearchCard extends StatelessWidget {
+  final TaskTableData task;
+
+  TaskSearchCard({this.task});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: task.isDone
+          ? Icon(Icons.check_circle_outline)
+          : Icon(Icons.radio_button_unchecked),
+      title: Text(task.name),
     );
   }
 }
