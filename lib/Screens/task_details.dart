@@ -50,8 +50,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         return Scaffold(
           appBar: AppBar(
             title: Text(
-              useFallBack ? 'Assigned To Me' : widget.task.board.name,
-              style: TextStyle(color: Colors.black),
+              'Details',
+              style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
             ),
             backgroundColor: Colors.white,
             elevation: 0,
@@ -82,7 +82,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                             useFallBack ? widget.task : widget.task.task);
                         Navigator.pop(context);
                       },
-                      child: Icon(Icons.delete_outline),
+                      child: Icon(Icons.delete_outline,color: Colors.red,),
                     ),
                   ),
                 ],

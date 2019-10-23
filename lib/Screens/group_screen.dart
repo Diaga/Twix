@@ -36,7 +36,7 @@ class _GroupScreenState extends State<GroupScreen> {
           IconButton(
             onPressed: () {
               showSearch(
-                  context: context, delegate: Search(group: widget.group));
+                  context: context, delegate: Search(group: widget.group,),);
             },
             icon: Icon(
               Icons.search,
@@ -115,7 +115,8 @@ class Search extends SearchDelegate<String> {
       )
     ];
   }
-
+  @override
+  String get searchFieldLabel => 'Search by email';
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(

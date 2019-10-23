@@ -92,69 +92,89 @@ class _HomeScreenState extends State<HomeScreen> {
     setAuthToken(database);
     populateAssignedToMe(database);
     return SafeArea(
-        child: Scaffold(
-      appBar: CustomAppBar(
-        height: 60.0,
-        color: ThemeData.light().scaffoldBackgroundColor,
-      ),
-      bottomNavigationBar: CustomBottomBar(
-        listCallBack: () {
-          _sheetDisplay(context, Icons.developer_board, 'Board', _insertBoard);
-        },
-        groupCallBack: () {
-          _sheetDisplay(context, Icons.group_add, 'Group', _insertGroup);
-        },
-      ),
-      body: ListView(
-        children: <Widget>[
-          BoardsList(
-            iconData: Icons.today,
-            title: 'My Day',
-            callBack: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TaskScreen(
-                    action: 'My Day',
-                  ),
-                ),
-              );
-            },
-          ),
-          BoardsList(
-              iconData: Icons.person_outline,
-              title: 'Assigned To Me',
+      child: Scaffold(
+        appBar: CustomAppBar(
+          height: 60.0,
+          color: ThemeData.light().scaffoldBackgroundColor,
+        ),
+        bottomNavigationBar: CustomBottomBar(
+          listCallBack: () {
+            _sheetDisplay(
+                context, Icons.developer_board, 'Board', _insertBoard);
+          },
+          groupCallBack: () {
+            _sheetDisplay(context, Icons.group_add, 'Group', _insertGroup);
+          },
+        ),
+        body: ListView(
+          children: <Widget>[
+            BoardsList(
+              iconData: Icons.wb_sunny,
+              title: 'My Day',
+              color: Colors.orange,
               callBack: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => TaskScreen(
-                              action: 'Assigned To Me',
-                              loggedInUser: loggedInUser,
-                            )));
-              }),
-          BoardsList(
-            iconData: Icons.playlist_add_check,
-            title: 'My Tasks',
-            callBack: () async {
-              String myTasksBoardId = myTasksBoard.id;
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TaskScreen(
-                    boardId: myTasksBoardId,
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TaskScreen(
+                      action: 'My Day',
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-          Divider(indent: 20,endIndent: 20,),
-          _buildBoardList(context, database),
-          Visibility(visible: HoldData.isDividerA, child: Divider(indent: 20,endIndent: 20,)),
-          _buildGroupList(context, database)
-        ],
+                );
+              },
+            ),
+            BoardsList(
+              iconData: Icons.person_outline,
+              title: 'Assigned To Me',
+              color: Colors.green[700],
+              callBack: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TaskScreen(
+                      action: 'Assigned To Me',
+                      loggedInUser: loggedInUser,
+                    ),
+                  ),
+                );
+              },
+            ),
+            BoardsList(
+              iconData: Icons.playlist_add_check,
+              title: 'My Tasks',
+              color: Colors.red[800],
+              callBack: () async {
+                String myTasksBoardId = myTasksBoard.id;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TaskScreen(
+                      boardId: myTasksBoardId,
+                    ),
+                  ),
+                );
+              },
+            ),
+            Divider(
+              indent: 20,
+              endIndent: 20,
+            ),
+            _buildBoardList(
+              context,
+              database,
+            ),
+            Visibility(
+              visible: HoldData.isDividerA,
+              child: Divider(
+                indent: 20,
+                endIndent: 20,
+              ),
+            ),
+            _buildGroupList(context, database)
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   void _sheetDisplay(
@@ -174,10 +194,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _insertBoard(String boardName, TwixDB database) async {
     final id = Uuid().v4();
-    await database.boardDao.insertBoard(BoardTableCompanion(
+    await database.boardDao.insertBoard(
+      BoardTableCompanion(
         id: Value(id),
         name: Value(boardName),
-        createdAt: Value(DateTime.now())));
+        createdAt: Value(
+          DateTime.now(),
+        ),
+      ),
+    );
     await Api.createBoard(
         id: id, name: boardName, userId: loggedInUser.id, isPersonal: false);
   }
@@ -185,8 +210,13 @@ class _HomeScreenState extends State<HomeScreen> {
   _insertGroup(String groupName, TwixDB database) async {
     final id = Uuid().v4();
     final adminId = (await database.userDao.getLoggedInUser()).id;
-    await database.groupDao.insertGroup(GroupTableCompanion(
-        id: Value(id), name: Value(groupName), adminId: Value(adminId)));
+    await database.groupDao.insertGroup(
+      GroupTableCompanion(
+        id: Value(id),
+        name: Value(groupName),
+        adminId: Value(adminId),
+      ),
+    );
     await Api.createGroup(id, groupName, adminId);
   }
 

@@ -93,7 +93,7 @@ class _BuildTaskCardState extends State<BuildTaskCard> with SingleTickerProvider
                   iconData: Icons.delete,
                   alignment: Alignment.centerRight,
                 ),
-              )),
+              ),),
     );;
   }
 }

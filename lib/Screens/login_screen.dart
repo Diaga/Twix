@@ -6,7 +6,6 @@ import 'package:twix/Widgets/custom_scroll_behaviour.dart';
 import 'package:uuid/uuid.dart';
 import 'package:twix/Database/database.dart';
 import 'package:twix/Api/api.dart';
-import 'package:twix/Palette/palette.dart';
 import 'package:twix/Screens/home_screen.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -84,11 +83,13 @@ class LoginState extends State<Login> {
                     ),
                     Container(
                       height: MediaQuery.of(context).size.height * 0.35,
-                      child: Column(children: <Widget>[
-                        _buildTextField('Name', nameController, false),
-                        _buildTextField('Email', emailController, false),
-                        _buildTextField('Password', passwordController, true),
-                      ]),
+                      child: Column(
+                        children: <Widget>[
+                          _buildTextField('Name', nameController, false),
+                          _buildTextField('Email', emailController, false),
+                          _buildTextField('Password', passwordController, true),
+                        ],
+                      ),
                     ),
                     Container(
                       height: MediaQuery.of(context).size.height * 0.07,
@@ -168,15 +169,17 @@ class LoginState extends State<Login> {
         response.statusCode == 201 && responseToken.statusCode == 200;
     if (result) {
       String authToken = jsonDecode(responseToken.body)['token'];
-      await database.userDao.insertUser(UserTableCompanion(
+      await database.userDao.insertUser(
+        UserTableCompanion(
           id: Value(id),
           name: Value(nameController.text),
           email: Value(emailController.text),
           password: Value(passwordController.text),
-          token: Value(authToken)));
+          token: Value(authToken),
+        ),
+      );
       Api.setAuthToken(authToken);
     }
-    print(result);
     return result;
   }
 
