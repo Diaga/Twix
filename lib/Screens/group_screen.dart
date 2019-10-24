@@ -1,10 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart';
 import 'package:moor_flutter/moor_flutter.dart' hide Column;
-
 import 'package:twix/Database/database.dart';
 import 'package:twix/Api/api.dart';
 import 'package:twix/Database/DAOs/group_user_dao.dart';
@@ -29,18 +27,22 @@ class _GroupScreenState extends State<GroupScreen> {
         backgroundColor: ThemeData.light().scaffoldBackgroundColor,
         title: Text(
           widget.group.name,
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
         ),
         iconTheme: IconThemeData(color: Colors.black),
         actions: <Widget>[
           IconButton(
             onPressed: () {
               showSearch(
-                  context: context, delegate: Search(group: widget.group,),);
+                context: context,
+                delegate: Search(
+                  group: widget.group,
+                ),
+              );
             },
             icon: Icon(
               Icons.search,
-              color: Colors.black,
+              color: Colors.indigoAccent,
             ),
           )
         ],
@@ -115,8 +117,10 @@ class Search extends SearchDelegate<String> {
       )
     ];
   }
+
   @override
   String get searchFieldLabel => 'Search by email';
+
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
@@ -134,23 +138,24 @@ class Search extends SearchDelegate<String> {
   @override
   Widget buildSuggestions(BuildContext context) {
     return FutureBuilder(
-        future: Api.getAllUsers(email: query),
-        builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
-          if (snapshot.connectionState == ConnectionState.active ||
-              snapshot.connectionState == ConnectionState.done) {
-            var data = jsonDecode(snapshot.data.body);
-            return ListView.builder(
-              itemBuilder: (BuildContext context, int index) {
-                return AddMemberList(
-                  user: UserTableData.fromJson(data[index]),
-                  groupId: group.id,
-                );
-              },
-              itemCount: data.length,
-            );
-          }
-          return Center(child: CircularProgressIndicator());
-        });
+      future: Api.getAllUsers(email: query),
+      builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
+        if (snapshot.connectionState == ConnectionState.active ||
+            snapshot.connectionState == ConnectionState.done) {
+          var data = jsonDecode(snapshot.data.body);
+          return ListView.builder(
+            itemBuilder: (BuildContext context, int index) {
+              return AddMemberList(
+                user: UserTableData.fromJson(data[index]),
+                groupId: group.id,
+              );
+            },
+            itemCount: data.length,
+          );
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
   }
 }
 

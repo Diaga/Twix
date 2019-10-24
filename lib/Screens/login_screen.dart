@@ -116,6 +116,7 @@ class LoginState extends State<Login> {
                               }
                             } else {
                               final snackBar = SnackBar(
+                                duration: Duration(milliseconds: 800),
                                 content: Text(
                                     'Please fill the above fields correctly!'),
                               );
@@ -123,6 +124,7 @@ class LoginState extends State<Login> {
                             }
                           } else {
                             final snackBar = SnackBar(
+                              duration: Duration(milliseconds: 800),
                               content: Text(
                                   'You must be connected to the internet to proceed!'),
                             );
@@ -184,8 +186,28 @@ class LoginState extends State<Login> {
   }
 
   bool _validateFields() {
-    if (nameController.text.isNotEmpty) if (emailController
-        .text.isNotEmpty) if (passwordController.text.isNotEmpty) return true;
+    if (nameController.text.isNotEmpty && emailController
+        .text.isNotEmpty && passwordController.text.isNotEmpty){
+      if (!emailController.text.contains('@')){
+        final snackBar = SnackBar(
+          duration: Duration(milliseconds: 800),
+          content: Text(
+              'Please provide valid email address'),
+        );
+        Scaffold.of(context).showSnackBar(snackBar);
+        return false;
+      }
+      if (passwordController.text.length < 5){
+        final snackBar = SnackBar(
+          duration: Duration(milliseconds: 800),
+          content: Text(
+              'Password should contains at least five characters',),
+        );
+        Scaffold.of(context).showSnackBar(snackBar);
+        return false;
+      }
+      return true;
+    }
     return false;
-  }
+    }
 }

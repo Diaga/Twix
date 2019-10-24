@@ -43,7 +43,10 @@ class CustomAppBar extends PreferredSize {
                 onTap: () {
                   showSearch(context: context, delegate: Search());
                 },
-                child: Icon(Icons.search),
+                child: Icon(
+                  Icons.search,
+                  color: Colors.indigoAccent,
+                ),
               ),
             ),
           ),
@@ -146,7 +149,7 @@ class TaskSearchCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: task.isDone
-          ? Icon(Icons.check_circle_outline)
+          ? Icon(Icons.check_circle_outline,color: Colors.green,)
           : Icon(Icons.radio_button_unchecked),
       title: Text(task.name),
     );

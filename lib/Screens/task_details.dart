@@ -102,11 +102,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       child: Center(
                         child: ListTile(
                           leading: task.isDone
-                              ? Icon(Icons.check_circle_outline)
+                              ? Icon(Icons.check_circle_outline,color: Colors.green,)
                               : Icon(FontAwesomeIcons.circle),
                           title: Text(task.name),
                           trailing: database.taskDao.isMyDay(task.myDayDate)
-                              ? Icon(Icons.star)
+                              ? Icon(Icons.star,color: Colors.orange,)
                               : Icon(Icons.star_border),
                         ),
                       ),
@@ -148,7 +148,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                               ),
                             );
                           },
-                          leading: Icon(Icons.assignment_ind),
+                          leading: Icon(Icons.assignment_ind,color: Colors.indigo,),
                           title: task.assignedTo != null
                               ? Text('Assigned')
                               : Text('Assign task'),
@@ -157,7 +157,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                           indent: 70,
                         ),
                         ListTile(
-                          leading: Icon(FontAwesomeIcons.bell),
+                          leading: Icon(FontAwesomeIcons.bell,color: Colors.red[800],),
                           title: task.remindMe != null
                               ? Text(
                                   '${DateFormat.MMMEd().format(task.remindMe).toString()},'
@@ -169,7 +169,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                           indent: 70,
                         ),
                         ListTile(
-                          leading: Icon(Icons.calendar_today),
+                          leading: Icon(Icons.calendar_today,color: Colors.teal,),
                           title: task.dueDate != null
                               ? Text(DateFormat.yMMMEd()
                                   .format(task.dueDate)

@@ -113,7 +113,7 @@ class _TaskScreenState extends State<TaskScreen> {
       appBar: AppBar(
         title: Text(
           'Tasks',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
         ),
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: ThemeData.light().scaffoldBackgroundColor,

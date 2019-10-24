@@ -14,6 +14,9 @@ void main() async {
 class Twix extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.grey,
+    ));
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return Provider(
       builder: (_) => TwixDB(),

@@ -20,13 +20,11 @@ class TaskCard extends StatefulWidget {
   _TaskCardState createState() => _TaskCardState();
 }
 
-class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin{
-
+class _TaskCardState extends State<TaskCard>
+    with SingleTickerProviderStateMixin {
   bool isAssignedToMe;
   TaskTableData task;
   BoardTableData board;
-
-
 
   @override
   void initState() {
@@ -37,8 +35,6 @@ class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin
     } else {
       task = widget.task.task;
     }
-
-
   }
 
   @override
@@ -51,7 +47,10 @@ class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin
         leading: Padding(
           padding: const EdgeInsets.all(7.0),
           child: task.isDone
-              ? Icon(Icons.check_circle_outline)
+              ? Icon(
+                  Icons.check_circle_outline,
+                  color: Colors.green,
+                )
               : Icon(FontAwesomeIcons.circle),
         ),
         title: Text(task.name,
@@ -63,9 +62,11 @@ class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin
         dense: true,
         trailing: database.taskDao.isMyDay(task.myDayDate)
             ? IconButton(
-                icon: Icon(Icons.star,color: Colors.orange,),
+                icon: Icon(
+                  Icons.star,
+                  color: Colors.orange,
+                ),
                 onPressed: () {
-                  print(database.taskDao.isMyDay(task.myDayDate));
                   database.taskDao.updateTask(task
                       .createCompanion(false)
                       .copyWith(myDayDate: Value(null)));
@@ -95,5 +96,4 @@ class _TaskCardState extends State<TaskCard> with SingleTickerProviderStateMixin
       ),
     );
   }
-
 }
