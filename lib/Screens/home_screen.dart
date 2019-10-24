@@ -150,6 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   MaterialPageRoute(
                     builder: (context) => TaskScreen(
                       boardId: myTasksBoardId,
+                      action: 'normal MyTasks',
                     ),
                   ),
                 );
@@ -163,12 +164,18 @@ class _HomeScreenState extends State<HomeScreen> {
               context,
               database,
             ),
-            Visibility(
-              visible: HoldData.isDividerA,
-              child: Divider(
-                indent: 20,
-                endIndent: 20,
-              ),
+            StreamBuilder (
+              stream: database.boardDao.watchAllBoards(),
+              builder: (context, snapshot) {
+                boards = snapshot.data ?? List();
+                return Visibility(
+                  visible: boards.length > 0,
+                  child: Divider(
+                    indent: 20,
+                    endIndent: 20,
+                  ),
+                );
+              }
             ),
             _buildGroupList(context, database)
           ],
@@ -226,10 +233,6 @@ class _HomeScreenState extends State<HomeScreen> {
       stream: database.boardDao.watchAllBoards(),
       builder: (context, AsyncSnapshot<List<BoardTableData>> snapshot) {
         boards = snapshot.data ?? List();
-        if (boards.length > 0)
-          HoldData.isDividerA = true;
-        else
-          HoldData.isDividerA = false;
         return ListView.builder(
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -249,10 +252,6 @@ class _HomeScreenState extends State<HomeScreen> {
       stream: database.groupDao.watchAllGroups(),
       builder: (context, AsyncSnapshot<List<GroupTableData>> snapshot) {
         groups = snapshot.data ?? List();
-        if (groups.length > 0)
-          HoldData.isDividerG = true;
-        else
-          HoldData.isDividerG = false;
         return ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,

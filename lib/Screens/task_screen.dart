@@ -10,9 +10,7 @@ import 'package:twix/Database/DAOs/assigned_task_dao.dart';
 import 'package:twix/Screens/home_screen.dart';
 import 'package:twix/Widgets/build_task_card.dart';
 import 'package:twix/Widgets/custom_scroll_behaviour.dart';
-import 'package:twix/Widgets/onswipe_container.dart';
 import 'package:twix/Widgets/task_adder_sheet.dart';
-import 'package:twix/Widgets/task_card.dart';
 
 class TaskScreen extends StatefulWidget {
   final String boardId;
@@ -27,9 +25,10 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen> {
   String boardId;
-  bool getBoardName;
-  bool isMyDay;
-  bool isAssignedToMe;
+  bool getBoardName = true;
+  bool isMyDay = false;
+  bool isAssignedToMe = false;
+  bool isMyTasks = false;
 
   BoardTableData boardData;
   List doneTasks;
@@ -44,6 +43,11 @@ class _TaskScreenState extends State<TaskScreen> {
     getBoardName = widget.action == 'normal';
     isMyDay = widget.action == 'My Day';
     isAssignedToMe = widget.action == 'Assigned To Me';
+
+    if (widget.action == 'normal MyTasks') {
+      getBoardName = true;
+      isMyTasks = true;
+    }
 
     var initializationSettingsAndroid =
         new AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -113,22 +117,25 @@ class _TaskScreenState extends State<TaskScreen> {
       appBar: AppBar(
         title: Text(
           'Tasks',
-          style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: ThemeData.light().scaffoldBackgroundColor,
         elevation: 0,
         actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.delete_outline,
-            ),
-            onPressed: () {
-              database.boardDao.deleteBoard(boardData);
-              Navigator.pop(context);
-            },
-            color: Colors.red,
-          )
+            Visibility(
+              visible: !isMyTasks && !isMyDay && !isAssignedToMe,
+              child: IconButton(
+                icon: Icon(
+                  Icons.delete_outline,
+                ),
+                onPressed: () {
+                  database.boardDao.deleteBoard(boardData);
+                  Navigator.pop(context);
+                },
+                color: Colors.red,
+              ),
+            )
         ],
       ),
       floatingActionButton: isAssignedToMe
@@ -162,6 +169,9 @@ class _TaskScreenState extends State<TaskScreen> {
                     if (isAssignedToMe)
                       return _buildBoardColumn(
                           'Assigned To Me', format.format(DateTime.now()));
+                    else if (isMyDay)
+                      return _buildBoardColumn(
+                          'My Day', format.format(DateTime.now()));
                     if (snapshot.connectionState == ConnectionState.active ||
                         snapshot.connectionState == ConnectionState.done) {
                       if (!snapshot.hasError) {
@@ -255,8 +265,10 @@ class _TaskScreenState extends State<TaskScreen> {
                                 stream: watchAllTaskList(database),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
-                                      ConnectionState
-                                          .active) if (!snapshot.hasError) {
+                                          ConnectionState.active ||
+                                      snapshot.connectionState ==
+                                          ConnectionState.done) if (!snapshot
+                                      .hasError) {
                                     allTasks = snapshot.data ?? List();
                                     return _buildCountAllTasks(
                                         allTasks.length.toString());

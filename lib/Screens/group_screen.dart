@@ -59,7 +59,7 @@ class _GroupScreenState extends State<GroupScreen> {
           if (snapshot.connectionState == ConnectionState.active ||
               snapshot.connectionState ==
                   ConnectionState.done) if (!snapshot.hasError) {
-            if (Connect.getConnection)
+            if (Connect.getConnection ?? true)
               return ScrollConfiguration(
                 behavior: CustomScrollBehaviour(),
                 child: ListView.builder(
