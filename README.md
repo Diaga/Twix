@@ -1,16 +1,11 @@
 # Twix
 
-AppCon Task Manager
+The project, codenamed 'Twix' with the real application label being **Cask**, is developed for AppCon'19 by Telenor Microfinance Bank. This repository only contains the mobile application or frontend of the whole project. 
 
-## Getting Started
+For the backend, please visit [Twix Server](https://github.com/Diaga/Twix-Server)
 
-This project is a starting point for a Flutter application.
+## Documentation
 
-A few resources to get you started if this is your first Flutter project:
+For installing Flutter, please refer to the [official flutter documentation](https://flutter.dev/get-started/).
+Once the Flutter SDK has been setup for your favorite IDE, connect your Android phone and build the project yourself or simply visit the firebase distribution link to install the pre-built apk.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
