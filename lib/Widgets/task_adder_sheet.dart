@@ -87,6 +87,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                                   id: Value(Uuid().v4()),
                                   name: Value(textEditingController.text),
                                   dueDate: Value(dueDate),
+                                  myDayDate: Value(dueDate),
                                   boardId: Value(widget.boardId),
                                   remindMe: Value(remindMeDateTime),
                                   createdAt: Value(today)))
@@ -162,6 +163,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
     if (selected != null && selected != dueDate)
       setState(() {
         dueDate = selected;
+        dueDate = DateTime(dueDate.year, dueDate.month, dueDate.day);
       });
   }
 
