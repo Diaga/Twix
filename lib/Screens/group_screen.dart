@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart';
 import 'package:moor_flutter/moor_flutter.dart' hide Column;
@@ -148,25 +147,40 @@ class Search extends SearchDelegate<String> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    final database = Provider.of<TwixDB>(context);
+    _populateUserData(database);
+    List<UserTableData> users;
     return FutureBuilder(
-      future: Api.getAllUsers(email: query),
-      builder: (BuildContext context, AsyncSnapshot<Response> snapshot) {
-        if (snapshot.connectionState == ConnectionState.active ||
-            snapshot.connectionState == ConnectionState.done) {
-          var data = jsonDecode(snapshot.data.body);
+      future: database.userDao.getAllUsers(query),
+      builder: (context, snapshot) {
+        users = snapshot.data ?? List();
+        if (query != '')
           return ListView.builder(
             itemBuilder: (BuildContext context, int index) {
               return AddMemberList(
-                user: UserTableData.fromJson(data[index]),
+                user: users[index],
                 groupId: group.id,
               );
             },
-            itemCount: data.length,
+            itemCount: users.length,
           );
-        }
-        return Center(child: CircularProgressIndicator());
-      },
+        else
+          return Container();
+        },
     );
+  }
+
+  _populateUserData(TwixDB database) async {
+    Response response = await Api.getAllUsers();
+    var users = jsonDecode(response.body);
+    for (var user in users) {
+      var userTableData = UserTableData.fromJson(user);
+      var userExists = await database.userDao.getUserById(userTableData.id);
+
+      if (userExists == null) {
+        database.userDao.insertUser(userTableData);
+      }
+    }
   }
 }
 
@@ -184,12 +198,7 @@ class _AddMemberListState extends State<AddMemberList> {
   @override
   Widget build(BuildContext context) {
     final database = Provider.of<TwixDB>(context);
-    insertOrReplaceUser(database, widget.user);
     return _buildListTile(database);
-  }
-
-  insertOrReplaceUser(TwixDB database, UserTableData user) {
-    database.userDao.insertUser(user);
   }
 
   StreamBuilder _buildListTile(TwixDB database) {
@@ -224,9 +233,7 @@ class MemberTileState extends State<MemberTile> {
     return FutureBuilder(
       future: database.groupUserDao
           .getGroupUserByGroupUserId(widget.user.id, widget.groupId),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.active ||
-            snapshot.connectionState == ConnectionState.done) {
+      builder: (context, snapshot) {
           if (snapshot.data != null) iconCheck = true;
           return ListTile(
             trailing: iconCheck ? Icon(Icons.check) : null,
@@ -239,7 +246,6 @@ class MemberTileState extends State<MemberTile> {
                     groupId: Value(widget.groupId)));
               } else {
                 Api.addToGroup(widget.groupId, widget.user.id);
-                database.userDao.insertUser(widget.user);
                 database.groupUserDao.insertGroupUser(GroupUserTableCompanion(
                     userId: Value(widget.user.id),
                     groupId: Value(widget.groupId)));
@@ -247,11 +253,6 @@ class MemberTileState extends State<MemberTile> {
               setState(() {});
             },
           );
-        }
-        return ListTile(
-          trailing: CircularProgressIndicator(),
-          title: Text(widget.user.email),
-        );
       },
     );
   }
