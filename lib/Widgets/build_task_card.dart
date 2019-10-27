@@ -101,6 +101,5 @@ class _BuildTaskCardState extends State<BuildTaskCard>
         ),
       ),
     );
-    ;
   }
 }

@@ -54,6 +54,5 @@ class _BuildGroupCardState extends State<BuildGroupCard>
         },
       ),
     );
-    ;
   }
 }

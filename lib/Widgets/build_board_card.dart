@@ -63,6 +63,5 @@ class _BuildBoardCardState extends State<BuildBoardCard>
         },
       ),
     );
-    ;
   }
 }
