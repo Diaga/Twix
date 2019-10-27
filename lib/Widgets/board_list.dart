@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:twix/Database/database.dart';
 
 class BoardsList extends StatelessWidget {
   final IconData iconData;
@@ -17,7 +16,6 @@ class BoardsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<TaskTableData> tasks;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: ListTile(

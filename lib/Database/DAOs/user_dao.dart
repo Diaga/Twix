@@ -14,6 +14,11 @@ class UserDao extends DatabaseAccessor<TwixDB> with _$UserDaoMixin {
       (select(userTable)..where((user) => isNotNull(user.password)))
           .getSingle();
 
+  Future<List<UserTableData>> getAllUsers(String like) =>
+      (select(userTable)..where((row) => row.email.like('$like%'))..orderBy([
+        (t) => OrderingTerm(expression: t.email, mode: OrderingMode.asc)
+      ])).get();
+
   Future<UserTableData> getUserById(String id) =>
       (select(userTable)..where((user) => user.id.equals(id))).getSingle();
 
