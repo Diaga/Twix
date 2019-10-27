@@ -123,19 +123,19 @@ class _TaskScreenState extends State<TaskScreen> {
         backgroundColor: ThemeData.light().scaffoldBackgroundColor,
         elevation: 0,
         actions: <Widget>[
-            Visibility(
-              visible: !isMyTasks && !isMyDay && !isAssignedToMe,
-              child: IconButton(
-                icon: Icon(
-                  Icons.delete_outline,
-                ),
-                onPressed: () {
-                  database.boardDao.deleteBoard(boardData);
-                  Navigator.pop(context);
-                },
-                color: Colors.red,
+          Visibility(
+            visible: !isMyTasks && !isMyDay && !isAssignedToMe,
+            child: IconButton(
+              icon: Icon(
+                Icons.delete_outline,
               ),
-            )
+              onPressed: () {
+                database.boardDao.deleteBoard(boardData);
+                Navigator.pop(context);
+              },
+              color: Colors.red,
+            ),
+          )
         ],
       ),
       floatingActionButton: isAssignedToMe
@@ -155,141 +155,156 @@ class _TaskScreenState extends State<TaskScreen> {
               backgroundColor: Colors.indigo,
               child: Icon(Icons.add),
             ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height * 0.20,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                FutureBuilder(
-                  future: boardFuture,
-                  builder: (context, snapshot) {
-                    DateFormat format = DateFormat.yMMMd();
-                    if (isAssignedToMe)
-                      return _buildBoardColumn(
-                          'Assigned To Me', format.format(DateTime.now()));
-                    else if (isMyDay)
-                      return _buildBoardColumn(
-                          'My Day', format.format(DateTime.now()));
-                    if (snapshot.connectionState == ConnectionState.active ||
-                        snapshot.connectionState == ConnectionState.done) {
-                      if (!snapshot.hasError) {
-                        boardData = snapshot.data;
-                        DateTime dateTime = boardData?.createdAt;
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: MediaQuery.of(context).size.height * 0.20,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  FutureBuilder(
+                    future: boardFuture,
+                    builder: (context, snapshot) {
+                      DateFormat format = DateFormat.yMMMd();
+                      if (isAssignedToMe)
                         return _buildBoardColumn(
-                            boardData == null ? '' : boardData.name,
-                            format.format(
-                                dateTime == null ? DateTime.now() : dateTime));
+                            boardName: 'Assigned To Me',
+                            createdAt: format.format(DateTime.now()));
+                      else if (isMyDay)
+                        return _buildBoardColumn(
+                            boardName: 'My Day',
+                            createdAt: format.format(DateTime.now()));
+                      if (snapshot.connectionState == ConnectionState.active ||
+                          snapshot.connectionState == ConnectionState.done) {
+                        if (!snapshot.hasError) {
+                          boardData = snapshot.data;
+                          DateTime dateTime = boardData?.createdAt;
+                          return _buildBoardColumn(
+                              boardName:
+                                  boardData == null ? '' : boardData.name,
+                              createdAt: format.format(
+                                  dateTime == null ? DateTime.now() : dateTime),
+                              board: boardData,
+                              database: database);
+                        }
                       }
-                    }
-                    return _buildBoardColumn(
-                        boardData != null ? boardData.name : '',
-                        boardData != null
-                            ? format.format(boardData.createdAt)
-                            : '');
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 15),
-                  child: Container(
-                    height: 80,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.indigo,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Stack(
-                      children: <Widget>[
-                        isAssignedToMe
-                            ? StreamBuilder(
-                                stream: database.assignedTaskDao
-                                    .watchDoneAssignedTasksByUserId(
-                                        widget.loggedInUser.id),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                          ConnectionState.done ||
-                                      snapshot.connectionState ==
-                                          ConnectionState.active) {
+                      return _buildBoardColumn(
+                          boardName: boardData != null ? boardData.name : '',
+                          createdAt: boardData != null
+                              ? format.format(boardData.createdAt)
+                              : '',
+                          board: boardData,
+                          database: database);
+                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 15),
+                    child: Container(
+                      height: 80,
+                      width: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.indigo,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Stack(
+                        children: <Widget>[
+                          isAssignedToMe
+                              ? StreamBuilder(
+                                  stream: database.assignedTaskDao
+                                      .watchDoneAssignedTasksByUserId(
+                                          widget.loggedInUser.id),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                            ConnectionState.done ||
+                                        snapshot.connectionState ==
+                                            ConnectionState.active) {
+                                      return _buildCountDoneTasks(
+                                          snapshot.data == null
+                                              ? '0'
+                                              : snapshot.data.length
+                                                  .toString());
+                                    }
+                                    return _buildCountAllTasks('0');
+                                  },
+                                )
+                              : StreamBuilder(
+                                  stream: watchDoneTaskList(database),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState
+                                            .active) if (!snapshot.hasError) {
+                                      doneTasks = snapshot.data ?? List();
+                                      return _buildCountDoneTasks(
+                                          doneTasks?.length.toString());
+                                    }
                                     return _buildCountDoneTasks(
-                                        snapshot.data == null
-                                            ? '0'
-                                            : snapshot.data.length.toString());
-                                  }
-                                  return _buildCountAllTasks('0');
-                                },
-                              )
-                            : StreamBuilder(
-                                stream: watchDoneTaskList(database),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState
-                                          .active) if (!snapshot.hasError) {
-                                    doneTasks = snapshot.data ?? List();
-                                    return _buildCountDoneTasks(
-                                        doneTasks?.length.toString());
-                                  }
-                                  return _buildCountDoneTasks(doneTasks != null
-                                      ? doneTasks.length.toString()
-                                      : '');
-                                }),
-                        Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            '/',
-                            style: TextStyle(
-                                fontSize: 30,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
+                                        doneTasks != null
+                                            ? doneTasks.length.toString()
+                                            : '');
+                                  }),
+                          Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '/',
+                              style: TextStyle(
+                                  fontSize: 30,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        isAssignedToMe
-                            ? StreamBuilder(
-                                stream: database.assignedTaskDao
-                                    .watchAllAssignedTasksByUserId(
-                                        widget.loggedInUser.id),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                          ConnectionState.done ||
-                                      snapshot.connectionState ==
-                                          ConnectionState.active) {
-                                    return _buildCountAllTasks(
-                                        snapshot.data == null
-                                            ? '0'
-                                            : snapshot.data.length.toString());
-                                  }
-                                  return _buildCountAllTasks('0');
-                                },
-                              )
-                            : StreamBuilder(
-                                stream: watchAllTaskList(database),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                          ConnectionState.active ||
-                                      snapshot.connectionState ==
-                                          ConnectionState.done) if (!snapshot
-                                      .hasError) {
-                                    allTasks = snapshot.data ?? List();
-                                    return _buildCountAllTasks(
-                                        allTasks.length.toString());
-                                  }
-                                  return _buildCountAllTasks(allTasks != null
-                                      ? allTasks.length.toString()
-                                      : '');
-                                }),
-                      ],
+                          isAssignedToMe
+                              ? StreamBuilder(
+                                  stream: database.assignedTaskDao
+                                      .watchAllAssignedTasksByUserId(
+                                          widget.loggedInUser.id),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                            ConnectionState.done ||
+                                        snapshot.connectionState ==
+                                            ConnectionState.active) {
+                                      return _buildCountAllTasks(
+                                          snapshot.data == null
+                                              ? '0'
+                                              : snapshot.data.length
+                                                  .toString());
+                                    }
+                                    return _buildCountAllTasks('0');
+                                  },
+                                )
+                              : StreamBuilder(
+                                  stream: watchAllTaskList(database),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                            ConnectionState.active ||
+                                        snapshot.connectionState ==
+                                            ConnectionState.done) if (!snapshot
+                                        .hasError) {
+                                      allTasks = snapshot.data ?? List();
+                                      return _buildCountAllTasks(
+                                          allTasks.length.toString());
+                                    }
+                                    return _buildCountAllTasks(allTasks != null
+                                        ? allTasks.length.toString()
+                                        : '');
+                                  }),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Container(
-              height: MediaQuery.of(context).size.height * 0.65,
-              child: isAssignedToMe
-                  ? _buildAssignedTaskList(context, database)
-                  : _buildTaskList(context, database)),
-        ],
+            Container(
+                height: MediaQuery.of(context).size.height * 0.65,
+                child: isAssignedToMe
+                    ? _buildAssignedTaskList(context, database)
+                    : _buildTaskList(context, database)),
+          ],
+        ),
       ),
     );
   }
@@ -335,16 +350,45 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  Widget _buildBoardColumn(String boardName, String createdAt) {
+  Widget _buildBoardColumn(
+      {String boardName,
+      String createdAt,
+      BoardTableData board,
+      TwixDB database}) {
+    final TextEditingController boardNameController =
+        TextEditingController.fromValue(TextEditingValue(
+            text: boardName,
+            selection: TextSelection.fromPosition(
+                TextPosition(offset: boardName.length))));
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 18),
-          child: Text(
-            boardName,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.6,
+            child: board == null || board?.isMyTasks == true
+                ? Text(
+                    boardName,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  )
+                : TextField(
+                    controller: boardNameController,
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      counterText: '',
+                    ),
+                    enableInteractiveSelection: false,
+                    maxLength: 25,
+                    maxLines: 1,
+                    autofocus: false,
+                    onChanged: (value) {
+                      database.boardDao
+                          .updateBoard(board.copyWith(name: value));
+                    },
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
           ),
         ),
         Padding(

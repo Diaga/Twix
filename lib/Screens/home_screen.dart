@@ -66,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
         await database.userDao.insertUser(UserTableCompanion(
             id: Value(userId), name: Value(userName), email: Value(userEmail)));
 
-      if (!taskExists)
+      if (!taskExists) {
         await database.taskDao.insertTask(TaskTableCompanion(
             id: Value(taskId),
             name: Value(taskName),
@@ -77,12 +77,13 @@ class _HomeScreenState extends State<HomeScreen> {
             notes: Value(taskNotes),
             createdAt: Value(DateTime.now())));
 
-      await database.assignedTaskDao.insertAssignedTask(
-          AssignedTaskTableCompanion(
-              id: Value(id),
-              isDone: Value(isDone),
-              taskId: Value(taskId),
-              userId: Value(userId)));
+        await database.assignedTaskDao.insertAssignedTask(
+            AssignedTaskTableCompanion(
+                id: Value(id),
+                isDone: Value(isDone),
+                taskId: Value(taskId),
+                userId: Value(userId)));
+      }
     }
   }
 

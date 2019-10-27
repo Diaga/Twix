@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart';
 import 'package:moor_flutter/moor_flutter.dart' hide Column;
 import 'package:twix/Database/database.dart';
 import 'package:twix/Api/api.dart';
+
 import 'package:twix/Database/DAOs/group_user_dao.dart';
 import 'package:twix/Widgets/custom_scroll_behaviour.dart';
 
@@ -27,7 +29,7 @@ class _GroupScreenState extends State<GroupScreen> {
         backgroundColor: ThemeData.light().scaffoldBackgroundColor,
         title: Text(
           widget.group.name,
-          style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         iconTheme: IconThemeData(color: Colors.black),
         actions: <Widget>[
@@ -41,10 +43,18 @@ class _GroupScreenState extends State<GroupScreen> {
               );
             },
             icon: Icon(
-              Icons.search,
+              Icons.group_add,
               color: Colors.indigoAccent,
             ),
-          )
+          ),
+          IconButton(
+              onPressed: () {
+                database.groupDao.deleteGroup(widget.group);
+              },
+              icon: Icon(
+                Icons.delete_outline,
+                color: Colors.red,
+              )),
         ],
       ),
       body: _buildGroupUserList(database),

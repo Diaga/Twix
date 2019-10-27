@@ -44,15 +44,22 @@ class _TaskCardState extends State<TaskCard>
       margin: EdgeInsets.all(8.0),
       color: Colors.white,
       child: ListTile(
-        leading: Padding(
-          padding: const EdgeInsets.all(7.0),
-          child: task.isDone
-              ? Icon(
-                  Icons.check_circle_outline,
-                  color: Colors.green,
-                )
-              : Icon(FontAwesomeIcons.circle),
-        ),
+        leading: Container(
+            child: task.isDone
+                ? IconButton(
+                    onPressed: null,
+                    icon: Icon(
+                      Icons.check_circle_outline,
+                      color: Colors.green,
+                    ))
+                : IconButton(
+                    onPressed: () {
+                      database.taskDao.updateTask(task.copyWith(isDone: true));
+                      setState(() {});
+                    },
+                    icon: Icon(
+                      FontAwesomeIcons.circle,
+                    ))),
         title: Text(task.name,
             style: task.isDone
                 ? TextStyle(decoration: TextDecoration.lineThrough)

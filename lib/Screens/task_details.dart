@@ -23,6 +23,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   bool useFallBack = false;
   bool shouldDisable = false;
 
+  TextEditingController taskController;
+
   @override
   void initState() {
     super.initState();
@@ -47,166 +49,215 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
               isSync: false,
               createdAt: DateTime.now(),
             );
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              'Details',
-              style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
+        taskController = TextEditingController.fromValue(TextEditingValue(
+            text: task.name,
+            selection: TextSelection.fromPosition(
+                TextPosition(offset: task.name.length))));
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(
+                'Task Details',
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: Colors.white,
+              elevation: 0,
+              iconTheme: IconThemeData(color: Colors.black),
             ),
-            backgroundColor: Colors.white,
-            elevation: 0,
-            iconTheme: IconThemeData(color: Colors.black),
-          ),
-          bottomNavigationBar: BottomAppBar(
-            child: Container(
-              height: 56,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Expanded(
-                    flex: 5,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(
-                          'Created on ${DateFormat.yMMMEd().format(task.createdAt).toString()}',
+            bottomNavigationBar: BottomAppBar(
+              child: Container(
+                height: 56,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 5,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          child: Text(
+                            'Created on ${DateFormat.yMMMEd().format(task.createdAt).toString()}',
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: InkWell(
-                      onTap: () {
-                        database.taskDao.deleteTask(
-                            useFallBack ? widget.task : widget.task.task);
-                        Navigator.pop(context);
-                      },
-                      child: Icon(Icons.delete_outline,color: Colors.red,),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          database.taskDao.deleteTask(
+                              useFallBack ? widget.task : widget.task.task);
+                          Navigator.pop(context);
+                        },
+                        child: Icon(
+                          Icons.delete_outline,
+                          color: Colors.red,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          body: AbsorbPointer(
-            absorbing: shouldDisable,
-            child: ScrollConfiguration(
-              behavior: CustomScrollBehaviour(),
-              child: ListView(
-                children: <Widget>[
-                  Container(
-                    height: 80,
-                    child: Card(
-                      margin: EdgeInsets.zero,
-                      child: Center(
-                        child: ListTile(
-                          leading: task.isDone
-                              ? Icon(Icons.check_circle_outline,color: Colors.green,)
-                              : Icon(FontAwesomeIcons.circle),
-                          title: Text(task.name),
-                          trailing: database.taskDao.isMyDay(task.myDayDate)
-                              ? Icon(Icons.star,color: Colors.orange,)
-                              : Icon(Icons.star_border),
+            body: AbsorbPointer(
+              absorbing: shouldDisable,
+              child: ScrollConfiguration(
+                behavior: CustomScrollBehaviour(),
+                child: ListView(
+                  children: <Widget>[
+                    Container(
+                      height: 80,
+                      child: Card(
+                        margin: EdgeInsets.zero,
+                        child: Center(
+                          child: ListTile(
+                            leading: task.isDone
+                                ? IconButton(
+                              onPressed: null,
+                                    icon: Icon(
+                                    Icons.check_circle_outline,
+                                    color: Colors.green,
+                                  ))
+                                : IconButton(
+                                    onPressed: () {
+                                      database.taskDao.updateTask(
+                                          task.copyWith(isDone: true));
+                                      setState(() {});
+                                    },
+                                    icon: Icon(
+                                      FontAwesomeIcons.circle,
+                                    )),
+                            title: TextField(
+                              controller: taskController,
+                              decoration: InputDecoration(
+                                  border: InputBorder.none, counterText: ''),
+                              onChanged: (value) {
+                                database.taskDao
+                                    .updateTask(task.copyWith(name: value));
+                              },
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w600),
+                            ),
+                            trailing: database.taskDao.isMyDay(task.myDayDate)
+                                ? Icon(
+                                    Icons.star,
+                                    color: Colors.orange,
+                                  )
+                                : Icon(Icons.star_border),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Card(
-                    margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
-                    child: Column(
-                      children: <Widget>[
-                        ListTile(
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (context) => Container(
-                                child: ScrollConfiguration(
-                                  behavior: CustomScrollBehaviour(),
-                                  child: ListView(
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                          height: 50,
-                                          child: Center(
-                                            child: Text(
-                                              'Groups',
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold),
+                    Card(
+                      margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
+                      child: Column(
+                        children: <Widget>[
+                          ListTile(
+                            onTap: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) => Container(
+                                  child: ScrollConfiguration(
+                                    behavior: CustomScrollBehaviour(),
+                                    child: ListView(
+                                      children: <Widget>[
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Container(
+                                            height: 50,
+                                            child: Center(
+                                              child: Text(
+                                                'Groups',
+                                                style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Container(
-                                        child: _buildGroupList(database),
-                                      ),
-                                    ],
+                                        Container(
+                                          child: _buildGroupList(database),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                          leading: Icon(Icons.assignment_ind,color: Colors.indigo,),
-                          title: task.assignedTo != null
-                              ? Text('Assigned')
-                              : Text('Assign task'),
-                        ),
-                        Divider(
-                          indent: 70,
-                        ),
-                        ListTile(
-                          leading: Icon(FontAwesomeIcons.bell,color: Colors.red[800],),
-                          title: task.remindMe != null
-                              ? Text(
-                                  '${DateFormat.MMMEd().format(task.remindMe).toString()},'
-                                  ' ${DateFormat.jm().format(task.remindMe).toString()}')
-                              : Text('No reminder'),
-                          onTap: () {},
-                        ),
-                        Divider(
-                          indent: 70,
-                        ),
-                        ListTile(
-                          leading: Icon(Icons.calendar_today,color: Colors.teal,),
-                          title: task.dueDate != null
-                              ? Text(DateFormat.yMMMEd()
-                                  .format(task.dueDate)
-                                  .toString())
-                              : Text('No due date'),
-                          onTap: () {},
-                        ),
-                      ],
+                              );
+                            },
+                            leading: Icon(
+                              Icons.assignment_ind,
+                              color: Colors.indigo,
+                            ),
+                            title: task.assignedTo != null
+                                ? Text('Assigned')
+                                : Text('Assign task'),
+                          ),
+                          Divider(
+                            indent: 70,
+                          ),
+                          ListTile(
+                            leading: Icon(
+                              FontAwesomeIcons.bell,
+                              color: Colors.red[800],
+                            ),
+                            title: task.remindMe != null
+                                ? Text(
+                                    '${DateFormat.MMMEd().format(task.remindMe).toString()},'
+                                    ' ${DateFormat.jm().format(task.remindMe).toString()}')
+                                : Text('No reminder'),
+                            onTap: () {},
+                          ),
+                          Divider(
+                            indent: 70,
+                          ),
+                          ListTile(
+                            leading: Icon(
+                              Icons.calendar_today,
+                              color: Colors.teal,
+                            ),
+                            title: task.dueDate != null
+                                ? Text(DateFormat.yMMMEd()
+                                    .format(task.dueDate)
+                                    .toString())
+                                : Text('No due date'),
+                            onTap: () {},
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Container(
-                    height: 200,
-                    width: double.infinity,
-                    margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
-                    child: Card(
-                      margin: EdgeInsets.zero,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      NoteEditor(task: task)));
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: task.notes != null || task.notes == ''
-                              ? Text(task.notes)
-                              : Text(
-                                  'Add notes',
-                                  style: TextStyle(color: Colors.grey),
-                                ),
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
+                      child: Card(
+                        margin: EdgeInsets.zero,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        NoteEditor(task: task)));
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: task.notes != null || task.notes == ''
+                                ? Text(task.notes)
+                                : Text(
+                                    'Add notes',
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -231,6 +282,12 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             ),
           );
         });
+  }
+
+  @override
+  void dispose() {
+    taskController?.dispose();
+    super.dispose();
   }
 }
 

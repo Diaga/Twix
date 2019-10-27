@@ -27,7 +27,8 @@ class TaskAdderSheet extends StatefulWidget {
 class _TaskAdderSheetState extends State<TaskAdderSheet> {
   final TextEditingController textEditingController = TextEditingController();
 
-  DateTime today = DateTime.now();
+  DateTime now = DateTime.now();
+  DateTime today;
   DateTime dueDate;
 
   DateTime initialDate = DateTime.now();
@@ -41,7 +42,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
   @override
   void initState() {
     super.initState();
-    today = DateTime(today.year, today.month, today.day);
+    today = DateTime(now.year, now.month, now.day);
   }
 
   @override
@@ -64,14 +65,17 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                       padding: const EdgeInsets.only(
                           left: 8.0, top: 8, bottom: 8, right: 5),
                       child: TextField(
-                        expands: true,
                         decoration: InputDecoration(
-                          hintText: 'Task name',
-                          border: InputBorder.none,
-                        ),
+                            hintText: 'Task name',
+                            border: InputBorder.none,
+                            counterText: ''),
                         autofocus: true,
-                        maxLines: null,
+                        maxLines: 1,
+                        maxLength: 25,
                         controller: textEditingController,
+                        onSubmitted: (value) {
+                          _insertTask(database);
+                        },
                       ),
                     ),
                   ),
@@ -79,41 +83,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                     child: IconButton(
                       icon: Icon(Icons.arrow_upward),
                       onPressed: () async {
-                        today = DateTime.now();
-                        today = DateTime(today.year, today.month, today.day);
-                        if (textEditingController.text.isNotEmpty) {
-                          widget.action == 'normal'
-                              ? database.taskDao.insertTask(TaskTableCompanion(
-                                  id: Value(Uuid().v4()),
-                                  name: Value(textEditingController.text),
-                                  dueDate: Value(dueDate),
-                                  myDayDate: Value(dueDate),
-                                  boardId: Value(widget.boardId),
-                                  remindMe: Value(remindMeDateTime),
-                                  createdAt: Value(today)))
-                              : database.taskDao.insertTask(
-                                  TaskTableCompanion(
-                                    id: Value(Uuid().v4()),
-                                    name: Value(textEditingController.text),
-                                    boardId: Value(widget.boardId),
-                                    dueDate: Value(dueDate),
-                                    myDayDate: Value(
-                                      DateTime(
-                                          today.year, today.month, today.day),
-                                    ),
-                                    remindMe: Value(remindMeDateTime),
-                                    createdAt: Value(today),
-                                  ),
-                                );
-                          Navigator.pop(context);
-                          if (remindMeDateTime != null) {
-                            widget.showNotification(
-                                title: 'Twix reminder!',
-                                task:
-                                    'You have to complete ${textEditingController.text}!',
-                                time: remindMeDateTime);
-                          }
-                        }
+                        _insertTask(database);
                       },
                     ),
                   ),
@@ -188,6 +158,42 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
       });
       remindMeDateTime = DateTime(reminderDate.year, reminderDate.month,
           reminderDate.day, reminderTime.hour, reminderTime.minute);
+    }
+  }
+
+  void _insertTask(TwixDB database) async {
+    today = DateTime.now();
+    today = DateTime(today.year, today.month, today.day);
+    if (textEditingController.text.isNotEmpty) {
+      widget.action == 'normal'
+          ? database.taskDao.insertTask(TaskTableCompanion(
+              id: Value(Uuid().v4()),
+              name: Value(textEditingController.text),
+              dueDate: Value(dueDate),
+              myDayDate: Value(dueDate),
+              boardId: Value(widget.boardId),
+              remindMe: Value(remindMeDateTime),
+              createdAt: Value(DateTime.now())))
+          : database.taskDao.insertTask(
+              TaskTableCompanion(
+                id: Value(Uuid().v4()),
+                name: Value(textEditingController.text),
+                boardId: Value(widget.boardId),
+                dueDate: Value(dueDate),
+                myDayDate: Value(
+                  DateTime(today.year, today.month, today.day),
+                ),
+                remindMe: Value(remindMeDateTime),
+                createdAt: Value(DateTime.now()),
+              ),
+            );
+      Navigator.pop(context);
+      if (remindMeDateTime != null) {
+        widget.showNotification(
+            title: 'Twix reminder!',
+            task: 'You have to complete ${textEditingController.text}!',
+            time: remindMeDateTime);
+      }
     }
   }
 }
