@@ -50,6 +50,7 @@ class _GroupScreenState extends State<GroupScreen> {
           IconButton(
               onPressed: () {
                 database.groupDao.deleteGroup(widget.group);
+                Navigator.pop(context);
               },
               icon: Icon(
                 Icons.delete_outline,
