@@ -71,7 +71,7 @@ class TaskDao extends DatabaseAccessor<TwixDB> with _$TaskDaoMixin {
           ..where((row) => row.myDayDate.equals(today))
           ..orderBy([
             (t) => OrderingTerm(expression: t.isDone, mode: OrderingMode.asc),
-            (t) => OrderingTerm(expression: t.dueDate, mode: OrderingMode.desc)
+            (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
           ]))
         .join([
           innerJoin(boardTable, taskTable.boardId.equalsExp(boardTable.id)),

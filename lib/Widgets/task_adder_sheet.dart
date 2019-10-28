@@ -174,19 +174,31 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
               boardId: Value(widget.boardId),
               remindMe: Value(remindMeDateTime),
               createdAt: Value(DateTime.now())))
-          : database.taskDao.insertTask(
-              TaskTableCompanion(
-                id: Value(Uuid().v4()),
-                name: Value(textEditingController.text),
-                boardId: Value(widget.boardId),
-                dueDate: Value(dueDate),
-                myDayDate: Value(
-                  DateTime(today.year, today.month, today.day),
-                ),
-                remindMe: Value(remindMeDateTime),
-                createdAt: Value(DateTime.now()),
-              ),
-            );
+          : widget.action == 'normal MyTasks'
+              ? database.taskDao.insertTask(
+                  TaskTableCompanion(
+                    id: Value(Uuid().v4()),
+                    name: Value(textEditingController.text),
+                    boardId: Value(widget.boardId),
+                    dueDate: Value(dueDate),
+                    myDayDate: Value(dueDate),
+                    remindMe: Value(remindMeDateTime),
+                    createdAt: Value(DateTime.now()),
+                  ),
+                )
+              : database.taskDao.insertTask(
+                  TaskTableCompanion(
+                    id: Value(Uuid().v4()),
+                    name: Value(textEditingController.text),
+                    boardId: Value(widget.boardId),
+                    dueDate: Value(dueDate),
+                    myDayDate: Value(
+                      DateTime(today.year, today.month, today.day),
+                    ),
+                    remindMe: Value(remindMeDateTime),
+                    createdAt: Value(DateTime.now()),
+                  ),
+                );
       Navigator.pop(context);
       if (remindMeDateTime != null) {
         widget.showNotification(
