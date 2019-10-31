@@ -44,14 +44,14 @@ class _AdderSheetState extends State<AdderSheet> {
                         right: 5,
                       ),
                       child: TextField(
-                        expands: true,
                         controller: textEditingController,
                         decoration: InputDecoration(
                           hintText: '${widget.text} name',
                           border: InputBorder.none,
+                            counterText: '',
                         ),
                         autofocus: true,
-                        maxLines: null,
+                        maxLength: 40 ,
                       ),
                     ),
                   ),

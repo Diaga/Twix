@@ -269,5 +269,4 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class HoldData {
   static bool isDividerA = false;
-  static bool isDividerG = false;
 }

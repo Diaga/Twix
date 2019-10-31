@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:moor_flutter/moor_flutter.dart' hide Column;
+import 'package:progress_button/progress_button.dart';
 import 'package:provider/provider.dart';
+import 'package:twix/Screens/home_screen.dart';
 import 'package:twix/Widgets/custom_scroll_behaviour.dart';
 import 'package:uuid/uuid.dart';
 import 'package:twix/Database/database.dart';
 import 'package:twix/Api/api.dart';
-import 'package:twix/Screens/home_screen.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+
 
 class Login extends StatefulWidget {
   @override
@@ -18,7 +19,7 @@ class LoginState extends State<Login> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  bool showSpinner = false;
+  ButtonState showSpinner = ButtonState.normal;
 
   @override
   void dispose() {
@@ -33,112 +34,105 @@ class LoginState extends State<Login> {
     final database = Provider.of<TwixDB>(context);
     return Scaffold(
       body: Builder(
-        builder: (context) => ModalProgressHUD(
-          inAsyncCall: showSpinner,
-          child: SafeArea(
-            child: ScrollConfiguration(
-              behavior: CustomScrollBehaviour(),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.20,
-                      child: Center(
-                        child: Hero(
-                          tag: 'avatar',
-                          child: Image(
-                            image: AssetImage(
-                              'images/splash_image.png',
-                            ),
-                            height: 100,
+        builder: (context) => SafeArea(
+          child: ScrollConfiguration(
+            behavior: CustomScrollBehaviour(),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.20,
+                    child: Center(
+                      child: Hero(
+                        tag: 'avatar',
+                        child: Image(
+                          image: AssetImage(
+                            'images/splash_image.png',
                           ),
+                          height: 100,
                         ),
                       ),
                     ),
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.15,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 30.0),
-                            child: Text(
-                              'Welcome!',
-                              style: TextStyle(fontSize: 30),
-                            ),
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 30.0),
+                          child: Text(
+                            'Welcome!',
+                            style: TextStyle(fontSize: 30),
                           ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 30.0),
-                            child: Text(
-                              'Sign up to continue...',
-                              style: TextStyle(color: Colors.grey),
-                            ),
+                        ),
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 30.0),
+                          child: Text(
+                            'Sign up to continue...',
+                            style: TextStyle(color: Colors.grey),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.35,
-                      child: Column(
-                        children: <Widget>[
-                          _buildTextField('Name', nameController, false),
-                          _buildTextField('Email', emailController, false),
-                          _buildTextField('Password', passwordController, true),
-                        ],
-                      ),
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.35,
+                    child: Column(
+                      children: <Widget>[
+                        _buildTextField('Name', nameController, false),
+                        _buildTextField('Email', emailController, false),
+                        _buildTextField('Password', passwordController, true),
+                      ],
                     ),
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.07,
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.all(30),
-                      child: FlatButton(
-                        shape: new RoundedRectangleBorder(
-                            borderRadius: new BorderRadius.circular(7.0),
-                            side: BorderSide(color: Colors.white)),
-                        color: Color.fromRGBO(249, 157, 33, 100),
-                        onPressed: () async {
-                          if (Connect.getConnection) {
-                            if (_validateFields()) {
-                              setState(() {
-                                showSpinner = true;
-                              });
-                              if (await (_actionSignUp(database))) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HomeScreen(),
-                                  ),
-                                );
-                              }
-                            } else {
-                              final snackBar = SnackBar(
-                                duration: Duration(milliseconds: 800),
-                                content: Text(
-                                    'Please fill the above fields correctly!'),
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.07,
+                    width: MediaQuery.of(context).size.width,
+                    margin: EdgeInsets.all(30),
+                    child: ProgressButton(
+                        buttonState: showSpinner,
+                        backgroundColor: Color.fromRGBO(249, 157, 33, 100),
+
+                      onPressed: () async {
+                        if (Connect.getConnection) {
+                          if (_validateFields()) {
+                            setState(() {
+                              showSpinner = ButtonState.inProgress;
+                            });
+                            if (await (_actionSignUp(database))) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomeScreen(),
+                                ),
                               );
-                              Scaffold.of(context).showSnackBar(snackBar);
                             }
                           } else {
                             final snackBar = SnackBar(
                               duration: Duration(milliseconds: 800),
                               content: Text(
-                                  'You must be connected to the internet to proceed!'),
+                                  'Please fill the above fields correctly!'),
                             );
                             Scaffold.of(context).showSnackBar(snackBar);
                           }
-                        },
-                        child: Text(
-                          'SIGN UP',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
+                        } else {
+                          final snackBar = SnackBar(
+                            duration: Duration(milliseconds: 800),
+                            content: Text(
+                                'You must be connected to the internet to proceed!'),
+                          );
+                          Scaffold.of(context).showSnackBar(snackBar);
+                        }
+                      },
+                      child: Text('SIGN UP',style: TextStyle(color: Colors.white),)
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -154,6 +148,7 @@ class LoginState extends State<Login> {
       child: TextField(
         obscureText: obscureText,
         controller: controller,
+        textCapitalization: TextCapitalization.values[0],
         decoration: InputDecoration(
           labelText: label,
         ),
