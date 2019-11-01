@@ -45,4 +45,4 @@ Twix has the following dependencies in addition to Flutter:
 * [firebase_messaging](https://pub.dev/packages/firebase_messaging)
 * [flutter_local_notifications](https://pub.dev/packages/flutter_local_notifications)
 * [font_awesome_flutter](https://pub.dev/packages/font_awesome_flutter)
-* [modal_progress_hud](https://pub.dev/packages/modal_progress_hud)
+* [progress_button](https://pub.dev/packages/progress_button)
