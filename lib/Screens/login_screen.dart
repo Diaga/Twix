@@ -1,7 +1,10 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:moor_flutter/moor_flutter.dart' hide Column;
 import 'package:provider/provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:twix/Widgets/custom_scroll_behaviour.dart';
 import 'package:uuid/uuid.dart';
 import 'package:twix/Database/database.dart';
@@ -19,6 +22,18 @@ class LoginState extends State<Login> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool showSpinner = false;
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  String registrationId;
+
+  @override
+  void initState() {
+    super.initState();
+    _firebaseAddDevice();
+  }
+
+  void _firebaseAddDevice() async {
+    registrationId = await _firebaseMessaging.getToken();
+  }
 
   @override
   void dispose() {
@@ -99,7 +114,7 @@ class LoginState extends State<Login> {
                         shape: new RoundedRectangleBorder(
                             borderRadius: new BorderRadius.circular(7.0),
                             side: BorderSide(color: Colors.white)),
-                        color: Color.fromRGBO(249, 157, 33, 100),
+                        color: Colors.amber,
                         onPressed: () async {
                           if (Connect.getConnection) {
                             if (_validateFields()) {
@@ -133,7 +148,8 @@ class LoginState extends State<Login> {
                         },
                         child: Text(
                           'SIGN UP',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -181,27 +197,29 @@ class LoginState extends State<Login> {
         ),
       );
       Api.setAuthToken(authToken);
+      Api.createDevice('${nameController.text} Device', registrationId);
     }
     return result;
   }
 
   bool _validateFields() {
-    if (nameController.text.isNotEmpty && emailController
-        .text.isNotEmpty && passwordController.text.isNotEmpty){
-      if (!emailController.text.contains('@')){
+    if (nameController.text.isNotEmpty &&
+        emailController.text.isNotEmpty &&
+        passwordController.text.isNotEmpty) {
+      if (!emailController.text.contains('@')) {
         final snackBar = SnackBar(
           duration: Duration(milliseconds: 800),
-          content: Text(
-              'Please provide valid email address'),
+          content: Text('Please provide valid email address'),
         );
         Scaffold.of(context).showSnackBar(snackBar);
         return false;
       }
-      if (passwordController.text.length < 5){
+      if (passwordController.text.length < 5) {
         final snackBar = SnackBar(
           duration: Duration(milliseconds: 800),
           content: Text(
-              'Password should contains at least five characters',),
+            'Password should contains at least five characters',
+          ),
         );
         Scaffold.of(context).showSnackBar(snackBar);
         return false;
@@ -209,5 +227,5 @@ class LoginState extends State<Login> {
       return true;
     }
     return false;
-    }
+  }
 }
