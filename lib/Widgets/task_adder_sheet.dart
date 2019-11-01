@@ -38,6 +38,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
   TimeOfDay reminderTime;
 
   DateTime remindMeDateTime;
+  Color addButtonBackgroundColor = Colors.grey[400];
 
   @override
   void initState() {
@@ -71,20 +72,42 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                             counterText: ''),
                         autofocus: true,
                         maxLines: 1,
-                        maxLength: 25,
+                        maxLength: 40,
                         controller: textEditingController,
                         onSubmitted: (value) {
                           _insertTask(database);
+                        },
+                        onChanged: (value){
+                          if (value==null || value==''){
+                            setState(() {
+                              addButtonBackgroundColor = Colors.grey[400];
+                            });
+                          }else{
+                            setState(() {
+                              addButtonBackgroundColor = Colors.indigoAccent;
+                            });
+                          }
                         },
                       ),
                     ),
                   ),
                   Expanded(
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_upward),
-                      onPressed: () async {
+                    child: InkWell(
+                      onTap: () async{
                         _insertTask(database);
                       },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 3,vertical: 5),
+                        margin: EdgeInsets.symmetric(horizontal: 9),
+                        decoration: BoxDecoration(
+                          color: addButtonBackgroundColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.arrow_upward,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ],

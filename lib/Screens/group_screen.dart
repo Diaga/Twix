@@ -5,9 +5,9 @@ import 'package:http/http.dart';
 import 'package:moor_flutter/moor_flutter.dart' hide Column;
 import 'package:twix/Database/database.dart';
 import 'package:twix/Api/api.dart';
-
 import 'package:twix/Database/DAOs/group_user_dao.dart';
 import 'package:twix/Widgets/custom_scroll_behaviour.dart';
+
 
 class GroupScreen extends StatefulWidget {
   final GroupTableData group;
@@ -42,7 +42,7 @@ class _GroupScreenState extends State<GroupScreen> {
               );
             },
             icon: Icon(
-              Icons.group_add,
+              Icons.person_add,
               color: Colors.indigoAccent,
             ),
           ),
