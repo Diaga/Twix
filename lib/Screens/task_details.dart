@@ -175,46 +175,49 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
                       child: Column(
                         children: <Widget>[
-                          ListTile(
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (context) => Container(
-                                  child: ScrollConfiguration(
-                                    behavior: CustomScrollBehaviour(),
-                                    child: ListView(
-                                      children: <Widget>[
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            height: 50,
-                                            child: Center(
-                                              child: Text(
-                                                'Groups',
-                                                style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                          AbsorbPointer(
+                            absorbing: task.assignedTo != null,
+                            child: ListTile(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  builder: (context) => Container(
+                                    child: ScrollConfiguration(
+                                      behavior: CustomScrollBehaviour(),
+                                      child: ListView(
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Container(
+                                              height: 50,
+                                              child: Center(
+                                                child: Text(
+                                                  'Groups',
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                        Container(
-                                          child: _buildGroupList(database),
-                                        ),
-                                      ],
+                                          Container(
+                                            child: _buildGroupList(database),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              );
-                            },
-                            leading: Icon(
-                              Icons.assignment_ind,
-                              color: Colors.indigo,
+                                );
+                              },
+                              leading: Icon(
+                                Icons.assignment_ind,
+                                color: Colors.indigo,
+                              ),
+                              title: task.assignedTo != null
+                                  ? Text('Assigned')
+                                  : Text('Assign task'),
                             ),
-                            title: task.assignedTo != null
-                                ? Text('Assigned')
-                                : Text('Assign task'),
                           ),
                           Divider(
                             indent: 70,
@@ -251,24 +254,28 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                           Divider(
                             indent: 70,
                           ),
-                          ListTile(
-                            leading: Icon(
-                              Icons.calendar_today,
-                              color: Colors.teal,
+                          AbsorbPointer(
+                            absorbing: task.assignedTo != null,
+                            child: ListTile(
+                              leading: Icon(
+                                Icons.calendar_today,
+                                color: Colors.teal,
+                              ),
+                              title: task.dueDate != null
+                                  ? Text(DateFormat.yMMMEd()
+                                      .format(task.dueDate)
+                                      .toString())
+                                  : Text('No due date'),
+                              onTap: () async {
+                                await selectDueDate();
+                                database.taskDao.updateTask(useFallBack
+                                    ? widget.taskFallBack
+                                        .copyWith(dueDate: dueDate)
+                                    : widget.task.task
+                                        .copyWith(dueDate: dueDate));
+                                setState(() {});
+                              },
                             ),
-                            title: task.dueDate != null
-                                ? Text(DateFormat.yMMMEd()
-                                    .format(task.dueDate)
-                                    .toString())
-                                : Text('No due date'),
-                            onTap: () async {
-                              await selectDueDate();
-                              database.taskDao.updateTask(useFallBack
-                                  ? widget.taskFallBack
-                                      .copyWith(dueDate: dueDate)
-                                  : widget.task.task
-                                      .copyWith(dueDate: dueDate));
-                            },
                           ),
                         ],
                       ),
@@ -279,22 +286,25 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       margin: EdgeInsets.fromLTRB(5, 15, 5, 0),
                       child: Card(
                         margin: EdgeInsets.zero,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        NoteEditor(task: task)));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: task.notes != null || task.notes == ''
-                                ? Text(task.notes)
-                                : Text(
-                                    'Add notes',
-                                    style: TextStyle(color: Colors.grey),
-                                  ),
+                        child: AbsorbPointer(
+                          absorbing: task.assignedTo != null,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          NoteEditor(task: task)));
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: task.notes != null || task.notes == ''
+                                  ? Text(task.notes)
+                                  : Text(
+                                      'Add notes',
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                            ),
                           ),
                         ),
                       ),
@@ -403,7 +413,7 @@ class GroupListTileState extends State<GroupListTile> {
                       widget.task.task.copyWith(assignedTo: widget.group.id));
                   setState(() {});
                   await Api.deleteTask(widget.task.task.id);
-                  await Api.createTask(
+                  var response = await Api.createTask(
                       id: widget.task.task.id,
                       name: widget.task.task.name,
                       isDone: widget.task.task.isDone,
@@ -411,7 +421,10 @@ class GroupListTileState extends State<GroupListTile> {
                       remindMe: widget.task.task.remindMe,
                       boardId: widget.task.board.id,
                       isAssigned: true,
-                      groupId: widget.group.id);
+                      groupId: widget.group.id,
+                    notes: widget.task.task.notes
+                  );
+                  print(response.body);
                 },
               ),
             );
