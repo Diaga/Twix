@@ -66,6 +66,7 @@ class _TaskAdderSheetState extends State<TaskAdderSheet> {
                       padding: const EdgeInsets.only(
                           left: 8.0, top: 8, bottom: 8, right: 5),
                       child: TextField(
+                        textCapitalization: TextCapitalization.values[0],
                         decoration: InputDecoration(
                             hintText: 'Task name',
                             border: InputBorder.none,

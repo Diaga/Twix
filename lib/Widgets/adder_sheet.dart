@@ -44,6 +44,7 @@ class _AdderSheetState extends State<AdderSheet> {
                         right: 5,
                       ),
                       child: TextField(
+                        textCapitalization: TextCapitalization.values[0],
                         controller: textEditingController,
                         decoration: InputDecoration(
                           hintText: '${widget.text} name',

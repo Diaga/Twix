@@ -158,6 +158,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                                 database.taskDao
                                     .updateTask(task.copyWith(name: value));
                               },
+                              textCapitalization: TextCapitalization.values[0],
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.w600),
                             ),

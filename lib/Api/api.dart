@@ -120,17 +120,6 @@ class Api {
       bool isAssigned,
       String groupId,
       String notes}) {
-    print(jsonEncode({
-      'id': id,
-      'name': name,
-      'is_done': isDone,
-      'due_date': dueDate.toString(),
-      'remind_me': remindMe.toString(),
-      'board_id': boardId,
-      'is_assigned': isAssigned,
-      'group_id': groupId,
-      'notes': notes
-    }));
     return post(_taskView,
         body: jsonEncode({
           'id': id,

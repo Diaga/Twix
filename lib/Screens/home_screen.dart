@@ -133,8 +133,12 @@ class _HomeScreenState extends State<HomeScreen> {
             id: Value(taskId),
             name: Value(taskName),
             isDone: Value(taskIsDone),
-            dueDate: Value(DateTime.parse('$taskDueDate  00:00:00.000')),
-            remindMe: Value(DateTime.parse(taskRemindMe)),
+            dueDate: taskDueDate == null
+                ? Value(null)
+                : Value(DateTime.parse('${taskDueDate.toString()} 13:27:00')),
+            remindMe: taskRemindMe == null
+                ? Value(null)
+                : Value(DateTime.parse(taskRemindMe)),
             boardId: Value(taskBoardId),
             notes: Value(taskNotes),
             createdAt: Value(DateTime.now())));
@@ -159,6 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: CustomAppBar(
           height: 60.0,
           color: ThemeData.light().scaffoldBackgroundColor,
+          showNotification: showNotification,
         ),
         bottomNavigationBar: CustomBottomBar(
           listCallBack: () {

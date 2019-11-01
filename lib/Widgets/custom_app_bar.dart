@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:twix/Database/database.dart';
+import 'package:twix/Screens/task_details.dart';
 
 class CustomAppBar extends PreferredSize {
   final double height;
   final Color color;
+  final Function showNotification;
 
-  CustomAppBar({this.height, this.color});
+  CustomAppBar({this.showNotification, this.height, this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,9 @@ class CustomAppBar extends PreferredSize {
             child: Material(
               child: InkWell(
                 onTap: () {
-                  showSearch(context: context, delegate: Search());
+                  showSearch(context: context, delegate: Search(
+                    showNotification: showNotification
+                  ));
                 },
                 child: Icon(
                   Icons.search,
@@ -94,6 +98,10 @@ class CustomAppBar extends PreferredSize {
 }
 
 class Search extends SearchDelegate<String> {
+  final Function showNotification;
+
+  Search({this.showNotification});
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -132,6 +140,7 @@ class Search extends SearchDelegate<String> {
             itemBuilder: (BuildContext context, int index) {
               return TaskSearchCard(
                 task: data[index],
+                showNotification: showNotification,
               );
             },
             itemCount: data.length,
@@ -142,16 +151,27 @@ class Search extends SearchDelegate<String> {
 
 class TaskSearchCard extends StatelessWidget {
   final TaskTableData task;
+  final Function showNotification;
 
-  TaskSearchCard({this.task});
+  TaskSearchCard({this.task, this.showNotification});
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: task.isDone
-          ? Icon(Icons.check_circle_outline,color: Colors.green,)
-          : Icon(Icons.radio_button_unchecked),
-      title: Text(task.name),
+    return InkWell(
+      child: ListTile(
+        leading: task.isDone
+            ? Icon(Icons.check_circle_outline,color: Colors.green,)
+            : Icon(Icons.radio_button_unchecked),
+        title: Text(task.name),
+        onTap: () async {
+          Navigator.push(context, MaterialPageRoute(
+              builder: (context) => TaskDetailsScreen(
+                taskFallBack: task,
+                showNotification: showNotification,
+              )
+          ));
+        },
+      ),
     );
   }
 }

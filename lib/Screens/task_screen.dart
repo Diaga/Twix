@@ -350,6 +350,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   )
                 : TextField(
                     controller: boardNameController,
+                    textCapitalization: TextCapitalization.values[0],
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       counterText: '',
