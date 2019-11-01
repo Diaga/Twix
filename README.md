@@ -30,8 +30,8 @@ In four simple steps, you can build the APK on your own machine!
 
 You can download the pre-built APK through either of the following methods:
 
-* [Google Drive Link](https://drive.google.com/open?id=1z2ix7fi-9R1Mvkx4_AJ21RgPxLpdBykt)
-* [Firebase Distribution Link](https://appdistribution.firebase.dev/i/8mnCboMR)
+* [Google Drive Link](https://drive.google.com/open?id=1pZWkWc6eVd9iMAg2FIwBxmI0GJJrhDE-)
+* [Firebase Distribution Link](https://appdistribution.firebase.dev/i/LwJCo2JK)
 
 ## Dependencies
 
